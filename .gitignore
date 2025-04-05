@@ -23,6 +23,19 @@
 hs_err_pid*
 replay_pid*
 
-# IntelliJ
+# IDE local
+.settings
+.project
 .idea
-**/build/**
+.vscode
+*.code-workspace
+*.iml
+*.env
+*.tmp
+*.bak
+*.swp
+.metadata
+bin/
+build/
+target/
+out/
