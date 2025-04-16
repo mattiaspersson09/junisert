@@ -15,7 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.api.internal.support;
 
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeException;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
@@ -43,14 +43,14 @@ public class AggregatedSupportGenerator implements AggregatedValueGenerator {
     }
 
     @Override
-    public Value<?> generate(Class<?> fromType) throws UnsupportedTypeException {
+    public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
         for (ValueGenerator<?> generator : generators) {
             if (generator.supports(fromType)) {
                 return generator.generate(fromType);
             }
         }
 
-        throw new UnsupportedTypeException(fromType);
+        throw new UnsupportedTypeError(fromType);
     }
 
     @Override

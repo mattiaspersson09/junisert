@@ -16,12 +16,14 @@
 package io.github.mattiaspersson09.junisert.value.common;
 
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedConstructionError;
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeException;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.testunits.constructor.ArgConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.DefaultPackageConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.DefaultPrivateConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.DefaultPublicConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.NoConstructor;
+
+import java.lang.reflect.InvocationTargetException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,21 +40,33 @@ public class ObjectValueGeneratorTest {
     }
 
     @Test
-    void supports_whenConstructorWithoutParameters_thenIsSupported() {
+    void supports_whenConstructorIsVisible_andHasNoParameters_thenIsSupported() {
         assertThat(generator.supports(NoConstructor.class)).isTrue();
         assertThat(generator.supports(DefaultPublicConstructor.class)).isTrue();
+    }
+
+    @Test
+    void supports_whenConstructorIsInvisible_andForcingAccess_thenIsSupported() {
+        ObjectValueGenerator generator = ObjectValueGenerator.withForcedAccess();
+
         assertThat(generator.supports(DefaultPackageConstructor.class)).isTrue();
         assertThat(generator.supports(DefaultPrivateConstructor.class)).isTrue();
     }
 
     @Test
-    void supports_whenConstructorsWithParameters_thenIsNotSupported() {
+    void supports_whenConstructorIsInvisible_andNotForcingAccess_thenIsNotSupported() {
+        assertThat(generator.supports(DefaultPackageConstructor.class)).isFalse();
+        assertThat(generator.supports(DefaultPrivateConstructor.class)).isFalse();
+    }
+
+    @Test
+    void supports_whenConstructorIsVisible_butHasParameters_thenIsNotSupported() {
         assertThat(generator.supports(ArgConstructor.class)).isFalse();
     }
 
     @Test
     void generate_whenForcesConstructorAccess_andClassHasDefaultConstructor_thenConstructsValue() {
-        ObjectValueGenerator generator = new ObjectValueGenerator(true);
+        ObjectValueGenerator generator = ObjectValueGenerator.withForcedAccess();
 
         assertThat(generator.generate(NoConstructor.class).get()).isNotNull();
         assertThat(generator.generate(DefaultPublicConstructor.class).get()).isNotNull();
@@ -67,16 +81,30 @@ public class ObjectValueGeneratorTest {
     }
 
     @Test
-    void generate_whenDoesNotForceAccess_andClassHasNoDefaultConstructor_thenThrowsUnsupportedTypeException() {
+    void generate_whenDoesNotForceAccess_andClassHasNoDefaultConstructor_thenThrowsUnsupportedTypeError() {
         assertThatThrownBy(() -> generator.generate(DefaultPackageConstructor.class))
-                .isInstanceOf(UnsupportedConstructionError.class);
+                .isInstanceOf(UnsupportedTypeError.class);
         assertThatThrownBy(() -> generator.generate(DefaultPrivateConstructor.class))
-                .isInstanceOf(UnsupportedConstructionError.class);
+                .isInstanceOf(UnsupportedTypeError.class);
     }
 
     @Test
-    void generate_whenClassHasOnlyArgumentConstructor_thenThrowsUnsupportedTypeException() {
+    void generate_whenClassHasOnlyArgumentConstructor_thenThrowsUnsupportedTypeError() {
         assertThatThrownBy(() -> generator.generate(ArgConstructor.class))
-                .isInstanceOf(UnsupportedTypeException.class);
+                .isInstanceOf(UnsupportedTypeError.class);
+    }
+
+    @Test
+    void generate_whenConstructionLeadsToFailure_shouldFailFast_thenThrowsUnsupportedTypeError() {
+        assertThatThrownBy(() -> generator.generate(FailingConstructor.class))
+                .isInstanceOf(UnsupportedConstructionError.class)
+                .hasMessageContaining("Failed to construct")
+                .hasCauseInstanceOf(InvocationTargetException.class);
+    }
+
+    private static class FailingConstructor {
+        public FailingConstructor() {
+            throw new RuntimeException();
+        }
     }
 }

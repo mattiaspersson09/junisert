@@ -15,7 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.api.internal.support;
 
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeException;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.sort.Order;
@@ -26,7 +26,7 @@ import java.util.Objects;
 /**
  * A value generator that will always throw an exception on generating value.
  * A blocked type will raise {@link BlockedTypeException} if found.
- * Otherwise {@link UnsupportedTypeException} will be thrown if this generator is used for
+ * Otherwise {@link UnsupportedTypeError} will be thrown if this generator is used for
  * other types than the blocked type. This generator should not be used for other reasons
  * then to block classes and <i>should be ordered first</i> among other generators to ensure blocking behavior.
  *
@@ -62,20 +62,20 @@ public final class BlockedValueGenerator<T> implements ValueGenerator<T>, Sortab
 
     /**
      * Will always throw, {@link BlockedTypeException} for a blocked type and
-     * {@link UnsupportedTypeException} if {@code fromType} is not the blocked type
+     * {@link UnsupportedTypeError} if {@code fromType} is not the blocked type
      * this generator is looking for.
      *
      * @param fromType to throw for
      * @throws BlockedTypeException     if blocked type is encountered
-     * @throws UnsupportedTypeException if the type isn't blocked
+     * @throws UnsupportedTypeError if the type isn't blocked
      */
     @Override
-    public Value<? extends T> generate(Class<?> fromType) throws BlockedTypeException, UnsupportedTypeException {
+    public Value<? extends T> generate(Class<?> fromType) throws BlockedTypeException, UnsupportedTypeError {
         if (supports(fromType)) {
             throw new BlockedTypeException(fromType);
         }
 
-        throw new UnsupportedTypeException(fromType);
+        throw new UnsupportedTypeError(fromType);
     }
 
     @Override

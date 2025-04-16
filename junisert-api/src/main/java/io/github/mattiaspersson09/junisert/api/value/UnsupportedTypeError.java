@@ -19,11 +19,11 @@ package io.github.mattiaspersson09.junisert.api.value;
  * When a value type isn't supported in a single {@link ValueGenerator} or among
  * several available generators.
  */
-public class UnsupportedTypeException extends RuntimeException {
+public class UnsupportedTypeError extends Error {
     private static final String NOT_SUPPORTED_TYPE = "Unable to find support for type '%s'. "
             + "Consider registering a custom support for your test suite.";
 
-    public UnsupportedTypeException(Class<?> type) {
+    public UnsupportedTypeError(Class<?> type) {
         super(String.format(NOT_SUPPORTED_TYPE, type));
     }
 }

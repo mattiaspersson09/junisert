@@ -16,11 +16,12 @@
 package io.github.mattiaspersson09.junisert.value.common;
 
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedConstructionError;
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeException;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 
 public class ObjectValueGenerator implements ValueGenerator<Object> {
     private final boolean forceConstructorAccess;
@@ -29,18 +30,18 @@ public class ObjectValueGenerator implements ValueGenerator<Object> {
         this(false);
     }
 
-    public ObjectValueGenerator(boolean forceConstructorAccess) {
+    ObjectValueGenerator(boolean forceConstructorAccess) {
         this.forceConstructorAccess = forceConstructorAccess;
     }
 
-    public static ObjectValueGenerator withForcedConstructorAccess(boolean forceConstructorAccess) {
-        return new ObjectValueGenerator(forceConstructorAccess);
+    public static ObjectValueGenerator withForcedAccess() {
+        return new ObjectValueGenerator(true);
     }
 
     @Override
-    public Value<?> generate(Class<?> fromType) throws UnsupportedTypeException {
+    public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
         if (!supports(fromType)) {
-            throw new UnsupportedTypeException(fromType);
+            throw new UnsupportedTypeError(fromType);
         }
 
         try {
@@ -50,6 +51,10 @@ public class ObjectValueGenerator implements ValueGenerator<Object> {
                 noArgConstructor.setAccessible(true);
             }
 
+            /*
+                We choose to fail fast instead of letting user figure out why reflection fails later
+                if we were to use lazy construction.
+             */
             return Value.ofEager(noArgConstructor.newInstance());
         } catch (Exception e) {
             throw new UnsupportedConstructionError(fromType, e);
@@ -60,8 +65,8 @@ public class ObjectValueGenerator implements ValueGenerator<Object> {
     public boolean supports(Class<?> type) {
         try {
             // Would throw NoSuchMethodException if no default (no parameter) constructor is found
-            type.getDeclaredConstructor();
-            return true;
+            Constructor<?> defaultConstructor = type.getDeclaredConstructor();
+            return Modifier.isPublic(defaultConstructor.getModifiers()) || forceConstructorAccess;
         } catch (Exception e) {
             return false;
         }

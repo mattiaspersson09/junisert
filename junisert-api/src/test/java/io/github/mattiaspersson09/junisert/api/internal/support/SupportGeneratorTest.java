@@ -15,7 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.api.internal.support;
 
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeException;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.sort.Order;
@@ -134,8 +134,8 @@ public class SupportGeneratorTest {
         Implementation<Impl> implementation = new Implementation<>(Impl.class, () -> new Impl(1));
         SupportGenerator<Super> support = new SupportGenerator<>(Super.class, implementation);
 
-        assertThatThrownBy(() -> support.generate(ExtendingImpl.class)).isInstanceOf(UnsupportedTypeException.class);
-        assertThatThrownBy(() -> support.generate(OtherImpl.class)).isInstanceOf(UnsupportedTypeException.class);
+        assertThatThrownBy(() -> support.generate(ExtendingImpl.class)).isInstanceOf(UnsupportedTypeError.class);
+        assertThatThrownBy(() -> support.generate(OtherImpl.class)).isInstanceOf(UnsupportedTypeError.class);
     }
 
     @Test
@@ -177,7 +177,7 @@ public class SupportGeneratorTest {
         SupportGenerator<Super> support = new SupportGenerator<>(Super.class, implementation);
         ValueGenerator<Super> other = new ValueGenerator<Super>() {
             @Override
-            public Value<Super> generate(Class<?> fromType) throws UnsupportedTypeException {
+            public Value<Super> generate(Class<?> fromType) throws UnsupportedTypeError {
                 return null;
             }
 

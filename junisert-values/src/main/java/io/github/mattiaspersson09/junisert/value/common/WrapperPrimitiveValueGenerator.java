@@ -15,7 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.value.common;
 
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeException;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
@@ -25,10 +25,10 @@ import java.util.stream.Stream;
 
 public class WrapperPrimitiveValueGenerator implements ValueGenerator<Object> {
     @Override
-    public Value<?> generate(Class<?> fromType) throws UnsupportedTypeException {
+    public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
         return WrapperPrimitive.from(fromType)
                 .map(wrapper -> Value.of(wrapper.value))
-                .orElseThrow(() -> new UnsupportedTypeException(fromType));
+                .orElseThrow(() -> new UnsupportedTypeError(fromType));
     }
 
     @Override

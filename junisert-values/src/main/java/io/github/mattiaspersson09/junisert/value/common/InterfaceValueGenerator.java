@@ -15,7 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.value.common;
 
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeException;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
@@ -25,9 +25,9 @@ import java.lang.reflect.Proxy;
 
 public class InterfaceValueGenerator implements ValueGenerator<Object> {
     @Override
-    public Value<?> generate(Class<?> fromType) throws UnsupportedTypeException {
+    public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
         if (!supports(fromType)) {
-            throw new UnsupportedTypeException(fromType);
+            throw new UnsupportedTypeError(fromType);
         }
 
         return Value.of(() -> Proxy.newProxyInstance(fromType.getClassLoader(), new Class[]{fromType},

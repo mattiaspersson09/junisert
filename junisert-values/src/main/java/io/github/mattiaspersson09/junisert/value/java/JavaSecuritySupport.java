@@ -17,7 +17,7 @@ package io.github.mattiaspersson09.junisert.value.java;
 
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedValueGenerator;
 import io.github.mattiaspersson09.junisert.api.internal.support.SupportBuilder;
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeException;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -57,14 +57,14 @@ final class JavaSecuritySupport {
                     try {
                         return AlgorithmParameterGenerator.getInstance(ALGORITHM);
                     } catch (NoSuchAlgorithmException e) {
-                        throw new UnsupportedTypeException(AlgorithmParameterGenerator.class);
+                        throw new UnsupportedTypeError(AlgorithmParameterGenerator.class);
                     }
                 })
                 .supportSingle(AlgorithmParameters.class, () -> {
                     try {
                         return AlgorithmParameters.getInstance(ALGORITHM);
                     } catch (NoSuchAlgorithmException e) {
-                        throw new UnsupportedTypeException(AlgorithmParameters.class);
+                        throw new UnsupportedTypeError(AlgorithmParameters.class);
                     }
                 })
                 .support(Guard.class)
@@ -79,7 +79,7 @@ final class JavaSecuritySupport {
                     try {
                         return KeyFactory.getInstance(ALGORITHM);
                     } catch (NoSuchAlgorithmException e) {
-                        throw new UnsupportedTypeException(KeyFactory.class);
+                        throw new UnsupportedTypeError(KeyFactory.class);
                     }
                 })
                 .supportSingle(KeyPair.class, () -> new KeyPair(new NoOpPublicKey(), new NoOpPrivateKey()))
@@ -87,7 +87,7 @@ final class JavaSecuritySupport {
                     try {
                         return KeyPairGenerator.getInstance(ALGORITHM);
                     } catch (NoSuchAlgorithmException e) {
-                        throw new UnsupportedTypeException(KeyPairGenerator.class);
+                        throw new UnsupportedTypeError(KeyPairGenerator.class);
                     }
                 })
                 .supportSingle(KeyStore.class, NoOpKeyStore::new)
@@ -96,7 +96,7 @@ final class JavaSecuritySupport {
                     try {
                         return MessageDigest.getInstance("SHA-256");
                     } catch (NoSuchAlgorithmException e) {
-                        throw new UnsupportedTypeException(MessageDigest.class);
+                        throw new UnsupportedTypeError(MessageDigest.class);
                     }
                 })
                 .supportSingle(Principal.class, () -> () -> NOOP + " principal")
@@ -105,7 +105,7 @@ final class JavaSecuritySupport {
                     try {
                         return Signature.getInstance("SHA256withRSA");
                     } catch (NoSuchAlgorithmException e) {
-                        throw new UnsupportedTypeException(Signature.class);
+                        throw new UnsupportedTypeError(Signature.class);
                     }
                 })
                 .build();
@@ -156,7 +156,6 @@ final class JavaSecuritySupport {
         @Override
         public void engineDeleteEntry(String alias) {
             // no-op
-
         }
 
         @Override

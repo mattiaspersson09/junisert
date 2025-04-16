@@ -15,7 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.value.common;
 
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeException;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -56,6 +56,6 @@ public class WrapperPrimitiveValueGeneratorTest {
 
     @Test
     void generate_notPrimitiveWrapper_throwsUnsupportedTypeException() {
-        assertThatThrownBy(() -> generator.generate(int.class)).isInstanceOf(UnsupportedTypeException.class);
+        assertThatThrownBy(() -> generator.generate(int.class)).isInstanceOf(UnsupportedTypeError.class);
     }
 }

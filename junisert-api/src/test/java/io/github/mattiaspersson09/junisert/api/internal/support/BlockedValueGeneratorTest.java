@@ -15,7 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.api.internal.support;
 
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeException;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.testunits.constructor.ArgConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.NoConstructor;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.Base;
@@ -39,7 +39,7 @@ public class BlockedValueGeneratorTest {
     void generate_notTheBlockedType_throwsUnsupportedTypeException() {
         BlockedValueGenerator<?> generator = new BlockedValueGenerator<>(ArgConstructor.class);
 
-        assertThatThrownBy(() -> generator.generate(NoConstructor.class)).isInstanceOf(UnsupportedTypeException.class);
+        assertThatThrownBy(() -> generator.generate(NoConstructor.class)).isInstanceOf(UnsupportedTypeError.class);
     }
 
     @Test

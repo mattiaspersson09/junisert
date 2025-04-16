@@ -15,8 +15,8 @@
  */
 package io.github.mattiaspersson09.junisert.value.common;
 
-
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeException;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
+import io.github.mattiaspersson09.junisert.api.value.Value;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,12 +56,23 @@ public class InterfaceValueGeneratorTest {
     }
 
     @Test
-    void generate_whenTypeIsNotSupported_thenThrowsUnsupportedValueTypeException() {
-        assertThatThrownBy(() -> generator.generate(Abstract.class)).isInstanceOf(UnsupportedTypeException.class);
-        assertThatThrownBy(() -> generator.generate(FinalClass.class)).isInstanceOf(UnsupportedTypeException.class);
+    void generate_whenTypeIsNotSupported_thenThrowsUnsupportedTypeError() {
+        assertThatThrownBy(() -> generator.generate(Abstract.class)).isInstanceOf(UnsupportedTypeError.class);
+        assertThatThrownBy(() -> generator.generate(FinalClass.class)).isInstanceOf(UnsupportedTypeError.class);
+    }
+
+    @Test
+    void notSupportingProxyInvocation_whenConstructedProxy_thenCanNotInvokeMethods() {
+        Value<?> proxyValue = generator.generate(Interface.class);
+        Interface proxy = (Interface) proxyValue.get();
+
+        assertThatThrownBy(proxy::invoke)
+                .isInstanceOf(UnsupportedOperationException.class)
+                .hasMessageContaining("Unable to invoke");
     }
 
     private interface Interface {
+        void invoke();
     }
 
     private interface NestedInterface {

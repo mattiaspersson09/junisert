@@ -15,7 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.api.internal.support;
 
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeException;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
@@ -45,14 +45,14 @@ public class AggregatedSupportGeneratorTest {
         ValueGenerator<?> primitive = new IntGenerator(1, 0);
         AggregatedSupportGenerator aggregated = new AggregatedSupportGenerator(Collections.singletonList(primitive));
 
-        assertThatThrownBy(() -> aggregated.generate(Integer.class)).isInstanceOf(UnsupportedTypeException.class);
+        assertThatThrownBy(() -> aggregated.generate(Integer.class)).isInstanceOf(UnsupportedTypeError.class);
     }
 
     @Test
     void generate_whenThereIsNoAggregatedGenerator_thenThrowsUnsupportedTypeException() {
         AggregatedSupportGenerator aggregated = new AggregatedSupportGenerator(Collections.emptyList());
 
-        assertThatThrownBy(() -> aggregated.generate(Integer.class)).isInstanceOf(UnsupportedTypeException.class);
+        assertThatThrownBy(() -> aggregated.generate(Integer.class)).isInstanceOf(UnsupportedTypeError.class);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class AggregatedSupportGeneratorTest {
         }
 
         @Override
-        public Value<? extends Number> generate(Class<?> fromType) throws UnsupportedTypeException {
+        public Value<? extends Number> generate(Class<?> fromType) throws UnsupportedTypeError {
             return Value.ofEager(value, empty);
         }
 
@@ -98,7 +98,7 @@ public class AggregatedSupportGeneratorTest {
         }
 
         @Override
-        public Value<? extends Number> generate(Class<?> fromType) throws UnsupportedTypeException {
+        public Value<? extends Number> generate(Class<?> fromType) throws UnsupportedTypeError {
             return () -> value;
         }
 

@@ -24,13 +24,13 @@ package io.github.mattiaspersson09.junisert.api.value;
 public interface ValueGenerator<T> {
     /**
      * Generates a value representation of <b>{@code fromType}</b> if it's supported.
-     * Will throw {@link UnsupportedTypeException} if type is not supported by this generator.
+     * Will throw {@link UnsupportedTypeError} if type is not supported by this generator.
      *
      * @param fromType to generate value for
      * @return object value of fromType
-     * @throws UnsupportedTypeException if type is not supported by this generator
+     * @throws UnsupportedTypeError if type is not supported by this generator
      */
-    Value<? extends T> generate(Class<?> fromType) throws UnsupportedTypeException;
+    Value<? extends T> generate(Class<?> fromType) throws UnsupportedTypeError;
 
     /**
      * Check if this generator supports requested type.

@@ -15,7 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.api.internal.support;
 
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeException;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.sort.NaturalSort;
@@ -69,12 +69,12 @@ public final class SupportGenerator<T> extends NaturalSort<SupportGenerator<T>> 
     }
 
     @Override
-    public Value<? extends T> generate(Class<?> fromType) throws UnsupportedTypeException {
+    public Value<? extends T> generate(Class<?> fromType) throws UnsupportedTypeError {
         return implementations.stream()
                 .filter(impl -> impl.isImplementationOf(fromType))
                 .sorted()
                 .findFirst()
-                .orElseThrow(() -> new UnsupportedTypeException(fromType));
+                .orElseThrow(() -> new UnsupportedTypeError(fromType));
     }
 
     @Override
