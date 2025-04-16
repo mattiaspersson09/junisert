@@ -1,0 +1,16 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = "junisert"
+
+include("junisert-api")
+include("junisert-common")
+include("junisert-values")
+include("junisert-core")
+include("junisert-testunits")
+
