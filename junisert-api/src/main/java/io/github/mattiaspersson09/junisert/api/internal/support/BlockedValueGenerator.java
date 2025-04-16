@@ -25,7 +25,7 @@ import java.util.Objects;
 
 /**
  * A value generator that will always throw an exception on generating value.
- * A blocked type will raise {@link BlockedTypeException} if found.
+ * A blocked type will raise {@link BlockedTypeError} if found.
  * Otherwise {@link UnsupportedTypeError} will be thrown if this generator is used for
  * other types than the blocked type. This generator should not be used for other reasons
  * then to block classes and <i>should be ordered first</i> among other generators to ensure blocking behavior.
@@ -43,7 +43,7 @@ import java.util.Objects;
  *     public Value&lt;?> getValueForType(Class&lt;?> type) {
  *       for (ValueGenerator&lt;?> generator : registeredGenerators) {
  *         if (generator.supports(type) {
- *           // will effectively throw {@link BlockedTypeException} and blocking usage
+ *           // will effectively throw {@link BlockedTypeError} and blocking usage
  *           return generator.generate(type);
  *         }
  *       }
@@ -51,7 +51,7 @@ import java.util.Objects;
  * </pre>
  *
  * @param <T> type to block
- * @see BlockedTypeException
+ * @see BlockedTypeError
  */
 public final class BlockedValueGenerator<T> implements ValueGenerator<T>, Sortable {
     private final Class<T> blocked;
@@ -61,18 +61,18 @@ public final class BlockedValueGenerator<T> implements ValueGenerator<T>, Sortab
     }
 
     /**
-     * Will always throw, {@link BlockedTypeException} for a blocked type and
+     * Will always throw, {@link BlockedTypeError} for a blocked type and
      * {@link UnsupportedTypeError} if {@code fromType} is not the blocked type
      * this generator is looking for.
      *
      * @param fromType to throw for
-     * @throws BlockedTypeException if blocked type is encountered
+     * @throws BlockedTypeError     if blocked type is encountered
      * @throws UnsupportedTypeError if the type isn't blocked
      */
     @Override
-    public Value<? extends T> generate(Class<?> fromType) throws BlockedTypeException, UnsupportedTypeError {
+    public Value<? extends T> generate(Class<?> fromType) throws BlockedTypeError, UnsupportedTypeError {
         if (supports(fromType)) {
-            throw new BlockedTypeException(fromType);
+            throw new BlockedTypeError(fromType);
         }
 
         throw new UnsupportedTypeError(fromType);

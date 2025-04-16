@@ -19,11 +19,11 @@ package io.github.mattiaspersson09.junisert.api.internal.support;
  * Used when a type is blocked and should not be used in the code base, but was
  * found during a test suite.
  */
-public class BlockedTypeException extends RuntimeException {
+public class BlockedTypeError extends Error {
     private static final String BLOCKED_TYPE = "Found blocked '%s'. Either remove the block or "
             + "consider removing the usage from code base.";
 
-    public BlockedTypeException(Class<?> type) {
+    public BlockedTypeError(Class<?> type) {
         super(String.format(BLOCKED_TYPE, type));
     }
 }

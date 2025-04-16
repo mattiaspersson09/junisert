@@ -32,7 +32,7 @@ public class BlockedValueGeneratorTest {
     void generate_typeIsBlocked_throwsBlockedTypeException() {
         BlockedValueGenerator<?> generator = new BlockedValueGenerator<>(ArgConstructor.class);
 
-        assertThatThrownBy(() -> generator.generate(ArgConstructor.class)).isInstanceOf(BlockedTypeException.class);
+        assertThatThrownBy(() -> generator.generate(ArgConstructor.class)).isInstanceOf(BlockedTypeError.class);
     }
 
     @Test
