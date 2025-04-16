@@ -28,6 +28,7 @@ replay_pid*
 .project
 .idea
 .vscode
+.gradle
 *.code-workspace
 *.iml
 *.env

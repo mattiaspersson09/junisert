@@ -3,3 +3,6 @@ plugins {
     id("maven-publish")
     id("com.diffplug.spotless") version("7.0.2")
 }
+
+group = "io.github.mattiaspersson09"
+version = "0.1.0-SNAPSHOT"

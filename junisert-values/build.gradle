@@ -19,7 +19,6 @@ version = rootProject.version
 
 dependencies {
     implementation(project(":junisert-api"))
-    implementation(project(":junisert-common"))
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")

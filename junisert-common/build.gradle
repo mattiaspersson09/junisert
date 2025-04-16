@@ -2,6 +2,7 @@ import com.diffplug.spotless.LineEnding
 
 plugins {
     id("java-library")
+    id("maven-publish")
     id("jacoco")
     id("com.diffplug.spotless")
 }
@@ -9,6 +10,9 @@ plugins {
 repositories {
     mavenCentral()
 }
+
+group = rootProject.group
+version = rootProject.version
 
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.1')
@@ -61,6 +65,18 @@ jacocoTestReport {
         classDirectories = files(classDirectories.files.collect {
             fileTree(dir: it, exclude: ['**/*Test.class', '**/*Test$*.class'])
         })
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        mavenLocal()
     }
 }
 

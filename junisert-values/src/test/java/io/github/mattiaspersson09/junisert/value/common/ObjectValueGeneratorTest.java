@@ -15,6 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.value.common;
 
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedConstructionError;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeException;
 import io.github.mattiaspersson09.junisert.testunits.constructor.ArgConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.DefaultPackageConstructor;
@@ -68,9 +69,9 @@ public class ObjectValueGeneratorTest {
     @Test
     void generate_whenDoesNotForceAccess_andClassHasNoDefaultConstructor_thenThrowsUnsupportedTypeException() {
         assertThatThrownBy(() -> generator.generate(DefaultPackageConstructor.class))
-                .isInstanceOf(UnsupportedTypeException.class);
+                .isInstanceOf(UnsupportedConstructionError.class);
         assertThatThrownBy(() -> generator.generate(DefaultPrivateConstructor.class))
-                .isInstanceOf(UnsupportedTypeException.class);
+                .isInstanceOf(UnsupportedConstructionError.class);
     }
 
     @Test

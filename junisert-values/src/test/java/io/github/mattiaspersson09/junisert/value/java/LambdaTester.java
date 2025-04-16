@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.value.internal;
+package io.github.mattiaspersson09.junisert.value.java;
 
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
@@ -24,19 +24,19 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 class LambdaTester {
     private static final Logger LOGGER = Logger.getLogger(LambdaTester.class);
 
-    private final Map<Class<?>, Object> argumentCache;
+    private final Map<Class<?>, Object> usedArguments;
     private final Collection<ValueGenerator<?>> functionalArgumentGenerators;
 
     LambdaTester(Collection<ValueGenerator<?>> functionalArgumentGenerators) {
         this.functionalArgumentGenerators = functionalArgumentGenerators;
-        this.argumentCache = new ConcurrentHashMap<>();
+        this.usedArguments = new HashMap<>();
     }
 
     public void invoke(Class<?> functional, Supplier<Object> lambdaObject) {
@@ -55,7 +55,6 @@ class LambdaTester {
 
             LOGGER.info("-> %s", method.getName());
 
-
             Object[] args = Arrays.stream(method.getParameters())
                     .map(this::getArgumentValue)
                     .toArray();
@@ -69,8 +68,8 @@ class LambdaTester {
     }
 
     private Object getArgumentValue(Class<?> argument) {
-        if (argumentCache.containsKey(argument)) {
-            return argumentCache.get(argument);
+        if (usedArguments.containsKey(argument)) {
+            return usedArguments.get(argument);
         }
 
         Object argumentValue = functionalArgumentGenerators.stream()
@@ -80,7 +79,7 @@ class LambdaTester {
                 .orElseThrow(RuntimeException::new)
                 .get();
 
-        argumentCache.put(argument, argumentValue);
+        usedArguments.put(argument, argumentValue);
 
         return argumentValue;
     }
