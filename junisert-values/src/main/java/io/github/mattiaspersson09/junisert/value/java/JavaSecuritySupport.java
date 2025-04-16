@@ -160,7 +160,7 @@ final class JavaSecuritySupport {
 
         @Override
         public Enumeration<String> engineAliases() {
-            return new JavaUtilSupport.EmptyEnumeration<>();
+            return new JavaUtilSupport.NoOpEnumeration<>();
         }
 
         @Override

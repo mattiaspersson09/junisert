@@ -66,7 +66,7 @@ public final class BlockedValueGenerator<T> implements ValueGenerator<T>, Sortab
      * this generator is looking for.
      *
      * @param fromType to throw for
-     * @throws BlockedTypeException     if blocked type is encountered
+     * @throws BlockedTypeException if blocked type is encountered
      * @throws UnsupportedTypeError if the type isn't blocked
      */
     @Override

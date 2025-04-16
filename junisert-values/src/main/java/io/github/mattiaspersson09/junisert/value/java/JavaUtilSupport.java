@@ -133,7 +133,7 @@ final class JavaUtilSupport {
                 .withImplementation(Stack.class, Stack::new)
                 .supportSingle(Date.class, Date::new)
                 .supportSingle(Dictionary.class, Properties.class, Properties::new)
-                .supportSingle(Enumeration.class, EmptyEnumeration::new)
+                .supportSingle(Enumeration.class, NoOpEnumeration::new)
                 .supportSingle(StringTokenizer.class, () -> new StringTokenizer("token"))
                 .support(Iterator.class)
                 .withImplementation(ListIterator.class, Collections::emptyListIterator)
@@ -224,7 +224,7 @@ final class JavaUtilSupport {
                 .build();
     }
 
-    static class EmptyEnumeration<E> implements Enumeration<E> {
+    static class NoOpEnumeration<E> implements Enumeration<E> {
         @Override
         public boolean hasMoreElements() {
             return false;
