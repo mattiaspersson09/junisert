@@ -38,5 +38,5 @@ replay_pid*
 .metadata
 bin/
 build/
-invokable/
+target/
 out/
