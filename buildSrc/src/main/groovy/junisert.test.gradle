@@ -1,0 +1,46 @@
+plugins {
+    id("java")
+}
+
+configurations {
+    integrationTestImplementation.extendsFrom(testImplementation)
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+testing {
+    suites {
+        integrationTest(JvmTestSuite) {
+            dependencies {
+                implementation project()
+            }
+
+            targets {
+                configureEach {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                    }
+                }
+            }
+        }
+    }
+}
+
+tasks.named("test", Test) {
+    useJUnitPlatform()
+}
+
+tasks.named("check") {
+    dependsOn(testing.suites.integrationTest)
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.assertj:assertj-core:3.27.3")
+    testImplementation("org.mockito:mockito-core:5.16.1")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.16.1")
+}

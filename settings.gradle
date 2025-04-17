@@ -13,4 +13,3 @@ include("junisert-common")
 include("junisert-values")
 include("junisert-core")
 include("junisert-testunits")
-

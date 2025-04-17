@@ -1,0 +1,47 @@
+plugins {
+    id("java")
+}
+
+if (!project.name.startsWith(rootProject.name)) {
+    throw new IllegalArgumentException("Invalid module name, module needs to start with " + rootProject.name)
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+group = rootProject.group
+version = rootProject.version
+
+def javaRelease = 8
+JavaVersion javaVersion = JavaVersion.VERSION_1_8
+
+java {
+    sourceCompatibility(javaVersion)
+    targetCompatibility(javaVersion)
+
+    withSourcesJar()
+//    withJavadocJar()
+}
+
+jar {
+    manifest {
+        attributes(
+                "Implementation-Title": project.name,
+                "Implementation-Version": project.version
+        )
+    }
+}
+
+compileJava {
+    options.setRelease(javaRelease)
+}
+
+compileTestJava {
+    options.setRelease(javaRelease)
+}
+
+javadoc {
+    destinationDir = file(project.layout.buildDirectory.dir("docs/javadoc"))
+}

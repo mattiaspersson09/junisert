@@ -1,71 +1,7 @@
-import com.diffplug.spotless.LineEnding
 
 plugins {
-    id("java-library")
+    id("junisert.java-library")
     id("maven-publish")
-    id("jacoco")
-    id("com.diffplug.spotless")
-}
-
-repositories {
-    mavenCentral()
-}
-
-group = rootProject.group
-version = rootProject.version
-
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testImplementation 'org.assertj:assertj-core:3.27.3'
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-
-    withSourcesJar()
-//    withJavadocJar()
-}
-
-jar {
-    manifest {
-        attributes(
-                "Implementation-Title": project.name,
-                "Implementation-Version": project.version
-        )
-    }
-}
-
-compileJava {
-    options.release = 8
-}
-
-compileTestJava {
-    options.release = 8
-}
-
-test {
-    useJUnitPlatform()
-
-    finalizedBy jacocoTestReport
-}
-
-jacocoTestReport {
-    classDirectories.from(files(sourceSets.main.output, sourceSets.test.output))
-    sourceDirectories.from(files(sourceSets.main.java.srcDirs, sourceSets.test.java.srcDirs))
-
-    reports {
-        xml.required = true
-        csv.required = false
-        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
-    }
-
-    afterEvaluate {
-        classDirectories = files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/*Test.class', '**/*Test$*.class'])
-        })
-    }
 }
 
 publishing {
@@ -77,20 +13,5 @@ publishing {
 
     repositories {
         mavenLocal()
-    }
-}
-
-spotless {
-    java {
-        toggleOffOn("<pre>", "</pre>")
-        eclipse().configFile(rootProject.layout.projectDirectory.dir("gradle/spotless.eclipse_style.xml"))
-
-        licenseHeaderFile(rootProject.layout.projectDirectory.dir("gradle/spotless.license"))
-        removeUnusedImports()
-        importOrderFile(rootProject.layout.projectDirectory.dir("gradle/spotless.importorder"))
-
-        trimTrailingWhitespace()
-        setLineEndings(LineEnding.UNIX)
-        endWithNewline()
     }
 }

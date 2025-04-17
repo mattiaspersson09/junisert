@@ -1,0 +1,24 @@
+plugins {
+    id("jacoco")
+}
+
+jacocoTestReport {
+//    classDirectories.from(files(sourceSets.main.output, sourceSets.test.output))
+//    sourceDirectories.from(files(sourceSets.main.java.srcDirs, sourceSets.test.java.srcDirs))
+
+    executionData tasks.withType(Test).findAll {
+        it.state.executed
+    }
+
+    reports {
+        xml.required = true
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    }
+
+//    afterEvaluate {
+//        classDirectories = files(classDirectories.files.collect {
+//            fileTree(dir: it, exclude: ['**/*Test.class', '**/*Test$*.class'])
+//        })
+//    }
+}

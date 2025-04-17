@@ -1,0 +1,21 @@
+import com.diffplug.spotless.LineEnding;
+
+plugins {
+    id("java")
+    id("com.diffplug.spotless")
+}
+
+spotless {
+    java {
+        toggleOffOn("<pre>", "</pre>")
+        eclipse().configFile(rootProject.layout.projectDirectory.dir("gradle/spotless.eclipse_style.xml"))
+
+        licenseHeaderFile(rootProject.layout.projectDirectory.dir("gradle/spotless.license"))
+        removeUnusedImports()
+        importOrderFile(rootProject.layout.projectDirectory.dir("gradle/spotless.importorder"))
+
+        trimTrailingWhitespace()
+        setLineEndings(LineEnding.UNIX)
+        endWithNewline()
+    }
+}

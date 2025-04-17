@@ -1,7 +1,12 @@
-plugins {
-    id("java-library")
-    id("maven-publish")
-    id("com.diffplug.spotless") version("7.0.2")
+buildscript {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("com.diffplug.spotless:spotless-plugin-gradle:7.0.3")
+    }
 }
 
 group = "io.github.mattiaspersson09"

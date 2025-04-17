@@ -184,7 +184,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavaInternalsTest {
+public class JavaInternalsIntegrationTest {
     private static ValueGenerator<?> generator;
     private static LambdaTester lambdaTester;
 
