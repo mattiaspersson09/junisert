@@ -15,17 +15,21 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-public class Method extends Member {
+public class Method extends Member implements Invokable {
     private final java.lang.reflect.Method origin;
     private final List<Parameter> parameters;
 
     Method(java.lang.reflect.Method origin, List<Parameter> parameters) {
         super(origin);
         this.origin = origin;
+        this.origin.setAccessible(true);
         this.parameters = Collections.unmodifiableList(Objects.requireNonNull(parameters));
     }
 
@@ -39,16 +43,27 @@ public class Method extends Member {
     }
 
     @Override
+    public Object invoke(Object instance, Object... args) throws InvocationTargetException, IllegalAccessException {
+        return origin.invoke(instance, args);
+    }
+
+    @Override
+    public Collection<Class<?>> accepts() {
+        return getParameters().stream()
+                .map(Parameter::getType)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         Method that = (Method) o;
         return Objects.equals(origin, that.origin) && Objects.equals(parameters, that.parameters);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), origin, parameters);
+        return Objects.hash(origin, parameters);
     }
 }

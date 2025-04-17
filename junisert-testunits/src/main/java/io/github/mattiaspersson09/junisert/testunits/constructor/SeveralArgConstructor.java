@@ -16,6 +16,6 @@
 package io.github.mattiaspersson09.junisert.testunits.constructor;
 
 public class SeveralArgConstructor {
-    public SeveralArgConstructor(String arg, int arg2, Integer arg3) {
+    public SeveralArgConstructor(Object arg, Object arg2, Object arg3) {
     }
 }

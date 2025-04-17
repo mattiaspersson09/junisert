@@ -15,12 +15,14 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class Field extends Member {
+public class Field extends Member implements Invokable {
     private final java.lang.reflect.Field origin;
     // Can have both bean style and builder style methods
     private final List<Setter> setters;
@@ -29,6 +31,7 @@ public class Field extends Member {
     Field(java.lang.reflect.Field origin) {
         super(origin);
         this.origin = origin;
+        this.origin.setAccessible(true);
         this.setters = new ArrayList<>();
         this.getters = new ArrayList<>();
     }
@@ -41,12 +44,33 @@ public class Field extends Member {
         getters.add(getter);
     }
 
-    public List<? extends Method> getSetters() {
+    public List<Method> getSetters() {
         return Collections.unmodifiableList(setters);
     }
 
-    public List<? extends Method> getGetters() {
+    public List<Method> getGetters() {
         return Collections.unmodifiableList(getters);
+    }
+
+    public boolean setValue(Object unitInstance, Object value) {
+        try {
+            origin.set(unitInstance, value);
+            return true;
+        } catch (IllegalAccessException e) {
+            return false;
+        }
+    }
+
+    public Object getValue(Object unitInstance) throws IllegalAccessException {
+        return origin.get(unitInstance);
+    }
+
+    public Object getValueOrElse(Object unitInstance, Object fallback) {
+        try {
+            return origin.get(unitInstance);
+        } catch (IllegalAccessException e) {
+            return fallback;
+        }
     }
 
     @Override
@@ -55,20 +79,27 @@ public class Field extends Member {
     }
 
     @Override
-    public String getName() {
-        return origin.getName();
+    public Object invoke(Object instance, Object... args) throws InvocationTargetException {
+        if (args.length != 1) {
+            throw new InvocationTargetException(new IllegalArgumentException());
+        }
+
+        if (!setValue(instance, args)) {
+            throw new InvocationTargetException(new UnsupportedOperationException());
+        }
+
+        return getValueOrElse(instance, null);
     }
 
     @Override
-    public boolean isSynthetic() {
-        return origin.isSynthetic();
+    public Collection<Class<?>> accepts() {
+        return Collections.singletonList(getType());
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         Field field = (Field) o;
         return Objects.equals(origin, field.origin)
                 && Objects.equals(setters, field.setters)
@@ -77,6 +108,6 @@ public class Field extends Member {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), origin, setters, getters);
+        return Objects.hash(origin, setters, getters);
     }
 }

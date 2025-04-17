@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.testunits.constructor;
+package io.github.mattiaspersson09.junisert.core.reflection;
 
-public class InceptionArgConstructor {
-    public InceptionArgConstructor(Arg arg) {
-    }
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 
-    public static class Arg {
-        public Arg(Object arg) {
-        }
-    }
+public interface Invokable {
+    Object invoke(Object instance, Object... args) throws InvocationTargetException, IllegalAccessException;
+
+    Collection<Class<?>> accepts();
 }

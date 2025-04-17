@@ -15,9 +15,10 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
+import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,6 +56,7 @@ public final class UnitCreator {
         }
 
         methods.forEach(unit::addMethod);
+        unit.setInstanceSupplier(() -> createObjectFromUnitConstructor(unit));
 
         return unit;
     }
@@ -70,13 +72,9 @@ public final class UnitCreator {
     }
 
     private static Object createObjectFromUnitConstructor(Unit unit) {
-        Predicate<Constructor> hasDefaultConstructor = Constructor::isDefaultConstructor;
-
-//        Constructor constructor = unit.getConstructors()
-//                .stream()
-//                .filter(hasDefaultConstructor.and(c -> c.modifier().isPublic()))
-
-        return null;
+        return ObjectValueGenerator.withForcedAccess()
+                .generate(unit.getType())
+                .get();
     }
 
     private static List<Parameter> map(java.lang.reflect.Parameter[] parameters) {
@@ -86,7 +84,10 @@ public final class UnitCreator {
     }
 
     static boolean methodIsSetterForField(java.lang.reflect.Method method, Field field) {
-        return false;
+        return (method.getName().substring("set".length()).equalsIgnoreCase(field.getName())
+                || method.getName().equalsIgnoreCase(field.getName()))
+                && method.getParameters().length == 1
+                && field.getType().isAssignableFrom(method.getParameters()[0].getType());
     }
 
     static boolean methodIsGetterForField(java.lang.reflect.Method method, Field field) {

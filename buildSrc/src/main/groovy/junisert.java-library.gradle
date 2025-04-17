@@ -2,6 +2,5 @@ plugins {
     id("java-library")
     id("junisert.java-base")
     id("junisert.test")
-    id("junisert.jacoco")
     id("junisert.spotless")
 }

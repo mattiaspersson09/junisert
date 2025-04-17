@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.testunits.constructor;
+package io.github.mattiaspersson09.junisert.core.assertion.test;
 
-public class InceptionArgConstructor {
-    public InceptionArgConstructor(Arg arg) {
-    }
+import io.github.mattiaspersson09.junisert.core.reflection.Unit;
 
-    public static class Arg {
-        public Arg(Object arg) {
-        }
-    }
+import java.util.function.Predicate;
+
+public interface UnitTest extends Predicate<Unit> {
 }

@@ -25,7 +25,7 @@ public class Constructor extends Member {
         this.origin = origin;
     }
 
-    public boolean isDefaultConstructor() {
+    public boolean isDefault() {
         return origin.getParameterCount() == 0;
     }
 
@@ -38,13 +38,12 @@ public class Constructor extends Member {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         Constructor that = (Constructor) o;
         return Objects.equals(origin, that.origin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), origin);
+        return Objects.hash(origin);
     }
 }
