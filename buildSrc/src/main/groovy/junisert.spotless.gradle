@@ -1,4 +1,6 @@
-import com.diffplug.spotless.LineEnding;
+import com.diffplug.spotless.LineEnding
+
+import java.nio.charset.StandardCharsets;
 
 plugins {
     id("java")
@@ -15,6 +17,7 @@ spotless {
         importOrderFile(rootProject.layout.projectDirectory.dir("gradle/spotless.importorder"))
 
         trimTrailingWhitespace()
+        setEncoding(StandardCharsets.UTF_8)
         setLineEndings(LineEnding.UNIX)
         endWithNewline()
     }
