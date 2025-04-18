@@ -28,6 +28,10 @@ public class UnsupportedConstructionError extends Error {
         super(String.format("Failed to construct concrete value of: %s", type), cause);
     }
 
+    public UnsupportedConstructionError(Class<?> type) {
+        super(String.format("Failed to construct concrete value of: %s", type));
+    }
+
     public UnsupportedConstructionError(Throwable cause) {
         super(cause);
     }

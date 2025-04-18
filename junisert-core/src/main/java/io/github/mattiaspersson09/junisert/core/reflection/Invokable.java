@@ -18,8 +18,37 @@ package io.github.mattiaspersson09.junisert.core.reflection;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
+/**
+ * Is a unit member which can be called (also known as invoke) with arguments to update some state within a
+ * unit instance.
+ */
 public interface Invokable {
+    /**
+     * Uses reflection to update state inside an instance of a parent unit.
+     *
+     * @param instance of the parent unit
+     * @param args     values to inject to update the state
+     * @return result of the invocation
+     * @throws InvocationTargetException if invocation fails
+     * @throws IllegalAccessException    if the invocation isn't possible or allowed
+     * @see #accepts()
+     */
     Object invoke(Object instance, Object... args) throws InvocationTargetException, IllegalAccessException;
 
+    /**
+     * Types this invokable accepts as values for invocation arguments.
+     *
+     * @return collection of value types
+     */
     Collection<Class<?>> accepts();
+
+    /**
+     * Name of this invokable, can be a descriptive signature of the unit member or
+     * short version of the member's class name.
+     *
+     * @return name for this invokable
+     */
+    default String getName() {
+        return getClass().getSimpleName();
+    }
 }

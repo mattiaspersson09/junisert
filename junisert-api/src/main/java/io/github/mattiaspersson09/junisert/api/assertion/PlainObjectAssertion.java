@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core.assertion.test;
+package io.github.mattiaspersson09.junisert.api.assertion;
 
-public class Effect {
+public interface PlainObjectAssertion {
+    PlainObjectAssertion hasSetters() throws UnitAssertionError;
+
+    PlainObjectAssertion hasGetters() throws UnitAssertionError;
+
+    PlainObjectAssertion implementsEquals() throws UnitAssertionError;
+
+    PlainObjectAssertion implementsHashCode() throws UnitAssertionError;
+
+    PlainObjectAssertion implementsToString() throws UnitAssertionError;
 }

@@ -41,11 +41,11 @@ class LambdaTester {
 
     public void invoke(Class<?> functional, Supplier<Object> lambdaObject) {
         if (!functional.isAnnotationPresent(FunctionalInterface.class)) {
-            LOGGER.info("Not a functional interface, ignoring: %s", functional);
+            LOGGER.info("Not a functional interface, ignoring: {0}", functional);
             return;
         }
 
-        LOGGER.info("invoking: %s", functional.getSimpleName());
+        LOGGER.test("invoking: {0}", functional.getSimpleName());
         Object lambda = lambdaObject.get();
 
         for (Method method : functional.getMethods()) {
@@ -53,7 +53,7 @@ class LambdaTester {
                 continue;
             }
 
-            LOGGER.info("-> %s", method.getName());
+            LOGGER.test("-> {0}", method.getName());
 
             Object[] args = Arrays.stream(method.getParameters())
                     .map(this::getArgumentValue)

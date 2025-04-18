@@ -39,7 +39,7 @@ public class ObjectValueGenerator implements ValueGenerator<Object> {
     }
 
     @Override
-    public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
+    public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError, UnsupportedConstructionError {
         if (!supports(fromType)) {
             throw new UnsupportedTypeError(fromType);
         }

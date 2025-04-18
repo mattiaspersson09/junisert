@@ -132,7 +132,6 @@ public class OrderTest {
 
     @Test
     void hashCode_whenNotTheSameOrderValue_thenIsNotEqual() {
-        System.out.println(new Object().hashCode());
         assertThat(Order.FIRST.hashCode()).isNotEqualTo(Order.SECOND.hashCode());
     }
 

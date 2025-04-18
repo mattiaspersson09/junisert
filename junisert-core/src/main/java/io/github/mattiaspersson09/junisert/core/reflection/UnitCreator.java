@@ -15,6 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedConstructionError;
 import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
 
 import java.util.ArrayList;
@@ -56,22 +57,13 @@ public final class UnitCreator {
         }
 
         methods.forEach(unit::addMethod);
-        unit.setInstanceSupplier(() -> createObjectFromUnitConstructor(unit));
+        unit.setInstanceSupplier(() -> createObjectFromDefaultConstructor(unit));
 
         return unit;
     }
 
-    public static Unit copy(Unit unit) {
-        Unit copy = new Unit(unit.getType());
-
-        unit.getFields().forEach(copy::addField);
-        unit.getConstructors().forEach(copy::addConstructor);
-        unit.getMethods().forEach(copy::addMethod);
-
-        return copy;
-    }
-
-    private static Object createObjectFromUnitConstructor(Unit unit) {
+    private static Object createObjectFromDefaultConstructor(Unit unit) throws UnsupportedConstructionError {
+        // throws UnsupportedConstructionError on reflection failure
         return ObjectValueGenerator.withForcedAccess()
                 .generate(unit.getType())
                 .get();

@@ -16,36 +16,61 @@
 package io.github.mattiaspersson09.junisert.common.logging;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import java.util.stream.Stream;
 
 final class LogFormatter extends Formatter {
-    private static final String COLOR_RESET = "\033[0m";
-    private static final String COLOR_WARNING = "\033[31m";
-    private static final String COLOR_INFO = COLOR_RESET;
-    private static final String COLOR_CONFIG = "\033[33m";
+    static final String COLOR_RESET = "\u001B[0m";
+    static final String COLOR_RED = "\u001B[31m";
+    static final String COLOR_STANDARD = COLOR_RESET;
+    static final String COLOR_BLUE = "\u001B[34m";
+    static final String COLOR_YELLOW = "\u001B[33m";
 
     @Override
     public String format(LogRecord record) {
+        LogLevel level = LogLevel.from(record.getLevel());
+
         return String.format("%1$s[%2$tF %2$tT] [%3$s] [%4$s] %5$s%6$s%n",
-                toColor(record.getLevel()),
+                level.toColor(),
                 new Date(record.getMillis()),
-                record.getLevel().getLocalizedName(),
+                level,
                 record.getLoggerName(),
                 record.getMessage(),
                 COLOR_RESET);
     }
 
-    private String toColor(Level level) {
-        if (Level.INFO.equals(level)) {
-            return COLOR_INFO;
-        } else if (Level.CONFIG.equals(level)) {
-            return COLOR_CONFIG;
-        } else if (Level.WARNING.equals(level)) {
-            return COLOR_WARNING;
-        } else {
-            return COLOR_RESET;
+    private enum LogLevel {
+        TEST(Level.FINE, COLOR_YELLOW),
+        CONFIG(Level.CONFIG, COLOR_BLUE),
+        INFO(Level.INFO, COLOR_STANDARD),
+        WARNING(Level.WARNING, COLOR_RED),
+        MISSING(null, COLOR_RESET);
+
+        private final Level level;
+        private final String color;
+
+        LogLevel(Level level, String color) {
+            this.level = level;
+            this.color = color;
+        }
+
+        private static LogLevel from(Level level) {
+            return Stream.of(values())
+                    .filter(logLevel -> Objects.equals(logLevel.level, level))
+                    .findAny()
+                    .orElse(MISSING);
+        }
+
+        public String toColor() {
+            return color;
+        }
+
+        @Override
+        public String toString() {
+            return name().replace("_", " ");
         }
     }
 }

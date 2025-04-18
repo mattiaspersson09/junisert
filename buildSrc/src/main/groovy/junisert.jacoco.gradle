@@ -5,6 +5,8 @@ plugins {
 jacocoTestReport {
 //    classDirectories.from(files(sourceSets.main.output, sourceSets.test.output))
 //    sourceDirectories.from(files(sourceSets.main.java.srcDirs, sourceSets.test.java.srcDirs))
+    classDirectories.from(files(sourceSets.main.output))
+    sourceDirectories.from(files(sourceSets.main.java.srcDirs))
 
     executionData tasks.withType(Test).findAll {
         it.state.executed
@@ -16,9 +18,9 @@ jacocoTestReport {
         html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
     }
 
-//    afterEvaluate {
-//        classDirectories = files(classDirectories.files.collect {
-//            fileTree(dir: it, exclude: ['**/*Test.class', '**/*Test$*.class'])
-//        })
-//    }
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: ['**/junisert/common/**'])
+        })
+    }
 }

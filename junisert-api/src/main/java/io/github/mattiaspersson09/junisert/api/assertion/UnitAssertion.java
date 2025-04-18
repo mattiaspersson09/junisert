@@ -18,9 +18,5 @@ package io.github.mattiaspersson09.junisert.api.assertion;
 public interface UnitAssertion {
     UnitAssertion isPlainOldJavaObject() throws UnitAssertionError;
 
-    ValueObjectAssertion asValueObject() throws UnitAssertionError;
-
-    default ValueObjectAssertion asPojo() throws UnitAssertionError {
-        return asValueObject();
-    }
+    PlainObjectAssertion asPojo() throws UnitAssertionError;
 }

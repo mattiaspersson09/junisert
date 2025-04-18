@@ -15,22 +15,37 @@
  */
 package io.github.mattiaspersson09.junisert.common.logging;
 
-import java.io.PrintStream;
-import java.util.logging.Handler;
-import java.util.logging.StreamHandler;
+import java.text.MessageFormat;
 
 public interface Logger {
     void info(String msg);
 
-    void info(String msg, Object... args);
+    default void info(String msg, Object... args) {
+        info(MessageFormat.format(msg, args));
+    }
 
     void warn(String msg);
 
-    void warn(String msg, Object... args);
+    default void warn(String msg, Object... args) {
+        warn(MessageFormat.format(msg, args));
+    }
+
+    default void fail(String detail, String expected, String reality) {
+        warn("{0}{1}{4}  Expectation: {2}{1}{4}but{1}  {4}Reality: {3}",
+                detail, System.lineSeparator(), expected, reality, LogFormatter.COLOR_RED);
+    }
 
     void config(String msg);
 
-    void config(String msg, Object... args);
+    default void config(String msg, Object... args) {
+        config(MessageFormat.format(msg, args));
+    }
+
+    void test(String msg);
+
+    default void test(String msg, Object... args) {
+        test(MessageFormat.format(msg, args));
+    }
 
 
     static Logger getLogger(Class<?> loggingClass) {
@@ -42,8 +57,6 @@ public interface Logger {
     }
 
     static Logger getLogger(String loggingName) {
-        Handler handler = new StreamHandler(new PrintStream(System.out), new LogFormatter());
-
-        return new JavaLoggerAdapter(handler, loggingName);
+        return new JavaLoggerAdapter(new LogHandler(new LogFormatter()), loggingName);
     }
 }

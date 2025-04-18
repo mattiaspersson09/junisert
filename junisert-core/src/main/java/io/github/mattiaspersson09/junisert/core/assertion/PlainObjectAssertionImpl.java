@@ -15,42 +15,42 @@
  */
 package io.github.mattiaspersson09.junisert.core.assertion;
 
+import io.github.mattiaspersson09.junisert.api.assertion.PlainObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
-import io.github.mattiaspersson09.junisert.api.assertion.ValueObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.core.reflection.Unit;
 
-public class ValueObjectAssertionImpl implements ValueObjectAssertion {
+public class PlainObjectAssertionImpl implements PlainObjectAssertion {
     private final Unit unit;
     private final ValueService valueService;
 
-    public ValueObjectAssertionImpl(Unit unit, ValueService valueService) {
+    public PlainObjectAssertionImpl(Unit unit, ValueService valueService) {
         this.unit = unit;
         this.valueService = valueService;
     }
 
     @Override
-    public ValueObjectAssertion hasSetters() throws UnitAssertionError {
+    public PlainObjectAssertion hasSetters() throws UnitAssertionError {
         return null;
     }
 
     @Override
-    public ValueObjectAssertion hasGetters() throws UnitAssertionError {
+    public PlainObjectAssertion hasGetters() throws UnitAssertionError {
         return null;
     }
 
     @Override
-    public ValueObjectAssertion implementsEquals() throws UnitAssertionError {
+    public PlainObjectAssertion implementsEquals() throws UnitAssertionError {
         return null;
     }
 
     @Override
-    public ValueObjectAssertion implementsHashCode() throws UnitAssertionError {
+    public PlainObjectAssertion implementsHashCode() throws UnitAssertionError {
         return null;
     }
 
     @Override
-    public ValueObjectAssertion implementsToString() throws UnitAssertionError {
+    public PlainObjectAssertion implementsToString() throws UnitAssertionError {
         return null;
     }
 }

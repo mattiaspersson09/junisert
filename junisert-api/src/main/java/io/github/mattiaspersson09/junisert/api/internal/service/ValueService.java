@@ -15,13 +15,12 @@
  */
 package io.github.mattiaspersson09.junisert.api.internal.service;
 
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
-
-import java.util.Optional;
 
 public interface ValueService {
     void registerSupport(ValueGenerator<?> generator);
 
-    Optional<Value<?>> findValue(Class<?> type);
+    Value<?> getValue(Class<?> type) throws UnsupportedTypeError;
 }

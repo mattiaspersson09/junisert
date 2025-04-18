@@ -21,7 +21,7 @@ public final class Junisert {
     private Junisert() {
     }
 
-    public UnitAssertion assertThatUnit(Class<?> unitClass) {
+    public static UnitAssertion assertThatUnit(Class<?> unitClass) {
         return null;
     }
 }

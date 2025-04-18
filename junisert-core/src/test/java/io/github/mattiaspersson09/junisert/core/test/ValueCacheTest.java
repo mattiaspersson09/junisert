@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core;
+package io.github.mattiaspersson09.junisert.core.test;
 
 import io.github.mattiaspersson09.junisert.api.value.Value;
 

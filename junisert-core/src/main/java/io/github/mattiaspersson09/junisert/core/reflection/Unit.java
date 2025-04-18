@@ -15,6 +15,8 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedConstructionError;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +56,7 @@ public final class Unit implements Reflected {
         this.instanceSupplier = instanceSupplier;
     }
 
-    public Optional<Object> createInstance() {
+    public Optional<Object> createInstance() throws UnsupportedConstructionError {
         return Optional.ofNullable(instanceSupplier)
                 .map(Supplier::get);
     }
@@ -73,7 +75,7 @@ public final class Unit implements Reflected {
 
     @Override
     public String getName() {
-        return origin.getName();
+        return origin.getSimpleName();
     }
 
     @Override

@@ -15,5 +15,14 @@
  */
 package io.github.mattiaspersson09.junisert.common.logging;
 
-public class LoggerTest {
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Level;
+
+class LogHandler extends ConsoleHandler {
+    public LogHandler(Formatter formatter) {
+        setOutputStream(System.out);
+        setFormatter(formatter);
+        setLevel(Level.ALL);
+    }
 }

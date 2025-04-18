@@ -108,7 +108,7 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 final class JavaUtilSupport {
-    private static final Logger LOGGER = Logger.getLogger(JavaUtilSupport.class);
+    private static final Logger LOGGER = Logger.getLogger("Anonymous lambda");
     private static final String CONSUMING = "consuming...";
     private static final short NUMERIC = 1;
     private static final boolean BOOLEAN = true;
@@ -165,14 +165,14 @@ final class JavaUtilSupport {
      */
     static AggregatedValueGenerator getFunctionalSupport() {
         return SupportBuilder.createSupport()
-                .supportSingle(BiConsumer.class, () -> (first, second) -> LOGGER.info(CONSUMING))
+                .supportSingle(BiConsumer.class, () -> (first, second) -> LOGGER.test(CONSUMING))
                 .supportSingle(BiFunction.class, () -> (first, second) -> Function.identity())
                 .supportSingle(BinaryOperator.class, () -> (first, second) -> Function.identity())
                 .supportSingle(BiPredicate.class, () -> (first, second) -> BOOLEAN)
                 .supportSingle(BooleanSupplier.class, () -> () -> BOOLEAN)
-                .supportSingle(Consumer.class, () -> (first) -> LOGGER.info(CONSUMING))
+                .supportSingle(Consumer.class, () -> (first) -> LOGGER.test(CONSUMING))
                 .supportSingle(DoubleBinaryOperator.class, () -> (first, second) -> NUMERIC)
-                .supportSingle(DoubleConsumer.class, () -> (first) -> LOGGER.info(CONSUMING))
+                .supportSingle(DoubleConsumer.class, () -> (first) -> LOGGER.test(CONSUMING))
                 .supportSingle(DoubleFunction.class, () -> (first) -> NUMERIC)
                 .supportSingle(DoublePredicate.class, () -> (first) -> BOOLEAN)
                 .supportSingle(DoubleSupplier.class, () -> () -> NUMERIC)
@@ -181,7 +181,7 @@ final class JavaUtilSupport {
                 .supportSingle(DoubleUnaryOperator.class, () -> (first) -> NUMERIC)
                 .supportSingle(Function.class, () -> (first) -> Function.identity())
                 .supportSingle(IntBinaryOperator.class, () -> (first, second) -> NUMERIC)
-                .supportSingle(IntConsumer.class, () -> (first) -> LOGGER.info(CONSUMING))
+                .supportSingle(IntConsumer.class, () -> (first) -> LOGGER.test(CONSUMING))
                 .supportSingle(IntFunction.class, () -> (first) -> Function.identity())
                 .supportSingle(IntPredicate.class, () -> (first) -> BOOLEAN)
                 .supportSingle(IntSupplier.class, () -> () -> NUMERIC)
@@ -189,16 +189,16 @@ final class JavaUtilSupport {
                 .supportSingle(IntToLongFunction.class, () -> (first) -> NUMERIC)
                 .supportSingle(IntUnaryOperator.class, () -> (first) -> NUMERIC)
                 .supportSingle(LongBinaryOperator.class, () -> (first, second) -> NUMERIC)
-                .supportSingle(LongConsumer.class, () -> (first) -> LOGGER.info(CONSUMING))
+                .supportSingle(LongConsumer.class, () -> (first) -> LOGGER.test(CONSUMING))
                 .supportSingle(LongFunction.class, () -> (first) -> NUMERIC)
                 .supportSingle(LongPredicate.class, () -> (first) -> BOOLEAN)
                 .supportSingle(LongSupplier.class, () -> () -> NUMERIC)
                 .supportSingle(LongToDoubleFunction.class, () -> (first) -> NUMERIC)
                 .supportSingle(LongToIntFunction.class, () -> (first) -> NUMERIC)
                 .supportSingle(LongUnaryOperator.class, () -> (first) -> NUMERIC)
-                .supportSingle(ObjDoubleConsumer.class, () -> (first, second) -> LOGGER.info(CONSUMING))
-                .supportSingle(ObjIntConsumer.class, () -> (first, second) -> LOGGER.info(CONSUMING))
-                .supportSingle(ObjLongConsumer.class, () -> (first, second) -> LOGGER.info(CONSUMING))
+                .supportSingle(ObjDoubleConsumer.class, () -> (first, second) -> LOGGER.test(CONSUMING))
+                .supportSingle(ObjIntConsumer.class, () -> (first, second) -> LOGGER.test(CONSUMING))
+                .supportSingle(ObjLongConsumer.class, () -> (first, second) -> LOGGER.test(CONSUMING))
                 .supportSingle(Predicate.class, () -> (first) -> BOOLEAN)
                 .supportSingle(Supplier.class, () -> () -> null)
                 .supportSingle(ToDoubleBiFunction.class, () -> (first, second) -> NUMERIC)

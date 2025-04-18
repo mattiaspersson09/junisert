@@ -15,9 +15,9 @@
  */
 package io.github.mattiaspersson09.junisert.core.assertion;
 
+import io.github.mattiaspersson09.junisert.api.assertion.PlainObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
-import io.github.mattiaspersson09.junisert.api.assertion.ValueObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.core.reflection.Unit;
 
@@ -36,7 +36,7 @@ public class UnitAssertionImpl implements UnitAssertion {
     }
 
     @Override
-    public ValueObjectAssertion asValueObject() {
-        return new ValueObjectAssertionImpl(unit, valueService);
+    public PlainObjectAssertion asPojo() {
+        return new PlainObjectAssertionImpl(unit, valueService);
     }
 }

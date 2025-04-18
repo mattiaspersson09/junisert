@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core;
+package io.github.mattiaspersson09.junisert.core.test;
 
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
@@ -46,20 +47,21 @@ final class SingletonValueService implements ValueService {
     }
 
     @Override
-    public Optional<Value<?>> findValue(Class<?> type) {
+    public Value<?> getValue(Class<?> type) {
         if (valueCache.contains(type)) {
-            return Optional.of(valueCache.get(type));
+            return valueCache.get(type);
         }
 
         for (ValueGenerator<?> generator : generators) {
             if (generator.supports(type)) {
                 Value<?> value = generator.generate(type);
-                // Let caller handle missing value after construction failure
-                return Optional.ofNullable(saveAndGetFromCache(type, value));
+
+                return Optional.ofNullable(saveAndGetFromCache(type, value))
+                        .orElseThrow(() -> new UnsupportedTypeError(type));
             }
         }
 
-        return Optional.empty();
+        throw new UnsupportedTypeError(type);
     }
 
     private Value<?> saveAndGetFromCache(Class<?> type, Value<?> value) {

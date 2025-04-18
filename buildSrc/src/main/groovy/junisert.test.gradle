@@ -23,7 +23,6 @@ testing {
                 configureEach {
                     testTask.configure {
                         shouldRunAfter(test)
-                        finalizedBy(jacocoTestReport)
                     }
                 }
             }
@@ -33,10 +32,13 @@ testing {
 
 tasks.named("test", Test) {
     useJUnitPlatform()
+    testLogging.showStandardStreams = true
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
 }
 
 tasks.named("check") {
     dependsOn(testing.suites.integrationTest)
+    finalizedBy(jacocoTestReport)
 }
 
 dependencies {

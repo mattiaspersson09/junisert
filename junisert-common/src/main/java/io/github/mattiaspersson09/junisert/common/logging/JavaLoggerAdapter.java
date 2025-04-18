@@ -16,6 +16,7 @@
 package io.github.mattiaspersson09.junisert.common.logging;
 
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -29,6 +30,7 @@ final class JavaLoggerAdapter implements Logger {
         logger = java.util.logging.Logger.getLogger(name);
         logger.setUseParentHandlers(false);
         logger.addHandler(handler);
+        logger.setLevel(Level.FINE);
     }
 
     @Override
@@ -37,18 +39,8 @@ final class JavaLoggerAdapter implements Logger {
     }
 
     @Override
-    public void info(String msg, Object... args) {
-        info(String.format(msg, args));
-    }
-
-    @Override
     public void warn(String msg) {
         logger.warning(msg);
-    }
-
-    @Override
-    public void warn(String msg, Object... args) {
-        warn(String.format(msg, args));
     }
 
     @Override
@@ -57,8 +49,8 @@ final class JavaLoggerAdapter implements Logger {
     }
 
     @Override
-    public void config(String msg, Object... args) {
-        config(String.format(msg, args));
+    public void test(String msg) {
+        logger.fine(msg);
     }
 
     static String adaptPackageToLogFormat(Package pack) {
