@@ -83,6 +83,10 @@ public final class UnitCreator {
     }
 
     static boolean methodIsGetterForField(java.lang.reflect.Method method, Field field) {
-        return false;
+        return (method.getName().substring("get".length()).equalsIgnoreCase(field.getName())
+                || method.getName().substring("is".length()).equalsIgnoreCase(field.getName())
+                || method.getName().equalsIgnoreCase(field.getName()))
+                && method.getParameters().length == 0
+                && method.getReturnType().isAssignableFrom(field.getType());
     }
 }
