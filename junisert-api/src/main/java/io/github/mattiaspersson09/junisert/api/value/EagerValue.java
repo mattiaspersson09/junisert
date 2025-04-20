@@ -31,7 +31,7 @@ class EagerValue<T> implements Value<T> {
     EagerValue(T value, T empty) throws IllegalArgumentException {
         Objects.requireNonNull(value, "Value isn't allowed to be missing");
 
-        if (Objects.equals(value, empty)) {
+        if (Objects.equals(empty, value)) {
             throw new IllegalArgumentException("Value and it's empty representation isn't allowed to be the same");
         }
 

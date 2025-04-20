@@ -15,8 +15,11 @@
  */
 package io.github.mattiaspersson09.junisert.core.test;
 
-import io.github.mattiaspersson09.junisert.core.reflection.Unit;
+import org.junit.jupiter.api.Test;
 
-public interface UnitTest {
-    void test(Unit unit);
+public class ImplementsEqualsTest {
+
+    @Test
+    void test() {
+    }
 }

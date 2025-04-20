@@ -30,11 +30,6 @@ public interface Logger {
         warn(MessageFormat.format(msg, args));
     }
 
-    default void fail(String detail, String expected, String reality) {
-        warn("{0}{1}{4}  Expectation: {2}{1}{4}but{1}  {4}Reality: {3}",
-                detail, System.lineSeparator(), expected, reality, LogFormatter.COLOR_RED);
-    }
-
     void config(String msg);
 
     default void config(String msg, Object... args) {
@@ -45,6 +40,11 @@ public interface Logger {
 
     default void test(String msg, Object... args) {
         test(MessageFormat.format(msg, args));
+    }
+
+    default void fail(String detail, String expected, String reality) {
+        warn("{0}{1}{4}Expectation: {2}{1}{4}but{1}{4}Reality: {3}",
+                detail, System.lineSeparator(), expected, reality, LogFormatter.COLOR_RED);
     }
 
 

@@ -24,15 +24,11 @@ package io.github.mattiaspersson09.junisert.api.value;
  * </ol>
  */
 public class UnsupportedConstructionError extends Error {
-    public UnsupportedConstructionError(Class<?> type, Throwable cause) {
-        super(String.format("Failed to construct concrete value of: %s", type), cause);
-    }
-
     public UnsupportedConstructionError(Class<?> type) {
         super(String.format("Failed to construct concrete value of: %s", type));
     }
 
-    public UnsupportedConstructionError(Throwable cause) {
-        super(cause);
+    public UnsupportedConstructionError(Class<?> type, Throwable cause) {
+        super(String.format("Failed to construct concrete value of: %s", type), cause);
     }
 }

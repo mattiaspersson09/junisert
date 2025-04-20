@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core.test;
+package io.github.mattiaspersson09.junisert.core.reflection.util;
 
-import io.github.mattiaspersson09.junisert.core.reflection.Unit;
+import io.github.mattiaspersson09.junisert.core.reflection.Method;
 
-public interface UnitTest {
-    void test(Unit unit);
+public final class Methods {
+    private Methods() {
+    }
+
+    public static boolean isEqualsMethod(Method method) {
+        return "equals".equals(method.getName());
+    }
 }
