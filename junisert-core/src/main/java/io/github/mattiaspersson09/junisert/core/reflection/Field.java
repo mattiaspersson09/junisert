@@ -15,7 +15,6 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,8 +24,8 @@ import java.util.Objects;
 public class Field extends Member implements Invokable {
     private final java.lang.reflect.Field origin;
     // Can have both bean style and builder style methods
-    private final List<Setter> setters;
-    private final List<Getter> getters;
+    private final List<Method> setters;
+    private final List<Method> getters;
 
     Field(java.lang.reflect.Field origin) {
         super(origin);
@@ -36,11 +35,11 @@ public class Field extends Member implements Invokable {
         this.getters = new ArrayList<>();
     }
 
-    void addSetter(Setter setter) {
+    void addSetter(Method setter) {
         setters.add(setter);
     }
 
-    void addGetter(Getter getter) {
+    void addGetter(Method getter) {
         getters.add(getter);
     }
 
@@ -79,16 +78,12 @@ public class Field extends Member implements Invokable {
     }
 
     @Override
-    public Object invoke(Object instance, Object... args) throws InvocationTargetException {
-        if (args.length != 1) {
-            throw new InvocationTargetException(new IllegalArgumentException());
-        }
-
+    public Object invoke(Object instance, Object... args) throws IllegalAccessException {
         if (!setValue(instance, args)) {
-            throw new InvocationTargetException(new UnsupportedOperationException());
+            throw new IllegalAccessException();
         }
 
-        return getValueOrElse(instance, null);
+        return getValue(instance);
     }
 
     @Override
@@ -97,17 +92,24 @@ public class Field extends Member implements Invokable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Field field = (Field) o;
-        return Objects.equals(origin, field.origin)
-                && Objects.equals(setters, field.setters)
-                && Objects.equals(getters, field.getters);
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Field field = (Field) object;
+        return Objects.equals(origin, field.origin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(origin, setters, getters);
+        return Objects.hash(origin);
+    }
+
+    @Override
+    public String toString() {
+        return "Field{" +
+                "origin=" + origin +
+                ", setters=" + setters +
+                ", getters=" + getters +
+                '}';
     }
 }

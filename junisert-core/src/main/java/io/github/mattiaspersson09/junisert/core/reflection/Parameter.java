@@ -58,4 +58,25 @@ public final class Parameter implements Reflected {
     public boolean isSynthetic() {
         return origin.isSynthetic();
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Parameter parameter = (Parameter) object;
+        return Objects.equals(origin, parameter.origin) && Objects.equals(modifier, parameter.modifier);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(origin, modifier);
+    }
+
+    @Override
+    public String toString() {
+        return "Parameter{" +
+                "origin=" + origin +
+                ", modifier=" + modifier +
+                '}';
+    }
 }

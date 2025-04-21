@@ -15,18 +15,26 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class Constructor extends Member {
     private final java.lang.reflect.Constructor<?> origin;
+    private final List<Parameter> parameters;
 
-    Constructor(java.lang.reflect.Constructor<?> origin) {
+    Constructor(java.lang.reflect.Constructor<?> origin, List<Parameter> parameters) {
         super(origin);
         this.origin = origin;
+        this.parameters = Collections.unmodifiableList(Objects.requireNonNull(parameters));
     }
 
     public boolean isDefault() {
         return origin.getParameterCount() == 0;
+    }
+
+    public List<Parameter> getParameters() {
+        return parameters;
     }
 
     @Override
@@ -35,15 +43,23 @@ public class Constructor extends Member {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Constructor that = (Constructor) o;
-        return Objects.equals(origin, that.origin);
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Constructor that = (Constructor) object;
+        return Objects.equals(origin, that.origin) && Objects.equals(parameters, that.parameters);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(origin);
+        return Objects.hash(origin, parameters);
+    }
+
+    @Override
+    public String toString() {
+        return "Constructor{" +
+                "origin=" + origin +
+                ", parameters=" + parameters +
+                '}';
     }
 }

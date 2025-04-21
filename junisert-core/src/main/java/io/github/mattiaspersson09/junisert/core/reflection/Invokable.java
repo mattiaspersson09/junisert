@@ -19,16 +19,34 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 /**
- * Is a unit member which can be called (also known as invoke) with arguments to update some state within a
- * unit instance.
+ * Is a unit member which can be called (also known as invoked) with {@code 0..N} arguments.
+ * The invokable is used to update state, retrieve current state or create a new instance
+ * of some <em>potentially</em> immutable state from an instance.
+ *
+ * <p>
+ * <h4>Potential units with invokable members:</h4>
+ * <ul>
+ * <li>Plain java objects</li>
+ * <li>Service objects</li>
+ * <li>Mapper classes</li>
+ * <li>Factory classes</li>
+ * <li>Utility classes</li>
+ * <li>...</li>
+ * </ul>
+ * <h4>Typical invokable members:</h4>
+ * <ul>
+ * <li>Fields</li>
+ * <li>Methods</li>
+ * <li>Constructors</li>
+ * </ul>
  */
 public interface Invokable {
     /**
-     * Uses reflection to update state inside an instance of a parent unit.
+     * Uses reflection to update or get state from an instance of a parent unit.
      *
      * @param instance of the parent unit
-     * @param args     values to inject to update the state
-     * @return result of the invocation
+     * @param args     values to inject to update or get state
+     * @return some state
      * @throws InvocationTargetException if invocation fails
      * @throws IllegalAccessException    if the invocation isn't possible or allowed
      * @see #accepts()

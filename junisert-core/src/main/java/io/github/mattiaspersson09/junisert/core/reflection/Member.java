@@ -53,11 +53,11 @@ public abstract class Member implements Reflected {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Member member = (Member) o;
-        return Objects.equals(origin, member.origin) && Objects.equals(modifier, member.modifier);
+        return Objects.equals(origin, member.origin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(origin, modifier);
+        return Objects.hash(origin);
     }
 }

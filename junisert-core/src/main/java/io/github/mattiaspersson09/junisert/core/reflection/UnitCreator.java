@@ -18,7 +18,6 @@ package io.github.mattiaspersson09.junisert.core.reflection;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedConstructionError;
 import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,35 +30,34 @@ public final class UnitCreator {
         Unit unit = new Unit(origin);
 
         Stream.of(origin.getDeclaredConstructors())
-                .map(Constructor::new)
+                .map(constructor -> new Constructor(constructor, toUnitParameters(constructor.getParameters())))
                 .forEach(unit::addConstructor);
 
-        List<Method> methods = new ArrayList<>();
+        Stream.of(origin.getDeclaredFields())
+                .map(Field::new)
+                .forEach(unit::addField);
 
-        for (java.lang.reflect.Field field : origin.getDeclaredFields()) {
-            Field unitField = new Field(field);
+        Stream.of(origin.getDeclaredMethods())
+                .map(method -> createMethod(unit, method))
+                .forEach(unit::addMethod);
 
-            for (java.lang.reflect.Method method : origin.getDeclaredMethods()) {
-                if (methodIsSetterForField(method, unitField)) {
-                    Setter setter = new Setter(method, map(method.getParameters()), unitField);
-                    methods.add(setter);
-                    unitField.addSetter(setter);
-                } else if (methodIsGetterForField(method, unitField)) {
-                    Getter getter = new Getter(method, map(method.getParameters()), unitField);
-                    methods.add(getter);
-                    unitField.addGetter(getter);
-                } else {
-                    methods.add(new Method(method, map(method.getParameters())));
-                }
-            }
-
-            unit.addField(unitField);
-        }
-
-        methods.forEach(unit::addMethod);
         unit.setInstanceSupplier(() -> createObjectFromDefaultConstructor(unit));
 
         return unit;
+    }
+
+    private static Method createMethod(Unit unit, java.lang.reflect.Method method) {
+        Method unitMethod = new Method(method, toUnitParameters(method.getParameters()));
+
+        for (Field unitField : unit.getFields()) {
+            if (methodIsSetterForField(method, unitField)) {
+                unitField.addSetter(unitMethod);
+            } else if (methodIsGetterForField(method, unitField)) {
+                unitField.addGetter(unitMethod);
+            }
+        }
+
+        return unitMethod;
     }
 
     private static Object createObjectFromDefaultConstructor(Unit unit) throws UnsupportedConstructionError {
@@ -69,7 +67,7 @@ public final class UnitCreator {
                 .get();
     }
 
-    private static List<Parameter> map(java.lang.reflect.Parameter[] parameters) {
+    private static List<Parameter> toUnitParameters(java.lang.reflect.Parameter[] parameters) {
         return Stream.of(parameters)
                 .map(Parameter::new)
                 .collect(Collectors.toList());

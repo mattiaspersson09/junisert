@@ -40,6 +40,10 @@ public final class Unit implements Reflected {
         this.methods = new ArrayList<>();
     }
 
+    public static Unit of(Class<?> origin) {
+        return UnitCreator.createFrom(origin);
+    }
+
     void addField(Field field) {
         fields.add(Objects.requireNonNull(field));
     }
@@ -73,6 +77,26 @@ public final class Unit implements Reflected {
         return Collections.unmodifiableList(methods);
     }
 
+    public boolean hasField(String name) {
+        return fields.stream()
+                .anyMatch(field -> field.getName().equals(name));
+    }
+
+    public boolean hasDefaultConstructor() {
+        return constructors.stream()
+                .anyMatch(Constructor::isDefault);
+    }
+
+    public boolean hasArgumentConstructor() {
+        return constructors.stream()
+                .anyMatch(constructor -> !constructor.getParameters().isEmpty());
+    }
+
+    public boolean hasMethod(String name) {
+        return methods.stream()
+                .anyMatch(method -> method.getName().equals(name));
+    }
+
     @Override
     public String getName() {
         return origin.getSimpleName();
@@ -94,12 +118,11 @@ public final class Unit implements Reflected {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Unit unit = (Unit) o;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Unit unit = (Unit) object;
         return Objects.equals(origin, unit.origin)
-                && Objects.equals(modifier, unit.modifier)
                 && Objects.equals(fields, unit.fields)
                 && Objects.equals(constructors, unit.constructors)
                 && Objects.equals(methods, unit.methods);
@@ -107,6 +130,17 @@ public final class Unit implements Reflected {
 
     @Override
     public int hashCode() {
-        return Objects.hash(origin, modifier, fields, constructors, methods);
+        return Objects.hash(origin, fields, constructors, methods);
+    }
+
+    @Override
+    public String toString() {
+        return "Unit{" +
+                "origin=" + origin +
+                ", modifier=" + modifier +
+                ", fields=" + fields +
+                ", constructors=" + constructors +
+                ", methods=" + methods +
+                '}';
     }
 }

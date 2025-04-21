@@ -15,6 +15,8 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
+import java.util.Objects;
+
 public final class Modifier {
     private final int value;
 
@@ -72,5 +74,18 @@ public final class Modifier {
 
     public boolean isVolatile() {
         return java.lang.reflect.Modifier.isVolatile(value);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Modifier modifier = (Modifier) object;
+        return value == modifier.value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

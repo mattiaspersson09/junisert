@@ -55,15 +55,23 @@ public class Method extends Member implements Invokable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Method that = (Method) o;
-        return Objects.equals(origin, that.origin) && Objects.equals(parameters, that.parameters);
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Method method = (Method) object;
+        return Objects.equals(origin, method.origin) && Objects.equals(parameters, method.parameters);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(origin, parameters);
+    }
+
+    @Override
+    public String toString() {
+        return "Method{" +
+                "origin=" + origin +
+                ", parameters=" + parameters +
+                '}';
     }
 }
