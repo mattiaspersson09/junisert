@@ -15,6 +15,8 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
+import io.github.mattiaspersson09.junisert.core.reflection.util.Parameters;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,11 +28,11 @@ public class Method extends Member implements Invokable {
     private final java.lang.reflect.Method origin;
     private final List<Parameter> parameters;
 
-    Method(java.lang.reflect.Method origin, List<Parameter> parameters) {
+    Method(java.lang.reflect.Method origin) {
         super(origin);
         this.origin = origin;
         this.origin.setAccessible(true);
-        this.parameters = Collections.unmodifiableList(Objects.requireNonNull(parameters));
+        this.parameters = Collections.unmodifiableList(Parameters.map(origin.getParameters()));
     }
 
     public List<Parameter> getParameters() {
@@ -55,16 +57,17 @@ public class Method extends Member implements Invokable {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        Method method = (Method) object;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Method method = (Method) o;
         return Objects.equals(origin, method.origin) && Objects.equals(parameters, method.parameters);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(origin, parameters);
+        return Objects.hash(super.hashCode(), origin, parameters);
     }
 
     @Override

@@ -47,7 +47,7 @@ public final class UnitCreator {
     }
 
     private static Method createMethod(Unit unit, java.lang.reflect.Method method) {
-        Method unitMethod = new Method(method, toUnitParameters(method.getParameters()));
+        Method unitMethod = new Method(method);
 
         for (Field unitField : unit.getFields()) {
             if (methodIsSetterForField(method, unitField)) {
