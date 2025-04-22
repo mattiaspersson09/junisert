@@ -15,15 +15,19 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Representing a reflected field as member of a unit, being a wrapper for {@link java.lang.reflect.Field}.
+ */
 public class Field extends Member implements Invokable {
     private final java.lang.reflect.Field origin;
-    // Can have both bean style and builder style methods
+    // Can have several different style methods
     private final List<Method> setters;
     private final List<Method> getters;
 
@@ -43,33 +47,84 @@ public class Field extends Member implements Invokable {
         getters.add(getter);
     }
 
+    /**
+     * Gets an unmodifiable view of the setter methods associated with this field.
+     *
+     * @return setters associated with this field
+     */
     public List<Method> getSetters() {
         return Collections.unmodifiableList(setters);
     }
 
+    /**
+     * Gets an unmodifiable view of the getter methods associated with this field.
+     *
+     * @return getters associated with this field
+     */
     public List<Method> getGetters() {
         return Collections.unmodifiableList(getters);
     }
 
+    /**
+     * Setting value for this field from a constructed parent instance using reflection. This method
+     * will never throw if access to this field is illegal, it's up to the caller to handle
+     * further operations based on the result.
+     *
+     * @param unitInstance as constructed parent object
+     * @param value        to set for this field
+     * @return true if update was successful, otherwise false
+     */
     public boolean setValue(Object unitInstance, Object value) {
         try {
             origin.set(unitInstance, value);
             return true;
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             return false;
         }
     }
 
+    /**
+     * Getting value from this field from a constructed parent instance using reflection.
+     * {@link IllegalAccessException} will be thrown if access is not possible because of restriction or
+     * unknown {@code unitInstance}.
+     *
+     * @param unitInstance as constructed parent object
+     * @return current value
+     * @throws IllegalAccessException if not possible to access this field
+     * @see #getValueOrElse(Object, Object)
+     */
     public Object getValue(Object unitInstance) throws IllegalAccessException {
-        return origin.get(unitInstance);
+        try {
+            return origin.get(unitInstance);
+        } catch (Exception e) {
+            throw new IllegalAccessException("Tried to get value from " + getName() + " but it was not possible");
+        }
     }
 
+    /**
+     * Gets value from this field from a constructed parent instance using reflection like {@link #getValue(Object)},
+     * but accepts a fallback value if access is not possible.
+     *
+     * @param unitInstance as constructed parent object
+     * @param fallback     value if access is not possible
+     * @return current value, otherwise the fallback
+     */
     public Object getValueOrElse(Object unitInstance, Object fallback) {
         try {
             return origin.get(unitInstance);
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             return fallback;
         }
+    }
+
+    /**
+     * Checks if this field is an instance field or not. An instance field is non-static and is owned by
+     * instances and not the owning class.
+     *
+     * @return true if this is an instance field
+     */
+    public boolean isInstanceField() {
+        return !modifier().isStatic();
     }
 
     @Override
@@ -78,9 +133,22 @@ public class Field extends Member implements Invokable {
     }
 
     @Override
-    public Object invoke(Object instance, Object... args) throws IllegalAccessException {
-        if (!setValue(instance, args)) {
-            throw new IllegalAccessException();
+    public Object invoke(Object instance, Object... args) throws IllegalAccessException, InvocationTargetException {
+        Object value;
+
+        if (getType().isArray()) {
+            value = args;
+        } else {
+            if (args.length > 1) {
+                throw new InvocationTargetException(
+                        new IllegalArgumentException(getName() + " only accepts a single value"));
+            }
+
+            value = args[0];
+        }
+
+        if (!setValue(instance, value)) {
+            throw new IllegalAccessException("Tried to set value for " + getName() + " but it was not possible");
         }
 
         return getValue(instance);
