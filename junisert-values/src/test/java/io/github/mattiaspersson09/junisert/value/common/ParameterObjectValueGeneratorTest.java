@@ -128,4 +128,15 @@ public class ParameterObjectValueGeneratorTest {
                 .generate(PackageArgConstructor.class))
                 .isNotNull();
     }
+
+    @Test
+    void generate_whenSeveralConstructorsWithParameters_thenGeneratesFromLessParameters() {
+        doReturn(((Value<?>) Object::new)).when(argumentGenerator).generate(Object.class);
+
+        SeveralParameterConstructors object = (SeveralParameterConstructors) generator.generate(
+                SeveralParameterConstructors.class).get();
+
+        assertThat(object.getFirstConstructorField()).isNotNull();
+        assertThat(object.getSecondConstructorField()).isNull();
+    }
 }

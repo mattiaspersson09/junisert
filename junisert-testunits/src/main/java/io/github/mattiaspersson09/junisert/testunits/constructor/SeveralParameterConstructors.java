@@ -1,21 +1,21 @@
 package io.github.mattiaspersson09.junisert.testunits.constructor;
 
 public class SeveralParameterConstructors {
-    private Object firstConstuctorField;
+    private Object firstConstructorField;
     private Object secondConstructorField;
 
-    public SeveralParameterConstructors(Object firstConstuctorField) {
-        this.firstConstuctorField = firstConstuctorField;
+    public SeveralParameterConstructors(Object firstConstructorField) {
+        this.firstConstructorField = firstConstructorField;
         this.secondConstructorField = null;
     }
 
-    public SeveralParameterConstructors(Object firstConstuctorField, Object secondConstructorField) {
-        this.firstConstuctorField = null;
+    public SeveralParameterConstructors(Object firstConstructorField, Object secondConstructorField) {
+        this.firstConstructorField = null;
         this.secondConstructorField = secondConstructorField;
     }
 
-    public Object getFirstConstuctorField() {
-        return firstConstuctorField;
+    public Object getFirstConstructorField() {
+        return firstConstructorField;
     }
 
     public Object getSecondConstructorField() {
