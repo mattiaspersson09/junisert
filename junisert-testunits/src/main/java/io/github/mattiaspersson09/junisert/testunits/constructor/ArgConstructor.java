@@ -16,11 +16,6 @@
 package io.github.mattiaspersson09.junisert.testunits.constructor;
 
 public class ArgConstructor {
-    public ArgConstructor(DefaultConstructor arg) {
-    }
-
-    public static class DefaultConstructor {
-        public DefaultConstructor() {
-        }
+    public ArgConstructor(Object arg) {
     }
 }
