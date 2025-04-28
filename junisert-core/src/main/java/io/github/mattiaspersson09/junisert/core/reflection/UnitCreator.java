@@ -30,7 +30,7 @@ public final class UnitCreator {
         Unit unit = new Unit(origin);
 
         Stream.of(origin.getDeclaredConstructors())
-                .map(constructor -> new Constructor(constructor, toUnitParameters(constructor.getParameters())))
+                .map(Constructor::new)
                 .forEach(unit::addConstructor);
 
         Stream.of(origin.getDeclaredFields())

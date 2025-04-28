@@ -15,6 +15,8 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
+import io.github.mattiaspersson09.junisert.core.reflection.util.Parameters;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -23,10 +25,10 @@ public class Constructor extends Member {
     private final java.lang.reflect.Constructor<?> origin;
     private final List<Parameter> parameters;
 
-    Constructor(java.lang.reflect.Constructor<?> origin, List<Parameter> parameters) {
+    Constructor(java.lang.reflect.Constructor<?> origin) {
         super(origin);
         this.origin = origin;
-        this.parameters = Collections.unmodifiableList(Objects.requireNonNull(parameters));
+        this.parameters = Collections.unmodifiableList(Parameters.map(origin.getParameters()));
     }
 
     public boolean isDefault() {
@@ -47,12 +49,12 @@ public class Constructor extends Member {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         Constructor that = (Constructor) object;
-        return Objects.equals(origin, that.origin) && Objects.equals(parameters, that.parameters);
+        return Objects.equals(origin, that.origin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(origin, parameters);
+        return Objects.hash(origin);
     }
 
     @Override
