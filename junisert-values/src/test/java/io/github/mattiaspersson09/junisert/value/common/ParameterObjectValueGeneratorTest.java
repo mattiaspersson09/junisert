@@ -98,6 +98,13 @@ public class ParameterObjectValueGeneratorTest {
     }
 
     @Test
+    void supports_whenArgumentGeneratorDoesNotSupportParameter_butParameterIsRecursive_thenSupports() {
+        when(argumentGenerator.supports(RecursiveArgConstructor.class)).thenReturn(false);
+
+        assertThat(generator.supports(RecursiveArgConstructor.class)).isTrue();
+    }
+
+    @Test
     void generate_whenThereIsNoArgumentConstructor_thenThrowsUnsupportedTypeError() {
         assertThatThrownBy(() -> generator.generate(DefaultPublicConstructor.class))
                 .isInstanceOf(UnsupportedTypeError.class);

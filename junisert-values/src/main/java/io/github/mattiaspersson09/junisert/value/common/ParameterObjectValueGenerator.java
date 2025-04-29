@@ -92,7 +92,11 @@ public class ParameterObjectValueGenerator implements ValueGenerator<Object> {
         Parameter[] parameters = constructor.getParameters();
 
         for (Parameter parameter : parameters) {
-            if (!argumentGenerator.supports(parameter.getType())) {
+            RecursiveConstructor parameterConstructor = new RecursiveConstructor(
+                    findConstructorWithFewestParameters(parameter.getType()).orElse(null),
+                    forceConstructorAccess);
+
+            if (!argumentGenerator.supports(parameter.getType()) && !parameterConstructor.isRecursive()) {
                 return false;
             }
         }
