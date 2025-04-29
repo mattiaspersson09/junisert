@@ -24,6 +24,10 @@ import io.github.mattiaspersson09.junisert.testunits.constructor.DefaultPackageC
 import io.github.mattiaspersson09.junisert.testunits.constructor.DefaultPrivateConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.DefaultPublicConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.PackageArgConstructor;
+import io.github.mattiaspersson09.junisert.testunits.constructor.PackageRecursiveArgConstructor;
+import io.github.mattiaspersson09.junisert.testunits.constructor.RecursiveArgConstructor;
+import io.github.mattiaspersson09.junisert.testunits.constructor.RecursiveArgThrowingConstructor;
+import io.github.mattiaspersson09.junisert.testunits.constructor.SeveralArgAndRecursiveConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.SeveralArgConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.SeveralParameterConstructors;
 
@@ -37,6 +41,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -138,5 +145,71 @@ public class ParameterObjectValueGeneratorTest {
 
         assertThat(object.getFirstConstructorField()).isNotNull();
         assertThat(object.getSecondConstructorField()).isNull();
+    }
+
+    @Test
+    void generate_whenConstructorParameterThatIsRecursive_thenUsesRecursiveSafeConstruction() {
+        when(argumentGenerator.supports(RecursiveArgConstructor.class)).thenReturn(false);
+        doReturn(((Value<?>) Object::new)).when(argumentGenerator).generate(Object.class);
+
+        RecursiveArgConstructor recursiveObject = (RecursiveArgConstructor) generator
+                .generate(RecursiveArgConstructor.class)
+                .get();
+        SeveralArgAndRecursiveConstructor objectWithRecursive = (SeveralArgAndRecursiveConstructor) generator
+                .generate(SeveralArgAndRecursiveConstructor.class)
+                .get();
+
+        assertThat(recursiveObject).isNotNull();
+        assertThat(recursiveObject.getRecursed()).isNotNull();
+        assertThat(recursiveObject.getRecursed().getRecursed()).isNull();
+
+        assertThat(objectWithRecursive).isNotNull();
+        assertThat(objectWithRecursive.getField()).isNotNull();
+        assertThat(objectWithRecursive.getRecursed()).isNotNull();
+        assertThat(objectWithRecursive.getRecursed().getRecursed()).isNull();
+    }
+
+    @Test
+    void generate_whenRecursiveConstructorParameter_andRecursiveConstructionFails_thenThrowsUnsupportedConstructionError() {
+        assertThatThrownBy(() -> generator.generate(RecursiveArgThrowingConstructor.class))
+                .isInstanceOf(UnsupportedConstructionError.class);
+
+        verify(argumentGenerator, times(1)).supports(any());
+        verifyNoMoreInteractions(argumentGenerator);
+    }
+
+    @Test
+    void generate_whenNotForcingAccess_andRecursiveConstructorParameter_thenThrowsUnsupportedConstructionError() {
+        when(argumentGenerator.supports(PackageRecursiveArgConstructor.class)).thenReturn(false);
+
+        assertThatThrownBy(() -> generator.generate(PackageRecursiveArgConstructor.class))
+                .isInstanceOf(UnsupportedConstructionError.class);
+
+        verify(argumentGenerator, times(1)).supports(any());
+        verifyNoMoreInteractions(argumentGenerator);
+    }
+
+    @Test
+    void generate_whenForcingAccess_andInaccessibleRecursiveConstructorParameter_thenGeneratesValue() {
+        ParameterObjectValueGenerator generator = ParameterObjectValueGenerator.withForcedAccess(argumentGenerator);
+
+        when(argumentGenerator.supports(PackageRecursiveArgConstructor.class)).thenReturn(false);
+
+        assertThat(generator.generate(PackageRecursiveArgConstructor.class).get()).isNotNull();
+
+        verify(argumentGenerator, times(1)).supports(any());
+        verifyNoMoreInteractions(argumentGenerator);
+    }
+
+    @Test
+    void generate_whenRecursiveParameter_andArgumentGeneratorDoesSupport_thenGeneratesArgument() {
+        when(argumentGenerator.supports(RecursiveArgConstructor.class)).thenReturn(true);
+        doReturn(((Value<?>) () -> new RecursiveArgConstructor(null)))
+                .when(argumentGenerator)
+                .generate(RecursiveArgConstructor.class);
+
+        generator.generate(RecursiveArgConstructor.class);
+
+        verify(argumentGenerator, times(1)).generate(RecursiveArgConstructor.class);
     }
 }

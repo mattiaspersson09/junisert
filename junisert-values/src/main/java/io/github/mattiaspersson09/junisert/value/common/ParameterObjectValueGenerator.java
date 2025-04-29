@@ -47,7 +47,7 @@ public class ParameterObjectValueGenerator implements ValueGenerator<Object> {
 
     @Override
     public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError, UnsupportedConstructionError {
-        Optional<Constructor<?>> argConstructor = findArgumentConstructorWithFewestParameters(fromType);
+        Optional<Constructor<?>> argConstructor = findConstructorWithFewestParameters(fromType);
 
         if (argConstructor.isPresent()) {
             Constructor<?> constructor = argConstructor.get();
@@ -59,9 +59,13 @@ public class ParameterObjectValueGenerator implements ValueGenerator<Object> {
 
                 Object[] arguments = Stream.of(constructor.getParameters())
                         .map(Parameter::getType)
-                        .map(argumentGenerator::generate)
+                        .map(this::generateRecursiveSafe)
                         .toArray();
 
+                /*
+                    We choose to fail fast instead of letting user figure out why reflection fails later
+                    if we were to use lazy construction.
+                */
                 return Value.ofEager(constructor.newInstance(arguments));
             } catch (Exception e) {
                 throw new UnsupportedConstructionError(fromType, e);
@@ -73,7 +77,7 @@ public class ParameterObjectValueGenerator implements ValueGenerator<Object> {
 
     @Override
     public boolean supports(Class<?> type) {
-        Optional<Constructor<?>> argConstructor = findArgumentConstructorWithFewestParameters(type);
+        Optional<Constructor<?>> argConstructor = findConstructorWithFewestParameters(type);
 
         if (!argConstructor.isPresent()) {
             return false;
@@ -96,9 +100,58 @@ public class ParameterObjectValueGenerator implements ValueGenerator<Object> {
         return true;
     }
 
-    private Optional<Constructor<?>> findArgumentConstructorWithFewestParameters(Class<?> type) {
+    private Object generateRecursiveSafe(Class<?> parameter) {
+        RecursiveConstructor recursiveConstructor = new RecursiveConstructor(
+                findConstructorWithFewestParameters(parameter).orElse(null), forceConstructorAccess);
+
+        if (recursiveConstructor.isRecursive() && !argumentGenerator.supports(parameter)) {
+            return recursiveConstructor.createInstance();
+        }
+
+        return argumentGenerator.generate(parameter).get();
+    }
+
+    // Should not find default constructors, let ObjectValueGenerator handle that logic
+    private Optional<Constructor<?>> findConstructorWithFewestParameters(Class<?> type) {
         return Stream.of(type.getDeclaredConstructors())
                 .filter(constructor -> constructor.getParameterCount() > 0)
                 .min(Comparator.comparingInt(Constructor::getParameterCount));
+    }
+
+    private static class RecursiveConstructor {
+        private final boolean forceConstructorAccess;
+        private final Constructor<?> constructor;
+
+        RecursiveConstructor(Constructor<?> constructor, boolean forceConstructorAccess) {
+            this.constructor = constructor;
+            this.forceConstructorAccess = forceConstructorAccess;
+        }
+
+        Object createInstance() throws UnsupportedTypeError {
+            try {
+                if (forceConstructorAccess) {
+                    constructor.setAccessible(true);
+                }
+
+                // This will be the deepest arguments in a recursive chain so everything should be null
+                // to prevent trying to accommodate too deep values
+                Object[] arguments = Stream.of(constructor.getParameters())
+                        .map(parameter -> null)
+                        .toArray();
+
+                return constructor.newInstance(arguments);
+            } catch (Exception e) {
+                throw new UnsupportedConstructionError(constructor.getDeclaringClass(), e);
+            }
+        }
+
+        boolean isRecursive() {
+            if (constructor == null) {
+                return false;
+            }
+
+            return Stream.of(constructor.getParameters())
+                    .anyMatch(parameter -> parameter.getType().equals(constructor.getDeclaringClass()));
+        }
     }
 }
