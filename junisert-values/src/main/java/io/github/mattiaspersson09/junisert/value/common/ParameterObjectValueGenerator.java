@@ -47,6 +47,10 @@ public class ParameterObjectValueGenerator implements ValueGenerator<Object> {
 
     @Override
     public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError, UnsupportedConstructionError {
+        if (WrapperPrimitiveValueGenerator.isWrapperPrimitive(fromType)) {
+            throw new UnsupportedTypeError(fromType);
+        }
+
         Optional<Constructor<?>> argConstructor = findConstructorWithFewestParameters(fromType);
 
         if (argConstructor.isPresent()) {
@@ -77,6 +81,10 @@ public class ParameterObjectValueGenerator implements ValueGenerator<Object> {
 
     @Override
     public boolean supports(Class<?> type) {
+        if (WrapperPrimitiveValueGenerator.isWrapperPrimitive(type)) {
+            return false;
+        }
+
         Optional<Constructor<?>> argConstructor = findConstructorWithFewestParameters(type);
 
         if (!argConstructor.isPresent()) {

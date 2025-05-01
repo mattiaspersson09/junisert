@@ -36,6 +36,10 @@ public class WrapperPrimitiveValueGenerator implements ValueGenerator<Object> {
         return WrapperPrimitive.from(type).isPresent();
     }
 
+    static boolean isWrapperPrimitive(Class<?> type) {
+        return WrapperPrimitive.from(type).isPresent();
+    }
+
     private enum WrapperPrimitive {
         BOOLEAN(Boolean.class, () -> Boolean.TRUE),
         CHAR(Character.class, () -> '1'),
