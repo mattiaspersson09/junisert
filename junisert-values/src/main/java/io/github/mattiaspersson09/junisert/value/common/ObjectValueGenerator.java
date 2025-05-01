@@ -63,6 +63,10 @@ public class ObjectValueGenerator implements ValueGenerator<Object> {
 
     @Override
     public boolean supports(Class<?> type) {
+        if (WrapperPrimitiveValueGenerator.isWrapperPrimitive(type)) {
+            return false;
+        }
+
         try {
             // Would throw NoSuchMethodException if no default (no parameter) constructor is found
             Constructor<?> defaultConstructor = type.getDeclaredConstructor();
