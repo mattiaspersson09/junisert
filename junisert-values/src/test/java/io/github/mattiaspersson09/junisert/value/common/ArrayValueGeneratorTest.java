@@ -33,28 +33,28 @@ public class ArrayValueGeneratorTest {
 
     @Test
     void supports_whenTypeIsArray_thenIsSupported() {
-        Class[] array = new Class[]{};
-        assertThat(generator.supports(Class[].class)).isTrue();
+        TestClass[] array = new TestClass[]{};
+        assertThat(generator.supports(TestClass[].class)).isTrue();
         assertThat(generator.supports(array.getClass())).isTrue();
     }
 
     @Test
     void supports_whenTypeIsNotAnArray_thenIsNotSupported() {
-        assertThat(generator.supports(Class.class)).isFalse();
+        assertThat(generator.supports(TestClass.class)).isFalse();
     }
 
     @Test
     void generate_whenTypeIsAnArray_thenReturnsEmptyArrayValue() {
-        assertThat((Class[]) generator.generate(Class[].class).get())
+        assertThat((Object[]) generator.generate(TestClass[].class).get())
                 .isNotNull()
                 .hasSize(0);
     }
 
     @Test
     void generate_whenNotAnArray_thenThrowsUnsupportedTypeError() {
-        assertThatThrownBy(() -> generator.generate(Class.class)).isInstanceOf(UnsupportedTypeError.class);
+        assertThatThrownBy(() -> generator.generate(TestClass.class)).isInstanceOf(UnsupportedTypeError.class);
     }
 
-    private static class Class {
+    private static class TestClass {
     }
 }
