@@ -20,9 +20,11 @@ import io.github.mattiaspersson09.junisert.api.internal.support.SupportBuilder;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 final class JavaLangSupport {
-    private static final Logger LOGGER = Logger.getLogger(JavaLangSupport.class);
+    private static final Supplier<Runnable> RUNNABLE = () -> () -> Logger.getLogger("Anonymous runnable")
+            .info("running");
 
     private JavaLangSupport() {
     }
@@ -35,11 +37,11 @@ final class JavaLangSupport {
                 .withImplementation(StringBuilder.class, StringBuilder::new)
                 .withImplementation(StringBuffer.class, StringBuffer::new)
                 .supportSingle(Iterable.class, ArrayList.class, ArrayList::new)
-                .supportSingle(Runnable.class, () -> () -> LOGGER.info("running"))
+                .supportSingle(Runnable.class, RUNNABLE)
                 .support(Throwable.class)
                 .withImplementation(RuntimeException.class, RuntimeException::new)
                 .withImplementation(AssertionError.class, AssertionError::new)
-                .supportSingle(Thread.class, () -> new Thread(() -> LOGGER.info("running")))
+                .supportSingle(Thread.class, () -> new Thread(RUNNABLE.get()))
                 .supportSingle(ThreadLocal.class, ThreadLocal::new)
                 .build();
     }
