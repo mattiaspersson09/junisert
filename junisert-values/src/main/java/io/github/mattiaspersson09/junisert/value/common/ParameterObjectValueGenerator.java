@@ -113,11 +113,14 @@ public class ParameterObjectValueGenerator implements ValueGenerator<Object> {
     }
 
     private Object generateRecursiveSafe(Class<?> parameter) {
-        RecursiveConstructor recursiveConstructor = new RecursiveConstructor(
-                findConstructorWithFewestParameters(parameter).orElse(null), forceConstructorAccess);
+        RecursiveConstructor constructor = new RecursiveConstructor(
+                findConstructorWithFewestParameters(parameter).orElse(null),
+                forceConstructorAccess);
 
-        if (recursiveConstructor.isRecursive() && !argumentGenerator.supports(parameter)) {
-            return recursiveConstructor.createInstance();
+        // If there is support for the parameter type, let the support construct it and ignore recursion
+        // otherwise create using recursive constructor
+        if (constructor.isRecursive() && !argumentGenerator.supports(parameter)) {
+            return constructor.createInstance();
         }
 
         return argumentGenerator.generate(parameter).get();
@@ -130,13 +133,20 @@ public class ParameterObjectValueGenerator implements ValueGenerator<Object> {
                 .min(Comparator.comparingInt(Constructor::getParameterCount));
     }
 
+    /**
+     * Only shallow depth and currently only supporting one inner construction, but can support even deeper
+     * depth (that COULD be configurable) if we replace the PrimitiveValueGenerator with
+     * ParameterObjectValueGenerator itself recursively as argument generator.
+     */
     private static class RecursiveConstructor {
         private final boolean forceConstructorAccess;
         private final Constructor<?> constructor;
+        private final ValueGenerator<?> argumentGenerator;
 
         RecursiveConstructor(Constructor<?> constructor, boolean forceConstructorAccess) {
             this.constructor = constructor;
             this.forceConstructorAccess = forceConstructorAccess;
+            this.argumentGenerator = new PrimitiveValueGenerator();
         }
 
         Object createInstance() throws UnsupportedTypeError {
@@ -145,16 +155,25 @@ public class ParameterObjectValueGenerator implements ValueGenerator<Object> {
                     constructor.setAccessible(true);
                 }
 
-                // This will be the deepest arguments in a recursive chain so everything should be null
+                // This will be the deepest arguments in a recursive chain so everything should be empty
                 // to prevent trying to accommodate too deep values
                 Object[] arguments = Stream.of(constructor.getParameters())
-                        .map(parameter -> null)
+                        .map(this::toValue)
                         .toArray();
 
                 return constructor.newInstance(arguments);
             } catch (Exception e) {
                 throw new UnsupportedConstructionError(constructor.getDeclaringClass(), e);
             }
+        }
+
+        private Object toValue(Parameter parameter) {
+            // Primitive types are not nullable and must have a primitive value
+            if (argumentGenerator.supports(parameter.getType())) {
+                return argumentGenerator.generate(parameter.getType()).asEmpty();
+            }
+
+            return null;
         }
 
         boolean isRecursive() {
