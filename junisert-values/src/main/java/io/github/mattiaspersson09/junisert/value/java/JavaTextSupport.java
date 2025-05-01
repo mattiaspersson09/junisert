@@ -26,6 +26,9 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 
 final class JavaTextSupport {
+    private JavaTextSupport() {
+    }
+
     static AggregatedValueGenerator getTextSupport() {
         return SupportBuilder.createSupport()
                 .supportSingle(Bidi.class, () -> new Bidi("text", Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT))
