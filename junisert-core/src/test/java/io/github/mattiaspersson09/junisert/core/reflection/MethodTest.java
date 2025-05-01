@@ -96,8 +96,6 @@ public class MethodTest {
         Method twoParameterOverloadingMethod = new Method(InstanceMethods.class
                 .getDeclaredMethod("publicVoidOverloadingParameters", Object.class, Object.class));
 
-        System.out.println(oneParameterMethod);
-
         assertThat(oneParameterMethod).isEqualTo((Object) oneParameterMethod);
         assertThat(oneParameterMethod).isEqualTo(new Method(InstanceMethods.class
                 .getDeclaredMethod("publicVoidOverloadingParameters", Object.class)));
@@ -113,8 +111,6 @@ public class MethodTest {
                 .getDeclaredMethod("publicVoidOverloadingParameters", Object.class));
         Method twoParameterOverloadingMethod = new Method(InstanceMethods.class
                 .getDeclaredMethod("publicVoidOverloadingParameters", Object.class, Object.class));
-
-        System.out.println(oneParameterMethod);
 
         assertThat(oneParameterMethod.hashCode()).isEqualTo(((Object) oneParameterMethod).hashCode());
         assertThat(oneParameterMethod.hashCode()).isEqualTo(new Method(InstanceMethods.class

@@ -44,6 +44,9 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 final class JavaIOSupport {
+    private JavaIOSupport() {
+    }
+
     static AggregatedValueGenerator getIOSupport() {
         return SupportBuilder.createSupport()
                 .supportSingle(Closeable.class, ByteArrayInputStream.class, JavaIOSupport::inputStream)
