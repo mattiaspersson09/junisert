@@ -1,26 +1,17 @@
 plugins {
     id("jacoco")
+    id("jacoco-report-aggregation")
 }
 
 jacocoTestReport {
-//    classDirectories.from(files(sourceSets.main.output, sourceSets.test.output))
-//    sourceDirectories.from(files(sourceSets.main.java.srcDirs, sourceSets.test.java.srcDirs))
-    classDirectories.from(files(sourceSets.main.output))
-    sourceDirectories.from(files(sourceSets.main.java.srcDirs))
-
-    executionData tasks.withType(Test).findAll {
-        it.state.executed
-    }
+    executionData.from(
+            project.layout.buildDirectory.dir("jacoco/test.exec"),
+            project.layout.buildDirectory.dir("jacoco/integrationTest.exec")
+    )
 
     reports {
         xml.required = true
         csv.required = false
         html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
-    }
-
-    afterEvaluate {
-        classDirectories = files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['**/junisert/common/**'])
-        })
     }
 }
