@@ -17,7 +17,6 @@ package io.github.mattiaspersson09.junisert.core.test;
 
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedConstructionError;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.core.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.reflection.Unit;
@@ -41,10 +40,8 @@ public class ImplementsEquals implements UnitTest {
             throw new UnitAssertionError(unit.getName() + " was expected to implement the equals method");
         }
 
-        Object instance = unit.createInstance()
-                .orElseThrow(() -> new UnsupportedConstructionError(unit.getType()));
-        Object instance2 = unit.createInstance()
-                .orElseThrow(() -> new UnsupportedConstructionError(unit.getType()));
+        Object instance = valueService.getValue(unit.getType()).get();
+        Object instance2 = valueService.getValue(unit.getType()).get();
 
         if (!isPassingNullCheck(instance)) {
             LOGGER.fail(details(unit, "fails null check"), "to not equal null objects", "it did");

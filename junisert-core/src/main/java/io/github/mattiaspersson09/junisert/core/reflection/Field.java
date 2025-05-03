@@ -39,6 +39,16 @@ public class Field extends Member implements Invokable {
         this.getters = new ArrayList<>();
     }
 
+    /**
+     * Creates a reflected field wrapper from {@code origin} field.
+     *
+     * @param origin to wrap
+     * @return reflected field
+     */
+    public static Field of(java.lang.reflect.Field origin) {
+        return new Field(origin);
+    }
+
     void addSetter(Method setter) {
         setters.add(setter);
     }
@@ -118,13 +128,84 @@ public class Field extends Member implements Invokable {
     }
 
     /**
-     * Checks if this field is an instance field or not. An instance field is non-static and is owned by
-     * instances and not the owning class.
+     * Checks if this field is immutable, it's considered immutable if the final modifier is present.<br>
+     * <br>
+     * This is a convenience method and is the same as calling {@code field.modifier().isFinal()}.
+     * If the desire is to check for immutable instance fields or immutable class fields then
+     * {@link #isInstanceImmutable()} and {@link #isClassConstant()} should be used instead.
+     * <p><br>
+     * Example of immutable fields:
+     * <pre>
+     *     public class Immutable {
+     *       private static final Object PRIVATE_CLASS_IMMUTABLE = new Object();
+     *       protected static final Object PROTECTED_CLASS_IMMUTABLE = new Object();
+     *       public static final Object PUBLIC_CLASS_IMMUTABLE = new Object();
+     *       static final Object PACKAGE_CLASS_IMMUTABLE = new Object();
      *
-     * @return true if this is an instance field
+     *       private final Object privateImmutable;
+     *       protected final Object protectedImmutable;
+     *       public final Object publicImmutable;
+     *       final Object packageImmutable;
+     *     }
+     * </pre>
+     * </p>
+     *
+     * @return true if this field is constant
+     * @see #isClassConstant()
+     * @see #isInstanceImmutable()
      */
-    public boolean isInstanceField() {
-        return !modifier().isStatic();
+    public boolean isImmutable() {
+        return modifier().isFinal();
+    }
+
+    /**
+     * Checks if this field is a constant value owned by classes and not instances.
+     * <p><br>
+     * Example of class constants:
+     * <pre>
+     * public class ClassWithConstants {
+     *   public static final Object PUBLIC_CLASS_CONSTANT = new Object();
+     *   protected static final Object PROTECTED_CLASS_CONSTANT = new Object();
+     *   private static final Object PRIVATE_CLASS_CONSTANT = new Object();
+     *   static final Object PACKAGE_CLASS_CONSTANT = new Object();
+     * }
+     * </pre>
+     * </p>
+     *
+     * @return true if this field is an immutable constant owned by a class
+     * @see #isImmutable()
+     * @see #isInstanceImmutable()
+     */
+    public boolean isClassConstant() {
+        return !isInstanceMember() && isImmutable();
+    }
+
+    /**
+     * Checks if this field is an immutable field owned by instances. An immutable instance field is non-static
+     * and has the final modifier.
+     * <p><br>
+     * Example of immutable instance fields:
+     * <pre>
+     * public class ImmutableFields {
+     *   private final Object privateImmutable;
+     *   public final Object publicImmutable;
+     *   final Object packageImmutable;
+     *
+     *   ImmutableFields(Object privateImmutable, Object publicImmutable, Object packageImmutable) {
+     *     this.publicImmutable = publicImmutable;
+     *     this.privateImmutable = privateImmutable;
+     *     this.packageImmutable = packageImmutable;
+     *   }
+     * }
+     * </pre>
+     * </p>
+     *
+     * @return true if this field is immutable
+     * @see #isClassConstant()
+     * @see #isImmutable()
+     */
+    public boolean isInstanceImmutable() {
+        return isInstanceMember() && isImmutable();
     }
 
     @Override
@@ -147,9 +228,7 @@ public class Field extends Member implements Invokable {
             value = args[0];
         }
 
-        if (!setValue(instance, value)) {
-            throw new IllegalAccessException("Tried to set value for " + getName() + " but it was not possible");
-        }
+        origin.set(instance, value);
 
         return getValue(instance);
     }
@@ -160,24 +239,21 @@ public class Field extends Member implements Invokable {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        Field field = (Field) object;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Field field = (Field) o;
         return Objects.equals(origin, field.origin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(origin);
+        return Objects.hash(super.hashCode(), origin);
     }
 
     @Override
     public String toString() {
-        return "Field{" +
-                "origin=" + origin +
-                ", setters=" + setters +
-                ", getters=" + getters +
-                '}';
+        return String.format("%s(%s)", getName(), getType());
     }
 }

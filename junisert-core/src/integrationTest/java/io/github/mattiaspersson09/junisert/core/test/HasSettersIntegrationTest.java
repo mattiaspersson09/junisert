@@ -1,0 +1,70 @@
+/*
+ * Copyright (c) 2025-2025 Mattias Persson
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.github.mattiaspersson09.junisert.core.test;
+
+import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
+import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
+import io.github.mattiaspersson09.junisert.core.reflection.Unit;
+import io.github.mattiaspersson09.junisert.testunits.setter.BeanAndBuilderStyle;
+import io.github.mattiaspersson09.junisert.testunits.setter.BeanStyle;
+import io.github.mattiaspersson09.junisert.testunits.setter.BuilderStyle;
+import io.github.mattiaspersson09.junisert.testunits.setter.HybridStyle;
+import io.github.mattiaspersson09.junisert.testunits.setter.MissingSetter;
+import io.github.mattiaspersson09.junisert.testunits.setter.NotSettingField;
+import io.github.mattiaspersson09.junisert.testunits.setter.TwoButOnlyOneWorking;
+import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+public class HasSettersIntegrationTest {
+    private static ValueService valueService;
+    private HasSetters hasSetters;
+
+    @BeforeAll
+    static void beforeAll() {
+        valueService = new TestValueService(new ObjectValueGenerator());
+    }
+
+    @BeforeEach
+    void setUp() {
+        hasSetters = new HasSetters(valueService);
+    }
+
+    @Test
+    void givenUnit_whenAllFieldsHaveSetters_andIsAcceptableSetters_thenPassesTest() {
+        hasSetters.test(Unit.of(BeanStyle.class));
+        hasSetters.test(Unit.of(BuilderStyle.class));
+        hasSetters.test(Unit.of(HybridStyle.class));
+        hasSetters.test(Unit.of(BeanAndBuilderStyle.class));
+        hasSetters.test(Unit.of(TwoButOnlyOneWorking.class));
+    }
+
+    @Test
+    void givenUnit_whenAnyFieldIsMissingSetter_thenFailsTest() {
+        assertThatThrownBy(() -> hasSetters.test(Unit.of(MissingSetter.class)))
+                .isInstanceOf(UnitAssertionError.class);
+    }
+
+    @Test
+    void givenUnit_whenAllFieldsHaveSetters_butSomeSetterIsNotWorking_thenFailsTest() {
+        assertThatThrownBy(() -> hasSetters.test(Unit.of(NotSettingField.class)))
+                .isInstanceOf(UnitAssertionError.class);
+    }
+}

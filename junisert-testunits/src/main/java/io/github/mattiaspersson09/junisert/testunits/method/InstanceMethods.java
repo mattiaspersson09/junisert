@@ -5,6 +5,10 @@ public class InstanceMethods {
         return new Object();
     }
 
+    public Object publicObjectObjectParameter(Object object) {
+        return new Object();
+    }
+
     public void publicVoidObjectParameter(Object object) {
     }
 

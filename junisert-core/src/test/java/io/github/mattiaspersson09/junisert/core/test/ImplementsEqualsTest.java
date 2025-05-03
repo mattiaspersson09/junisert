@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.core.assertion.test;
+package io.github.mattiaspersson09.junisert.core.test;
 
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.api.value.Value;
-import io.github.mattiaspersson09.junisert.core.reflection.UnitCreator;
-import io.github.mattiaspersson09.junisert.core.test.ImplementsEquals;
+import io.github.mattiaspersson09.junisert.core.reflection.Unit;
 import io.github.mattiaspersson09.junisert.testunits.equals.WellImplementedEquals;
 import io.github.mattiaspersson09.junisert.testunits.equals.WellImplementedEqualsExtendingBase;
 import io.github.mattiaspersson09.junisert.testunits.equals.broken.AlwaysTrueEquals;
@@ -40,7 +39,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
-public class ImplementsEqualsIntegrationTest {
+public class ImplementsEqualsTest {
     @Mock
     ValueService valueService;
 
@@ -53,21 +52,27 @@ public class ImplementsEqualsIntegrationTest {
 
     @Test
     void whenHasWellImplementedEquals_thenImplementsEquals() {
-        doReturn((Value<?>) Object::new).when(valueService).getValue(any());
+        doReturn((Value<?>) Object::new).when(valueService).getValue(Object.class);
+        doReturn((Value<?>) WellImplementedEquals::new)
+                .when(valueService)
+                .getValue(WellImplementedEquals.class);
 
-        implementsEquals.test(UnitCreator.createFrom(WellImplementedEquals.class));
+        implementsEquals.test(Unit.of(WellImplementedEquals.class));
     }
 
     @Test
     void whenHasWellImplementedEquals_andExtendingOtherClass_thenImplementsEquals() {
-        doReturn((Value<?>) Object::new).when(valueService).getValue(any());
+        doReturn((Value<?>) Object::new).when(valueService).getValue(Object.class);
+        doReturn((Value<?>) WellImplementedEqualsExtendingBase::new)
+                .when(valueService)
+                .getValue(WellImplementedEqualsExtendingBase.class);
 
-        implementsEquals.test(UnitCreator.createFrom(WellImplementedEqualsExtendingBase.class));
+        implementsEquals.test(Unit.of(WellImplementedEqualsExtendingBase.class));
     }
 
     @Test
     void whenNotDeclaringOwnImplementation_thenThrowsUnitAssertionError() {
-        assertThatThrownBy(() -> implementsEquals.test(UnitCreator.createFrom(MissingEquals.class)))
+        assertThatThrownBy(() -> implementsEquals.test(Unit.of(MissingEquals.class)))
                 .isInstanceOf(UnitAssertionError.class)
                 .hasMessageContaining("MissingEquals was expected to implement the equals method");
     }
@@ -76,15 +81,15 @@ public class ImplementsEqualsIntegrationTest {
     void whenHasBrokenEqualsImplementation_thenThrowsUnitAssertionError() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(any());
 
-        assertThatThrownBy(() -> implementsEquals.test(UnitCreator.createFrom(AlwaysTrueEquals.class)))
+        assertThatThrownBy(() -> implementsEquals.test(Unit.of(AlwaysTrueEquals.class)))
                 .isInstanceOf(UnitAssertionError.class);
-        assertThatThrownBy(() -> implementsEquals.test(UnitCreator.createFrom(OnlyReferenceEquals.class)))
+        assertThatThrownBy(() -> implementsEquals.test(Unit.of(OnlyReferenceEquals.class)))
                 .isInstanceOf(UnitAssertionError.class);
-        assertThatThrownBy(() -> implementsEquals.test(UnitCreator.createFrom(NoTypeCheckEquals.class)))
+        assertThatThrownBy(() -> implementsEquals.test(Unit.of(NoTypeCheckEquals.class)))
                 .isInstanceOf(UnitAssertionError.class);
-        assertThatThrownBy(() -> implementsEquals.test(UnitCreator.createFrom(OnlyTypeCheckEquals.class)))
+        assertThatThrownBy(() -> implementsEquals.test(Unit.of(OnlyTypeCheckEquals.class)))
                 .isInstanceOf(UnitAssertionError.class);
-        assertThatThrownBy(() -> implementsEquals.test(UnitCreator.createFrom(InconsistentEquals.class)))
+        assertThatThrownBy(() -> implementsEquals.test(Unit.of(InconsistentEquals.class)))
                 .isInstanceOf(UnitAssertionError.class);
     }
 }

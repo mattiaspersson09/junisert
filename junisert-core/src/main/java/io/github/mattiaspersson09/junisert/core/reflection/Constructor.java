@@ -15,28 +15,41 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
-import io.github.mattiaspersson09.junisert.core.reflection.util.Parameters;
 
-import java.util.Collections;
-import java.util.List;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.Objects;
 
-public class Constructor extends Member {
+/**
+ * Representing a reflected constructor as member of a unit, being a wrapper for {@link java.lang.reflect.Constructor}.
+ */
+public class Constructor extends ExecutableMember implements Invokable {
     private final java.lang.reflect.Constructor<?> origin;
-    private final List<Parameter> parameters;
 
     Constructor(java.lang.reflect.Constructor<?> origin) {
         super(origin);
         this.origin = origin;
-        this.parameters = Collections.unmodifiableList(Parameters.map(origin.getParameters()));
+        this.origin.setAccessible(true);
     }
 
+    /**
+     * Creates a reflected constructor wrapper from {@code origin} constructor.
+     *
+     * @param origin to wrap
+     * @return reflected constructor
+     */
+    public static Constructor of(java.lang.reflect.Constructor<?> origin) {
+        return new Constructor(origin);
+    }
+
+    /**
+     * Checks if this constructor is a default constructor, having no parameters and can be either
+     * public, protected, private or package-private.
+     *
+     * @return true if this is a default constructor
+     */
     public boolean isDefault() {
-        return origin.getParameterCount() == 0;
-    }
-
-    public List<Parameter> getParameters() {
-        return parameters;
+        return hasNoParameters();
     }
 
     @Override
@@ -45,23 +58,39 @@ public class Constructor extends Member {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        Constructor that = (Constructor) object;
+    public Object invoke(Object instance, Object... args) throws InvocationTargetException, IllegalAccessException {
+        if (instance != null && !origin.getDeclaringClass().equals(instance.getClass())) {
+            throw new IllegalArgumentException("Instance class does not have the same origin as this constructor");
+        }
+
+        try {
+            return origin.newInstance(args);
+        } catch (InstantiationException e) {
+            throw new InvocationTargetException(e);
+        }
+    }
+
+    @Override
+    public Collection<Class<?>> accepts() {
+        return getParameterTypes();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Constructor that = (Constructor) o;
         return Objects.equals(origin, that.origin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(origin);
+        return Objects.hash(super.hashCode(), origin);
     }
 
     @Override
     public String toString() {
-        return "Constructor{" +
-                "origin=" + origin +
-                ", parameters=" + parameters +
-                '}';
+        return String.format("%s(%s)", origin.getDeclaringClass().getSimpleName(), getParameterTypes());
     }
 }

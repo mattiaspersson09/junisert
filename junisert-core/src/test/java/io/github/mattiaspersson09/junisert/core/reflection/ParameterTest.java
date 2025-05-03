@@ -15,75 +15,82 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
-import io.github.mattiaspersson09.junisert.testunits.method.Annotated;
-import io.github.mattiaspersson09.junisert.testunits.method.InstanceMethods;
-import io.github.mattiaspersson09.junisert.testunits.method.VarArg;
+import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class ParameterTest {
-    @Test
-    void isVarArg_whenParameterIsVarArg_thenIsTrue() throws NoSuchMethodException {
-        Parameter varArgParameter = new Parameter(VarArg.class
-                .getDeclaredMethod("publicVoidObjectVarArgParameter", Object[].class)
-                .getParameters()[0]);
+    @Mock
+    java.lang.reflect.Parameter origin;
 
-        assertThat(varArgParameter.isVarArgs()).isTrue();
+    @Test
+    void isSynthetic_whenSynthetic_thenIsTrue() {
+        Parameter parameter = Parameter.of(origin);
+
+        when(origin.isSynthetic()).thenReturn(true);
+
+        assertThat(parameter.isSynthetic()).isTrue();
     }
 
     @Test
-    void isVarArg_whenParameterIsArray_thenIsFalse() throws NoSuchMethodException {
-        Parameter varArgParameter = new Parameter(VarArg.class
-                .getDeclaredMethod("publicVoidObjectArrayParameter", Object[].class)
-                .getParameters()[0]);
+    void isSynthetic_whenNotSynthetic_thenIsFalse() {
+        Parameter parameter = Parameter.of(origin);
 
-        assertThat(varArgParameter.isVarArgs()).isFalse();
+        when(origin.isSynthetic()).thenReturn(false);
+
+        assertThat(parameter.isSynthetic()).isFalse();
     }
 
     @Test
-    void isAnnotated_whenParameterHasAnnotation_thenIsTrue() throws NoSuchMethodException {
-        Parameter deprecatedParameter = new Parameter(Annotated.class
-                .getDeclaredMethod("deprecatedPublicVoidDeprecatedObjectParameter", Object.class)
-                .getParameters()[0]);
+    void equalsTest() {
+        Parameter parameter = Parameter.of(origin);
 
-        assertThat(deprecatedParameter.isAnnotated()).isTrue();
+        assertThat(parameter).isEqualTo(Parameter.of(origin));
+        assertThat(parameter).isEqualTo((Object) parameter);
+        assertThat(parameter).isNotEqualTo(null);
+        assertThat(parameter).isNotEqualTo(new Object());
     }
 
     @Test
-    void isAnnotated_whenParameterHasNoAnnotation_thenIsFalse() throws NoSuchMethodException {
-        Parameter deprecatedParameter = new Parameter(Annotated.class
-                .getDeclaredMethod("deprecatedPublicVoidObjectParameter", Object.class)
-                .getParameters()[0]);
+    void equals_whenHasOtherOrigin_thenIsFalse() {
+        Parameter parameter = Parameter.of(origin);
 
-        assertThat(deprecatedParameter.isAnnotated()).isFalse();
+        assertThat(parameter).isNotEqualTo(Parameter.of(mock(java.lang.reflect.Parameter.class)));
     }
 
     @Test
-    void getName_hasGenericJavaArgumentName() throws NoSuchMethodException {
-        Parameter deprecatedParameter = new Parameter(Annotated.class
-                .getDeclaredMethod("deprecatedPublicVoidObjectParameter", Object.class)
-                .getParameters()[0]);
+    void hashCodeTest() {
+        Parameter parameter = Parameter.of(origin);
 
-        assertThat(deprecatedParameter.getName()).contains("arg");
+        assertThat(parameter.hashCode()).isEqualTo(Parameter.of(origin).hashCode());
+        assertThat(parameter.hashCode()).isEqualTo(((Object) parameter).hashCode());
+        assertThat(parameter.hashCode()).isNotEqualTo(Objects.hashCode(null));
+        assertThat(parameter.hashCode()).isNotEqualTo(new Object().hashCode());
     }
 
     @Test
-    void getType_isReflectedType() throws NoSuchMethodException {
-        Parameter deprecatedParameter = new Parameter(Annotated.class
-                .getDeclaredMethod("deprecatedPublicVoidObjectParameter", Object.class)
-                .getParameters()[0]);
+    void hashCode_whenHasOtherOrigin_thenIsFalse() {
+        Parameter parameter = Parameter.of(origin);
 
-        assertThat(deprecatedParameter.getType()).isEqualTo(Object.class);
+        assertThat(parameter.hashCode()).isNotEqualTo(Parameter.of(mock(java.lang.reflect.Parameter.class)).hashCode());
     }
 
     @Test
-    void modifier_whenHasNoModifier_thenIsConsideredPackagePrivate() throws NoSuchMethodException {
-        Parameter noModifierParameter = new Parameter(InstanceMethods.class
-                .getDeclaredMethod("publicVoidObjectParameter", Object.class)
-                .getParameters()[0]);
+    void toStringTest() {
+        Parameter parameter = Parameter.of(origin);
 
-        assertThat(noModifierParameter.modifier().isPackagePrivate()).isTrue();
+        doReturn(Object.class).when(origin).getType();
+        when(origin.getName()).thenReturn("parameterName");
+
+        assertThat(parameter.toString()).isEqualTo("class java.lang.Object parameterName");
     }
 }

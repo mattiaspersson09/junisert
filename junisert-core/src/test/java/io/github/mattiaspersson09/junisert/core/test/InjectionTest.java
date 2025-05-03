@@ -15,13 +15,14 @@
  */
 package io.github.mattiaspersson09.junisert.core.test;
 
+import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
+import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedConstructionError;
+import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.core.reflection.Invokable;
-import io.github.mattiaspersson09.junisert.core.reflection.Unit;
 import io.github.mattiaspersson09.junisert.testunits.setter.BeanStyle;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,12 +33,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class InjectionTest {
     @Mock
-    Unit unit;
+    ValueService valueService;
     @Mock
     Invokable target;
 
@@ -45,63 +47,66 @@ public class InjectionTest {
 
     @BeforeEach
     void setUp() {
-        injection = new Injection(unit, target);
+        injection = new Injection(target, valueService);
     }
 
     @Test
     void inject_whenInjectionIsSuccessful_thenReturnsTrue() {
-        Object unitInstance = new BeanStyle();
-
-        injection.setup(instance -> true);
-        injection.shouldResultIn(instance -> true);
-
-        when(unit.createInstance()).thenReturn(Optional.of(unitInstance));
+        doReturn(BeanStyle.class).when(target).getParent();
+        doReturn((Value<?>) BeanStyle::new).when(valueService).getValue(BeanStyle.class);
 
         assertThat(injection.inject()).isTrue();
     }
 
     @Test
     void inject_whenInjectionIsUnsuccessful_thenReturnsFalse() {
-        Object unitInstance = new BeanStyle();
+        doReturn(BeanStyle.class).when(target).getParent();
+        doReturn((Value<?>) BeanStyle::new).when(valueService).getValue(BeanStyle.class);
 
-        injection.setup(instance -> true);
         injection.shouldResultIn(instance -> false);
-
-        when(unit.createInstance()).thenReturn(Optional.of(unitInstance));
 
         assertThat(injection.inject()).isFalse();
     }
 
     @Test
-    void inject_whenMissingUnitInstance_thenThrowsUnsupportedConstructionError() {
-        when(unit.createInstance()).thenReturn(Optional.empty());
+    void inject_whenCanNotConstructInstance_thenPropagatesServiceFailure() {
+        when(valueService.getValue(any())).thenThrow(UnsupportedConstructionError.class);
 
         assertThatThrownBy(() -> injection.inject()).isInstanceOf(UnsupportedConstructionError.class);
     }
 
     @Test
-    void inject_whenSetupIsUnsuccessful_andUnableToGuaranteeInjection_thenReturnsFalse() {
-        injection.setup(instance -> false);
-        injection.shouldResultIn(instance -> true);
+    void inject_whenSetupIsUnsuccessful_thenReturnsFalse() {
+        doReturn(BeanStyle.class).when(target).getParent();
+        doReturn((Value<?>) BeanStyle::new).when(valueService).getValue(BeanStyle.class);
 
-        when(unit.createInstance()).thenReturn(Optional.of(new BeanStyle()));
+        injection.setup(instance -> false);
 
         assertThat(injection.inject()).isFalse();
     }
 
     @Test
-    void inject_whenInjectionFails_thenThrowsGivenOnError() throws InvocationTargetException, IllegalAccessException {
-        Object unitInstance = new BeanStyle();
+    void inject_whenInjectionFails_thenThrowsGivenError() throws InvocationTargetException, IllegalAccessException {
+        doReturn(BeanStyle.class).when(target).getParent();
+        doReturn((Value<?>) BeanStyle::new).when(valueService).getValue(any());
+        when(target.invoke(any(), any())).thenThrow(InvocationTargetException.class);
 
-        injection.setup(instance -> true);
-        injection.shouldResultIn(instance -> true);
-        injection.onInjectionError(() -> new Error("injection failure"));
+        injection.onInjectionFail(() -> new UnitAssertionError("injection failure"));
 
-        when(unit.createInstance()).thenReturn(Optional.of(unitInstance));
+        assertThatThrownBy(() -> injection.inject(new Object()))
+                .isInstanceOf(UnitAssertionError.class)
+                .hasMessage("injection failure");
+    }
+
+    @Test
+    void inject_whenInjectionFails_andNoGivenErrorSupplier_thenThrowsGenericUnitAssertionError() throws InvocationTargetException,
+                                                                                                 IllegalAccessException {
+        doReturn((Value<?>) BeanStyle::new).when(valueService).getValue(any());
+        doReturn(BeanStyle.class).when(target).getParent();
         when(target.invoke(any(), any())).thenThrow(InvocationTargetException.class);
 
         assertThatThrownBy(() -> injection.inject(new Object()))
-                .isInstanceOf(Error.class)
-                .hasMessage("injection failure");
+                .isInstanceOf(UnitAssertionError.class)
+                .hasMessageContaining("Failed to invoke");
     }
 }

@@ -66,15 +66,14 @@ public class HasSetters implements UnitTest {
             }
 
             Value<?> argument = valueService.getValue(field.getType());
-            Injection injection = new Injection(unit, method);
+            Injection injection = new Injection(method, valueService);
 
             Object value = argument.get();
             Object empty = argument.asEmpty();
 
             injection.setup(instance -> field.setValue(instance, empty));
-            injection.shouldResultIn(instance -> !Objects.equals(empty,
-                    field.getValueOrElse(instance, empty)));
-            injection.onInjectionError(() -> new UnitAssertionError("Failed to invoke setter"));
+            injection.shouldResultIn(instance -> !Objects.equals(empty, field.getValueOrElse(instance, empty)));
+            injection.onInjectionFail(() -> new UnitAssertionError("Failed to invoke setter"));
 
             if (injection.inject(value)) {
                 return true;

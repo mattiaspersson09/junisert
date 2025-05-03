@@ -15,6 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
+
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -22,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ModifierTest {
+public class ModifierIntegrationTest {
 
     @Test
     void getsCorrectModifiers() throws NoSuchFieldException, NoSuchMethodException {

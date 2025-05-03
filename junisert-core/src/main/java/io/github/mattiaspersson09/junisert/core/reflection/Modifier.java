@@ -17,6 +17,10 @@ package io.github.mattiaspersson09.junisert.core.reflection;
 
 import java.util.Objects;
 
+/**
+ * Convenience wrapper for {@link java.lang.reflect.Modifier} that takes no arguments and simplify checking or filtering
+ * reflected elements with certain modifiers.
+ */
 public final class Modifier {
     private final int value;
 

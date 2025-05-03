@@ -86,10 +86,10 @@ public class HasGetters implements UnitTest {
                 }
             };
 
-            Injection injection = new Injection(unit, method);
+            Injection injection = new Injection(method, valueService);
             injection.setup(instance -> field.setValue(instance, value));
             injection.shouldResultIn(instance -> Objects.equals(value, getterGetValue.apply(instance)));
-            injection.onInjectionError(() -> new UnitAssertionError("Failed to invoke getter"));
+            injection.onInjectionFail(() -> new UnitAssertionError("Failed to invoke getter"));
 
             if (injection.inject()) {
                 return true;
