@@ -15,70 +15,115 @@
  */
 package io.github.mattiaspersson09.junisert.core.test;
 
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedConstructionError;
+import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
+import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.core.reflection.Invokable;
-import io.github.mattiaspersson09.junisert.core.reflection.Unit;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * Performs injection of values for invokable unit members.
+ * Performs test injection of values for invokable unit members. Users can test a setup before the injection,
+ * test the result after injection and throw given error if injection fails. The tests are performed on the unit
+ * instance that the {@link Invokable} target is declared in.<br>
+ * <br>
+ * If no setup or result is set by the user then setup and result always passes.
+ *
+ * @see Invokable
+ * @see ValueService
  */
 public class Injection {
-    private static final Logger LOGGER = Logger.getLogger(Injection.class);
+    private static final Logger LOGGER = Logger.getLogger("Injection");
 
+    private final ValueService valueService;
     private final Invokable injectionTarget;
-    private final Unit parentUnit;
-    private Predicate<Object> injectionSetup;
-    private Predicate<Object> injectionEffect;
-    private Supplier<? extends Error> onInjectionError;
+    private Predicate<Object> setup;
+    private Predicate<Object> result;
+    private Supplier<UnitAssertionError> onInjectionFail;
 
-    public Injection(Unit parentUnit, Invokable injectionTarget) {
+    /**
+     * Creates a new test injection.
+     *
+     * @param injectionTarget to inject values into from a unit instance
+     * @param valueService    that can create unit instances
+     */
+    public Injection(Invokable injectionTarget, ValueService valueService) {
         this.injectionTarget = injectionTarget;
-        this.parentUnit = parentUnit;
-    }
-
-    public void setup(Predicate<Object> setup) {
-        this.injectionSetup = setup;
-    }
-
-    public void shouldResultIn(Predicate<Object> effect) {
-        this.injectionEffect = effect;
-    }
-
-    public void onInjectionError(Supplier<? extends Error> onInjectionError) {
-        this.onInjectionError = onInjectionError;
+        this.valueService = valueService;
+        this.setup = setup -> true;
+        this.result = result -> true;
     }
 
     /**
+     * Setup that should pass before injection, it can be setting up values for the unit instance that should later
+     * be affected.
      *
-     * @param args
-     * @return
+     * @param setup that should pass before injection
      */
-    public boolean inject(Object... args) {
-        Object unitInstance = parentUnit.createInstance()
-                .orElseThrow(() -> new UnsupportedConstructionError(parentUnit.getType()));
+    public void setup(Predicate<Object> setup) {
+        this.setup = Objects.requireNonNull(setup);
+    }
 
-        if (!injectionSetup.test(unitInstance)) {
+    /**
+     * Result that should pass after injection, it can be to make sure state is changed inside the unit instance
+     * after the injection.
+     *
+     * @param result that should pass after injection
+     */
+    public void shouldResultIn(Predicate<Object> result) {
+        this.result = Objects.requireNonNull(result);
+    }
+
+    /**
+     * Lazy error to throw if injection fails.
+     *
+     * @param onInjectionError to throw
+     */
+    public void onInjectionFail(Supplier<UnitAssertionError> onInjectionError) {
+        this.onInjectionFail = Objects.requireNonNull(onInjectionError);
+    }
+
+    /**
+     * Try to inject {@code arguments} into given {@link Invokable}. The injection is only seen as successful
+     * if setup is successful, the injection does not throw and the injection gives the desired result.<br>
+     * <ul>
+     * <li>If no setup is given then the setup test always passes.</li>
+     * <li>If no desired result is given then the result test always passes.</li>
+     * <li>If no error supplier is given for injection failure, then a generic {@link UnitAssertionError}
+     * will be thrown if injection fails.</li>
+     * </ul>
+     *
+     * @param arguments to inject
+     * @return true if setup passes, injection is successful and produces the desired result
+     * @see #setup(Predicate)
+     * @see #shouldResultIn(Predicate)
+     * @see #onInjectionFail(Supplier)
+     */
+    public boolean inject(Object... arguments) {
+        Object unitInstance = valueService.getValue(injectionTarget.getParent()).get();
+
+        if (!setup.test(unitInstance)) {
             LOGGER.warn("Injection precondition setup was unsuccessful");
             return false;
         }
 
         try {
-            LOGGER.test("Invoking: arguments({0}) -> {1}.{2}({3})",
-                    Arrays.toString(args),
-                    parentUnit.getName(),
-                    injectionTarget.getName(),
-                    injectionTarget.accepts());
-            injectionTarget.invoke(unitInstance, args);
+            LOGGER.test("Injecting: arguments({0}) -> {1}.{2}",
+                    Arrays.toString(arguments),
+                    injectionTarget.getParent().getSimpleName(),
+                    injectionTarget);
+            injectionTarget.invoke(unitInstance, arguments);
         } catch (InvocationTargetException | IllegalAccessException e) {
-            throw onInjectionError.get();
+            throw Optional.ofNullable(onInjectionFail)
+                    .map(Supplier::get)
+                    .orElseGet(() -> new UnitAssertionError("Failed to invoke: " + injectionTarget, e));
         }
 
-        return injectionEffect.test(unitInstance);
+        return result.test(unitInstance);
     }
 }

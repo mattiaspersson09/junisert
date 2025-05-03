@@ -61,6 +61,13 @@ public interface Invokable {
     Collection<Class<?>> accepts();
 
     /**
+     * Get the parent unit declaring this invokable.
+     *
+     * @return declaring unit
+     */
+    Class<?> getParent();
+
+    /**
      * Name of this invokable, can be a descriptive signature of the unit member or
      * short version of the member's class name.
      *

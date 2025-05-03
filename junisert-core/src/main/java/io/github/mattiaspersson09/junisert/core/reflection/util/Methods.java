@@ -15,13 +15,39 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection.util;
 
+import io.github.mattiaspersson09.junisert.core.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.reflection.Method;
 
 public final class Methods {
     private Methods() {
     }
 
+    public static boolean isSetterForField(java.lang.reflect.Method method, Field field) {
+        return isSetterForField(Method.of(method), field);
+    }
+
+    public static boolean isGetterForField(java.lang.reflect.Method method, Field field) {
+        return isGetterForField(Method.of(method), field);
+    }
+
+    public static boolean isSetterForField(Method method, Field field) {
+        return (method.getName().substring("set".length()).equalsIgnoreCase(field.getName())
+                || method.getName().equalsIgnoreCase(field.getName()))
+                && method.hasParameterCount(1)
+                && method.hasParameterAssignableTo(field.getType());
+    }
+
+    public static boolean isGetterForField(Method method, Field field) {
+        return (method.getName().substring("get".length()).equalsIgnoreCase(field.getName())
+                || method.getName().substring("is".length()).equalsIgnoreCase(field.getName())
+                || method.getName().equalsIgnoreCase(field.getName()))
+                && method.isProducing(field.getType());
+    }
+
     public static boolean isEqualsMethod(Method method) {
-        return "equals".equals(method.getName());
+        return "equals".equals(method.getName())
+                && method.hasParameterCount(1)
+                && method.hasParameterType(Object.class)
+                && method.hasReturnType(boolean.class);
     }
 }

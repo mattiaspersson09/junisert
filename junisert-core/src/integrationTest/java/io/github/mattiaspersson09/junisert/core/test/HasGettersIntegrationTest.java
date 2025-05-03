@@ -1,0 +1,75 @@
+/*
+ * Copyright (c) 2025-2025 Mattias Persson
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.github.mattiaspersson09.junisert.core.test;
+
+import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
+import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
+import io.github.mattiaspersson09.junisert.core.reflection.Unit;
+import io.github.mattiaspersson09.junisert.testunits.getter.BeanAndBuilderStyle;
+import io.github.mattiaspersson09.junisert.testunits.getter.BeanStyle;
+import io.github.mattiaspersson09.junisert.testunits.getter.BooleanBeanStyle;
+import io.github.mattiaspersson09.junisert.testunits.getter.BooleanBuilderStyle;
+import io.github.mattiaspersson09.junisert.testunits.getter.BuilderStyle;
+import io.github.mattiaspersson09.junisert.testunits.getter.MissingGetter;
+import io.github.mattiaspersson09.junisert.testunits.getter.NotGettingField;
+import io.github.mattiaspersson09.junisert.testunits.getter.TwoButOnlyOneWorking;
+import io.github.mattiaspersson09.junisert.testunits.getter.TwoLettersOrLessBeanStyle;
+import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
+import io.github.mattiaspersson09.junisert.value.common.PrimitiveValueGenerator;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+public class HasGettersIntegrationTest {
+    private static ValueService valueService;
+    private HasGetters hasGetters;
+
+    @BeforeAll
+    static void beforeAll() {
+        valueService = new TestValueService(new PrimitiveValueGenerator(), new ObjectValueGenerator());
+    }
+
+    @BeforeEach
+    void setUp() {
+        hasGetters = new HasGetters(valueService);
+    }
+
+    @Test
+    void givenUnit_whenAllFieldsHaveGetters_andIsAcceptableGetters_thenPassesTest() {
+        hasGetters.test(Unit.of(BeanStyle.class));
+        hasGetters.test(Unit.of(BuilderStyle.class));
+        hasGetters.test(Unit.of(TwoLettersOrLessBeanStyle.class));
+        hasGetters.test(Unit.of(BooleanBeanStyle.class));
+        hasGetters.test(Unit.of(BooleanBuilderStyle.class));
+        hasGetters.test(Unit.of(BeanAndBuilderStyle.class));
+        hasGetters.test(Unit.of(TwoButOnlyOneWorking.class));
+    }
+
+    @Test
+    void givenUnit_whenAllFieldsHaveGetters_butSomeGetterIsNotWorking_thenFailsTest() {
+        assertThatThrownBy(() -> hasGetters.test(Unit.of(NotGettingField.class)))
+                .isInstanceOf(UnitAssertionError.class);
+    }
+
+    @Test
+    void givenUnit_whenAnyFieldIsMissingGetter_thenFailsTest() {
+        assertThatThrownBy(() -> hasGetters.test(Unit.of(MissingGetter.class)))
+                .isInstanceOf(UnitAssertionError.class);
+    }
+}

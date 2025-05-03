@@ -27,7 +27,26 @@ public abstract class Member implements Reflected {
 
     protected Member(java.lang.reflect.Member origin) {
         this.origin = Objects.requireNonNull(origin);
-        this.modifier = new Modifier(Objects.requireNonNull(origin).getModifiers());
+        this.modifier = new Modifier(origin.getModifiers());
+    }
+
+    /**
+     * Checks if this member is owned by an instance or not. An instance member is non-static and is owned by
+     * instances and not a class.
+     *
+     * @return true if this is an instance field
+     */
+    public final boolean isInstanceMember() {
+        return !modifier.isStatic();
+    }
+
+    /**
+     * Get the unit type that is parent to this member.
+     *
+     * @return parent unit
+     */
+    public final Class<?> getParent() {
+        return origin.getDeclaringClass();
     }
 
     @Override
@@ -39,12 +58,12 @@ public abstract class Member implements Reflected {
     public abstract Class<?> getType();
 
     @Override
-    public Modifier modifier() {
+    public final Modifier modifier() {
         return modifier;
     }
 
     @Override
-    public boolean isSynthetic() {
+    public final boolean isSynthetic() {
         return origin.isSynthetic();
     }
 

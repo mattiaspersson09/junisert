@@ -15,22 +15,26 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedConstructionError;
+import io.github.mattiaspersson09.junisert.core.reflection.util.Methods;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+/**
+ * Representing a reflected unit, being a wrapper for unit classes. Should not be used for and not supported for
+ * other intentions other than constructing an assertable and testable unit, which were created by the user.
+ */
 public final class Unit implements Reflected {
     private final Class<?> origin;
     private final Modifier modifier;
     private final List<Field> fields;
     private final List<Constructor> constructors;
     private final List<Method> methods;
-    private Supplier<Object> instanceSupplier;
 
     Unit(Class<?> origin) {
         this.origin = Objects.requireNonNull(origin, "unit origin can't be null");
@@ -40,61 +44,218 @@ public final class Unit implements Reflected {
         this.methods = new ArrayList<>();
     }
 
+    /**
+     * Creates a new unit from an origin class created by the user, to be used for assertion and tests.
+     *
+     * @param origin of unit
+     * @return new testable unit
+     */
     public static Unit of(Class<?> origin) {
-        return UnitCreator.createFrom(origin);
+        Unit unit = new Unit(origin);
+
+        Stream.of(origin.getDeclaredConstructors())
+                .map(Constructor::new)
+                .forEach(unit.constructors::add);
+
+        Stream.of(origin.getDeclaredFields())
+                .map(Field::new)
+                .forEach(unit.fields::add);
+
+        Stream.of(origin.getDeclaredMethods())
+                .map(method -> {
+                    Method unitMethod = new Method(method);
+
+                    for (Field unitField : unit.getFields()) {
+                        if (Methods.isSetterForField(unitMethod, unitField)) {
+                            unitField.addSetter(unitMethod);
+                        } else if (Methods.isGetterForField(unitMethod, unitField)) {
+                            unitField.addGetter(unitMethod);
+                        }
+                    }
+
+                    return unitMethod;
+                })
+                .forEach(unit.methods::add);
+
+        return unit;
     }
 
-    void addField(Field field) {
-        fields.add(Objects.requireNonNull(field));
-    }
-
-    void addMethod(Method method) {
-        methods.add(Objects.requireNonNull(method));
-    }
-
-    void addConstructor(Constructor constructor) {
-        constructors.add(Objects.requireNonNull(constructor));
-    }
-
-    void setInstanceSupplier(Supplier<Object> instanceSupplier) {
-        this.instanceSupplier = instanceSupplier;
-    }
-
-    public Optional<Object> createInstance() throws UnsupportedConstructionError {
-        return Optional.ofNullable(instanceSupplier)
-                .map(Supplier::get);
-    }
-
+    /**
+     * Returns an unmodifiable view of fields declared by this unit.
+     *
+     * @return unmodifiable view of declared fields
+     */
     public List<Field> getFields() {
         return Collections.unmodifiableList(fields);
     }
 
+    /**
+     * Returns an unmodifiable view of constructors declared by this unit.
+     *
+     * @return unmodifiable view of declared constructors
+     */
     public List<Constructor> getConstructors() {
         return Collections.unmodifiableList(constructors);
     }
 
+    /**
+     * Returns an unmodifiable view of methods declared by this unit.
+     *
+     * @return unmodifiable view of declared methods
+     */
     public List<Method> getMethods() {
         return Collections.unmodifiableList(methods);
     }
 
+    /**
+     * Checks if this unit has not declared any fields.
+     *
+     * @return true if no fields are declared
+     */
+    public boolean hasNoFields() {
+        return fields.isEmpty();
+    }
+
+    /**
+     * Checks if this unit has a declared a field with {@code name}.
+     *
+     * @param name of declared field
+     * @return true if declared field with given name is present
+     */
     public boolean hasField(String name) {
         return fields.stream()
                 .anyMatch(field -> field.getName().equals(name));
     }
 
+    /**
+     * Checks if this unit has any declared field matching given {@code predicate}.
+     *
+     * @param predicate to match field with
+     * @return true if a declared field matches given predicate
+     */
+    public boolean hasFieldMatching(Predicate<Field> predicate) {
+        Objects.requireNonNull(predicate);
+
+        return fields.stream()
+                .anyMatch(predicate);
+    }
+
+    /**
+     * Finds fields declared by this unit which matches given {@code predicate}.
+     *
+     * @param predicate to match fields with
+     * @return view of declared fields matching given predicate
+     */
+    public List<Field> findFieldsMatching(Predicate<Field> predicate) {
+        Objects.requireNonNull(predicate);
+
+        return fields.stream()
+                .filter(predicate)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Checks if this unit has declared a default constructor, which does not accept any arguments.
+     *
+     * @return true if a default constructor is present
+     */
     public boolean hasDefaultConstructor() {
         return constructors.stream()
                 .anyMatch(Constructor::isDefault);
     }
 
-    public boolean hasArgumentConstructor() {
+    /**
+     * Checks if this unit is missing a default constructor, which does not accept any arguments.
+     *
+     * @return true if no default constructor is present
+     */
+    public boolean hasNoDefaultConstructor() {
         return constructors.stream()
-                .anyMatch(constructor -> !constructor.getParameters().isEmpty());
+                .noneMatch(Constructor::isDefault);
     }
 
+    /**
+     * Checks if this unit has declared a constructor which accepts {@code 1..N} number of arguments.
+     *
+     * @return true if a constructor accepting arguments is present
+     */
+    public boolean hasArgumentConstructor() {
+        return constructors.stream()
+                .anyMatch(constructor -> !constructor.isDefault());
+    }
+
+    /**
+     * Checks if this unit has any declared constructor matching given {@code predicate}.
+     *
+     * @param predicate to match constructor with
+     * @return true if a declared constructor matches given predicate
+     */
+    public boolean hasConstructorMatching(Predicate<Constructor> predicate) {
+        Objects.requireNonNull(predicate);
+
+        return constructors.stream()
+                .anyMatch(predicate);
+    }
+
+    /**
+     * Finds constructors declared by this unit which matches given {@code predicate}.
+     *
+     * @param predicate to match constructors with
+     * @return view of declared constructors matching given predicate
+     */
+    public List<Constructor> findConstructorsMatching(Predicate<Constructor> predicate) {
+        Objects.requireNonNull(predicate);
+
+        return constructors.stream()
+                .filter(predicate)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Checks if this unit has not declared any methods.
+     *
+     * @return true if no methods are declared
+     */
+    public boolean hasNoMethods() {
+        return methods.isEmpty();
+    }
+
+    /**
+     * Checks if this unit has a declared a method with {@code name}.
+     *
+     * @param name of declared method
+     * @return true if declared method with given name is present
+     */
     public boolean hasMethod(String name) {
         return methods.stream()
                 .anyMatch(method -> method.getName().equals(name));
+    }
+
+    /**
+     * Checks if this unit has any declared method matching given {@code predicate}.
+     *
+     * @param predicate to match method with
+     * @return true if a declared method matches given predicate
+     */
+    public boolean hasMethodMatching(Predicate<Method> predicate) {
+        Objects.requireNonNull(predicate);
+
+        return methods.stream()
+                .anyMatch(predicate);
+    }
+
+    /**
+     * Finds methods declared by this unit which matches given {@code predicate}.
+     *
+     * @param predicate to match methods with
+     * @return view of declared methods matching given predicate
+     */
+    public List<Method> findMethodsMatching(Predicate<Method> predicate) {
+        Objects.requireNonNull(predicate);
+
+        return methods.stream()
+                .filter(predicate)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -122,15 +283,12 @@ public final class Unit implements Reflected {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         Unit unit = (Unit) object;
-        return Objects.equals(origin, unit.origin)
-                && Objects.equals(fields, unit.fields)
-                && Objects.equals(constructors, unit.constructors)
-                && Objects.equals(methods, unit.methods);
+        return Objects.equals(origin, unit.origin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(origin, fields, constructors, methods);
+        return Objects.hash(origin);
     }
 
     @Override

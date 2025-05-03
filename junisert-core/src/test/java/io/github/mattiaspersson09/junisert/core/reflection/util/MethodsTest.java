@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core.reflection;
+package io.github.mattiaspersson09.junisert.core.reflection.util;
+
+import io.github.mattiaspersson09.junisert.core.reflection.Field;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -28,7 +30,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UnitCreatorTest {
+public class MethodsTest {
     @Mock
     Method method;
     @Mock
@@ -44,7 +46,7 @@ public class UnitCreatorTest {
         when(method.getParameters()).thenReturn(new Parameter[]{parameter});
         doReturn(FieldType.class).when(parameter).getType();
 
-        assertThat(UnitCreator.methodIsSetterForField(method, field)).isTrue();
+        assertThat(Methods.isSetterForField(method, field)).isTrue();
     }
 
     @Test
@@ -55,7 +57,7 @@ public class UnitCreatorTest {
         when(method.getParameters()).thenReturn(new Parameter[]{parameter});
         doReturn(FieldType.class).when(parameter).getType();
 
-        assertThat(UnitCreator.methodIsSetterForField(method, field)).isTrue();
+        assertThat(Methods.isSetterForField(method, field)).isTrue();
     }
 
     @Test
@@ -66,7 +68,7 @@ public class UnitCreatorTest {
         when(method.getParameters()).thenReturn(new Parameter[]{parameter});
         doReturn(PolymorphicParameterType.class).when(parameter).getType();
 
-        assertThat(UnitCreator.methodIsSetterForField(method, field)).isTrue();
+        assertThat(Methods.isSetterForField(method, field)).isTrue();
     }
 
     @Test
@@ -77,7 +79,7 @@ public class UnitCreatorTest {
         when(method.getParameters()).thenReturn(new Parameter[]{parameter});
         doReturn(WrongFieldType.class).when(parameter).getType();
 
-        assertThat(UnitCreator.methodIsSetterForField(method, field)).isFalse();
+        assertThat(Methods.isSetterForField(method, field)).isFalse();
     }
 
     @Test
@@ -86,7 +88,7 @@ public class UnitCreatorTest {
         when(method.getName()).thenReturn("setField");
         when(method.getParameters()).thenReturn(new Parameter[]{});
 
-        assertThat(UnitCreator.methodIsSetterForField(method, field)).isFalse();
+        assertThat(Methods.isSetterForField(method, field)).isFalse();
     }
 
     @Test
@@ -95,7 +97,7 @@ public class UnitCreatorTest {
         when(method.getName()).thenReturn("setField");
         when(method.getParameters()).thenReturn(new Parameter[]{parameter, parameter});
 
-        assertThat(UnitCreator.methodIsSetterForField(method, field)).isFalse();
+        assertThat(Methods.isSetterForField(method, field)).isFalse();
     }
 
     private static class FieldType {

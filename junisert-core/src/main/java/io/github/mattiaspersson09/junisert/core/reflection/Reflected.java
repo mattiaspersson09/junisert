@@ -19,11 +19,32 @@ package io.github.mattiaspersson09.junisert.core.reflection;
  * Required information for identifying a reflected element.
  */
 public interface Reflected {
+    /**
+     * Returns name for this reflected element.
+     *
+     * @return name for this reflected element
+     */
     String getName();
 
+    /**
+     * Returns the represented type of this reflected element. Can be a field type, method return type or origin type.
+     *
+     * @return type of this reflected element
+     */
     Class<?> getType();
 
+    /**
+     * Returns a wrapper representing this reflected element's modifiers.
+     *
+     * @return modifier wrapper
+     * @see Modifier
+     */
     Modifier modifier();
 
+    /**
+     * Checks if this reflected element is synthetically created.
+     *
+     * @return true if this element is synthetically created
+     */
     boolean isSynthetic();
 }

@@ -17,8 +17,6 @@ package io.github.mattiaspersson09.junisert.core.reflection.util;
 
 import io.github.mattiaspersson09.junisert.core.reflection.Parameter;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,16 +26,7 @@ public final class Parameters {
     }
 
     public static Parameter map(java.lang.reflect.Parameter parameter) {
-        try {
-            Constructor<?> packageConstructor = Parameter.class
-                    .getDeclaredConstructor(java.lang.reflect.Parameter.class);
-            packageConstructor.setAccessible(true);
-
-            return (Parameter) packageConstructor.newInstance(parameter);
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
-                 IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        return Parameter.of(parameter);
     }
 
     public static List<Parameter> map(java.lang.reflect.Parameter[] parameters) {

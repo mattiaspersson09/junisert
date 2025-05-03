@@ -31,6 +31,10 @@ public final class Parameter implements Reflected {
         this.modifier = new Modifier(origin.getModifiers());
     }
 
+    public static Parameter of(java.lang.reflect.Parameter origin) {
+        return new Parameter(origin);
+    }
+
     public boolean isVarArgs() {
         return origin.isVarArgs();
     }
@@ -64,19 +68,16 @@ public final class Parameter implements Reflected {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         Parameter parameter = (Parameter) object;
-        return Objects.equals(origin, parameter.origin) && Objects.equals(modifier, parameter.modifier);
+        return Objects.equals(origin, parameter.origin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(origin, modifier);
+        return Objects.hash(origin);
     }
 
     @Override
     public String toString() {
-        return "Parameter{" +
-                "origin=" + origin +
-                ", modifier=" + modifier +
-                '}';
+        return getType() + " " + getName();
     }
 }
