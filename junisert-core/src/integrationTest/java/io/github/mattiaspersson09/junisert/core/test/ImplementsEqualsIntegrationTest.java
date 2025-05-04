@@ -57,7 +57,9 @@ public class ImplementsEqualsIntegrationTest {
     @Test
     void givenUnit_whenNotDeclaringImplementationOfEqualsMethod_thenFailsTest() {
         assertThatThrownBy(() -> implementsEquals.test(Unit.of(MissingEquals.class)))
-                .isInstanceOf(UnitAssertionError.class);
+                .isInstanceOf(UnitAssertionError.class)
+                .hasMessageContaining("was expected to implement")
+                .hasMessageContaining("equals");
     }
 
     @Test

@@ -40,8 +40,9 @@ public class ImplementsEquals implements UnitTest {
             throw new UnitAssertionError(unit.getName() + " was expected to implement the equals method");
         }
 
-        Object instance = valueService.getValue(unit.getType()).get();
-        Object instance2 = valueService.getValue(unit.getType()).get();
+        InstanceCreator instanceCreator = new InstanceCreator();
+        Object instance = instanceCreator.createInstance(unit);
+        Object instance2 = instanceCreator.createInstance(unit);
 
         if (!isPassingNullCheck(instance)) {
             LOGGER.fail(details(unit, "fails null check"), "to not equal null objects", "it did");

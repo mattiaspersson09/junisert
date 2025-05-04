@@ -37,10 +37,10 @@ import java.util.function.Supplier;
  * @see Invokable
  * @see ValueService
  */
-public class Injection {
+class Injection {
     private static final Logger LOGGER = Logger.getLogger("Injection");
 
-    private final ValueService valueService;
+    private final InstanceCreator instanceCreator;
     private final Invokable injectionTarget;
     private Predicate<Object> setup;
     private Predicate<Object> result;
@@ -50,11 +50,11 @@ public class Injection {
      * Creates a new test injection.
      *
      * @param injectionTarget to inject values into from a unit instance
-     * @param valueService    that can create unit instances
+     * @param instanceCreator that can create unit instances
      */
-    public Injection(Invokable injectionTarget, ValueService valueService) {
+    Injection(Invokable injectionTarget, InstanceCreator instanceCreator) {
         this.injectionTarget = injectionTarget;
-        this.valueService = valueService;
+        this.instanceCreator = instanceCreator;
         this.setup = setup -> true;
         this.result = result -> true;
     }
@@ -105,7 +105,7 @@ public class Injection {
      * @see #onInjectionFail(Supplier)
      */
     public boolean inject(Object... arguments) {
-        Object unitInstance = valueService.getValue(injectionTarget.getParent()).get();
+        Object unitInstance = instanceCreator.createInstance(injectionTarget.getParent());
 
         if (!setup.test(unitInstance)) {
             LOGGER.warn("Injection precondition setup was unsuccessful");
