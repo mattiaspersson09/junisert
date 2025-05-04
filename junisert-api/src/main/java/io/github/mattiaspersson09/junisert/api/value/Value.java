@@ -20,13 +20,24 @@ import java.util.function.Supplier;
 /**
  * Representation of an object's value and an empty representation.
  *
- * @param <T> value to be supplied
+ * @param <T> concrete value to be supplied
  * @see #of(Supplier) lazy value construction
  */
 @FunctionalInterface
 public interface Value<T> extends Supplier<T> {
     /**
-     * Gets an empty value representation of {@link #get()}.
+     * Gets a resulting concrete value. This will construct an underlying lazy value or get an already constructed
+     * eager value. If the underlying value were lazy, this operation might throw {@link UnsupportedConstructionError}.
+     *
+     * @return constructed value
+     * @see #asEmpty()
+     */
+    @Override
+    T get();
+
+    /**
+     * Gets an empty value representation of {@link #get()}. This is usually represented as {@code null} for objects
+     * which aren't <em>primitive</em>.
      *
      * @return empty representation
      */

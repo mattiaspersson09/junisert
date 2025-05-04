@@ -19,7 +19,7 @@ package io.github.mattiaspersson09.junisert.api.value;
  * Used when a failure occurs during value generation and the construction of a concrete value fails due to one of:
  *
  * <ol>
- * <li>reflection failure</li>
+ * <li>eager reflection failure</li>
  * <li>lazy construction failure</li>
  * </ol>
  */

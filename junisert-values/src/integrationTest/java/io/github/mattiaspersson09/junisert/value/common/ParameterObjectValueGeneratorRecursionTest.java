@@ -86,8 +86,6 @@ public class ParameterObjectValueGeneratorRecursionTest {
                 .generate(CyclicRecursiveParameter.class)
                 .get();
 
-        System.out.println(value);
-
         // shallow object
         assertThat(value).isNotNull();
         assertThat(value.cycle).isNotNull();

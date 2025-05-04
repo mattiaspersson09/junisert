@@ -28,20 +28,20 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class ParameterObjectValueGenerator implements ValueGenerator<Object> {
-    private final ValueGenerator<Object> argumentGenerator;
+    private final ValueGenerator<?> argumentGenerator;
     private final boolean forceConstructorAccess;
 
-    public ParameterObjectValueGenerator(ValueGenerator<Object> argumentGenerator) {
+    public ParameterObjectValueGenerator(ValueGenerator<?> argumentGenerator) {
         this.argumentGenerator = argumentGenerator;
         this.forceConstructorAccess = false;
     }
 
-    private ParameterObjectValueGenerator(ValueGenerator<Object> argumentGenerator, boolean forceConstructorAccess) {
+    private ParameterObjectValueGenerator(ValueGenerator<?> argumentGenerator, boolean forceConstructorAccess) {
         this.argumentGenerator = argumentGenerator;
         this.forceConstructorAccess = forceConstructorAccess;
     }
 
-    public static ParameterObjectValueGenerator withForcedAccess(ValueGenerator<Object> argumentGenerator) {
+    public static ParameterObjectValueGenerator withForcedAccess(ValueGenerator<?> argumentGenerator) {
         return new ParameterObjectValueGenerator(argumentGenerator, true);
     }
 

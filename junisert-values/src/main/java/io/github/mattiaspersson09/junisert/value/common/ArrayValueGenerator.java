@@ -28,7 +28,7 @@ public class ArrayValueGenerator implements ValueGenerator<Object> {
             throw new UnsupportedTypeError(fromType);
         }
 
-        return Value.of(() -> Array.newInstance(fromType, 0));
+        return Value.of(() -> Array.newInstance(fromType.getComponentType(), 0));
     }
 
     @Override

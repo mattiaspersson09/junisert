@@ -45,9 +45,10 @@ public final class Methods {
     }
 
     public static boolean isEqualsMethod(Method method) {
-        return "equals".equals(method.getName())
-                && method.hasParameterCount(1)
-                && method.hasParameterType(Object.class)
-                && method.hasReturnType(boolean.class);
+        return "equals".equals(method.getName()) && method.isFunctionOf(Object.class, boolean.class);
+    }
+
+    public static boolean isHashCodeMethod(Method method) {
+        return "hashCode".equals(method.getName()) && method.isProducing(int.class);
     }
 }

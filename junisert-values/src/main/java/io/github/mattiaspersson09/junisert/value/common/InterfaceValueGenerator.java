@@ -42,6 +42,15 @@ public class InterfaceValueGenerator implements ValueGenerator<Object> {
     private static class AnonymousInvocation implements InvocationHandler {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) {
+            switch (method.getName()) {
+                case "equals":
+                    return false;
+                case "hashCode":
+                    return 1;
+                case "toString":
+                    return "Anonymous proxy";
+            }
+
             throw new UnsupportedOperationException("Unable to invoke on an anonymously constructed proxy object");
         }
     }
