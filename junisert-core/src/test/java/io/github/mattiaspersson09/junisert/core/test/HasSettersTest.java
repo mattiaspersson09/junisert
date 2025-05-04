@@ -51,7 +51,6 @@ public class HasSettersTest {
     @Test
     void acceptsBeanStyleSetters() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(any());
-        doReturn((Value<?>) BeanStyle::new).when(valueService).getValue(BeanStyle.class);
 
         hasSetters.test(Unit.of(BeanStyle.class));
     }
@@ -59,7 +58,6 @@ public class HasSettersTest {
     @Test
     void acceptsBuilderStyleSetters() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(any());
-        doReturn((Value<?>) BuilderStyle::new).when(valueService).getValue(BuilderStyle.class);
 
         hasSetters.test(Unit.of(BuilderStyle.class));
     }
@@ -67,7 +65,6 @@ public class HasSettersTest {
     @Test
     void acceptsHybridStyleSetters() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(any());
-        doReturn((Value<?>) HybridStyle::new).when(valueService).getValue(HybridStyle.class);
 
         hasSetters.test(Unit.of(HybridStyle.class));
     }
@@ -75,7 +72,6 @@ public class HasSettersTest {
     @Test
     void whenMoreThanOneSetter_thenIsSatisfiedWithAnyWorking() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(any());
-        doReturn((Value<?>) BeanAndBuilderStyle::new).when(valueService).getValue(BeanAndBuilderStyle.class);
 
         hasSetters.test(Unit.of(BeanAndBuilderStyle.class));
     }
@@ -83,7 +79,6 @@ public class HasSettersTest {
     @Test
     void whenMoreThanOneSetter_andOnlyOneIsWorking_thenIsSatisfiedWithOneWorking() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(any());
-        doReturn((Value<?>) TwoButOnlyOneWorking::new).when(valueService).getValue(TwoButOnlyOneWorking.class);
 
         hasSetters.test(Unit.of(TwoButOnlyOneWorking.class));
     }

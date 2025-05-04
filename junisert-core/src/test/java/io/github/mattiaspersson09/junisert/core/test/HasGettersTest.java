@@ -54,10 +54,6 @@ public class HasGettersTest {
     @Test
     void acceptsBeanStyleGetters() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(Object.class);
-        doReturn((Value<?>) BeanStyle::new).when(valueService).getValue(BeanStyle.class);
-        doReturn((Value<?>) BooleanBeanStyle::new).when(valueService).getValue(BooleanBeanStyle.class);
-        doReturn((Value<?>) TwoLettersOrLessBeanStyle::new).when(valueService)
-                .getValue(TwoLettersOrLessBeanStyle.class);
         doReturn(new BooleanValue()).when(valueService).getValue(boolean.class);
 
         hasGetters.test(Unit.of(BeanStyle.class));
@@ -69,8 +65,6 @@ public class HasGettersTest {
     void acceptsBuilderStyleGetters() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(Object.class);
         doReturn(new BooleanValue()).when(valueService).getValue(boolean.class);
-        doReturn((Value<?>) BuilderStyle::new).when(valueService).getValue(BuilderStyle.class);
-        doReturn((Value<?>) BooleanBuilderStyle::new).when(valueService).getValue(BooleanBuilderStyle.class);
 
         hasGetters.test(Unit.of(BuilderStyle.class));
         hasGetters.test(Unit.of(BooleanBuilderStyle.class));
@@ -79,7 +73,6 @@ public class HasGettersTest {
     @Test
     void whenMoreThanOneGetter_thenIsSatisfiedWithAnyWorking() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(any());
-        doReturn((Value<?>) BeanAndBuilderStyle::new).when(valueService).getValue(BeanAndBuilderStyle.class);
 
         hasGetters.test(Unit.of(BeanAndBuilderStyle.class));
     }
@@ -87,7 +80,6 @@ public class HasGettersTest {
     @Test
     void whenMoreThanOneGetter_andOnlyOneIsWorking_thenIsSatisfiedWithOneWorking() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(any());
-        doReturn((Value<?>) TwoButOnlyOneWorking::new).when(valueService).getValue(TwoButOnlyOneWorking.class);
 
         hasGetters.test(Unit.of(TwoButOnlyOneWorking.class));
     }

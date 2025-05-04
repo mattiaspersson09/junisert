@@ -66,7 +66,7 @@ public class HasSetters implements UnitTest {
             }
 
             Value<?> argument = valueService.getValue(field.getType());
-            Injection injection = new Injection(method, valueService);
+            Injection injection = new Injection(method, new InstanceCreator());
 
             Object value = argument.get();
             Object empty = argument.asEmpty();

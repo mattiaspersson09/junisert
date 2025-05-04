@@ -53,9 +53,6 @@ public class ImplementsEqualsTest {
     @Test
     void whenHasWellImplementedEquals_thenImplementsEquals() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(Object.class);
-        doReturn((Value<?>) WellImplementedEquals::new)
-                .when(valueService)
-                .getValue(WellImplementedEquals.class);
 
         implementsEquals.test(Unit.of(WellImplementedEquals.class));
     }
@@ -63,9 +60,6 @@ public class ImplementsEqualsTest {
     @Test
     void whenHasWellImplementedEquals_andExtendingOtherClass_thenImplementsEquals() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(Object.class);
-        doReturn((Value<?>) WellImplementedEqualsExtendingBase::new)
-                .when(valueService)
-                .getValue(WellImplementedEqualsExtendingBase.class);
 
         implementsEquals.test(Unit.of(WellImplementedEqualsExtendingBase.class));
     }

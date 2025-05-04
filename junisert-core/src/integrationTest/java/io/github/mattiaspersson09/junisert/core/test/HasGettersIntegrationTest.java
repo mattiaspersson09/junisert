@@ -30,6 +30,8 @@ import io.github.mattiaspersson09.junisert.testunits.getter.TwoLettersOrLessBean
 import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.PrimitiveValueGenerator;
 
+import java.util.Arrays;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +44,7 @@ public class HasGettersIntegrationTest {
 
     @BeforeAll
     static void beforeAll() {
-        valueService = new TestValueService(new PrimitiveValueGenerator(), new ObjectValueGenerator());
+        valueService = new TestValueService(Arrays.asList(new PrimitiveValueGenerator(), new ObjectValueGenerator()));
     }
 
     @BeforeEach
