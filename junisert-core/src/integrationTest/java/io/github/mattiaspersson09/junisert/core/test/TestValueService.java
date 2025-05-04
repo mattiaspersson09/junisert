@@ -20,7 +20,6 @@ import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,10 +28,6 @@ final class TestValueService implements ValueService {
 
     TestValueService(ValueGenerator<?> generator) {
         this(Collections.singletonList(generator));
-    }
-
-    TestValueService(ValueGenerator<?>... generators) {
-        this(Arrays.asList(generators));
     }
 
     TestValueService(List<ValueGenerator<?>> generators) {
