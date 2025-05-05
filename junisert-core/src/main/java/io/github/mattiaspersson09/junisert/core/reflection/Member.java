@@ -34,7 +34,7 @@ public abstract class Member implements Reflected {
      * Checks if this member is owned by an instance or not. An instance member is non-static and is owned by
      * instances and not a class.
      *
-     * @return true if this is an instance field
+     * @return true if this is an instance member
      */
     public final boolean isInstanceMember() {
         return !modifier.isStatic();
