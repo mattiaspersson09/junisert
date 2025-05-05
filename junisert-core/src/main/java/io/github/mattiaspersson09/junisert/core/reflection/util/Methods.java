@@ -51,4 +51,8 @@ public final class Methods {
     public static boolean isHashCodeMethod(Method method) {
         return "hashCode".equals(method.getName()) && method.isProducing(int.class);
     }
+
+    public static boolean isToStringMethod(Method method) {
+        return "toString".equals(method.getName()) && method.isProducing(String.class);
+    }
 }

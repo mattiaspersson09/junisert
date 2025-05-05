@@ -20,6 +20,7 @@ import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.core.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.reflection.Unit;
+import io.github.mattiaspersson09.junisert.core.reflection.util.Fields;
 import io.github.mattiaspersson09.junisert.core.reflection.util.Methods;
 
 import java.util.Objects;
@@ -28,28 +29,29 @@ public class ImplementsHashCode implements UnitTest {
     private static final Logger LOGGER = Logger.getLogger("Implements HashCode");
 
     private final ValueService valueService;
+    private final InstanceCreator instanceCreator;
 
     public ImplementsHashCode(ValueService valueService) {
         this.valueService = valueService;
+        this.instanceCreator = new InstanceCreator();
     }
 
     @Override
     public void test(Unit unit) {
-        LOGGER.test("Testing unit: " + unit.getName());
+        LOGGER.test("Testing unit: {0}", unit.getName());
 
-        if (!hasDeclaredHashCodeMethod(unit)) {
+        if (!unit.hasMethodMatching(Methods::isHashCodeMethod)) {
             LOGGER.fail(details(unit, "was nowhere to be found"), "to have a hashCode method", "it was not found");
             throw new UnitAssertionError(unit.getName() + " was expected to implement the hashCode method");
         }
 
-        InstanceCreator instanceCreator = new InstanceCreator();
         Object instance = instanceCreator.createInstance(unit);
         Object instance2 = instanceCreator.createInstance(unit);
 
         LOGGER.info("Setting up fields for hash code comparison");
 
         for (Field field : unit.getFields()) {
-            if (field.isSynthetic() || field.modifier().isStatic()) {
+            if (!Fields.isInstanceField(field)) {
                 continue;
             }
 
@@ -123,10 +125,6 @@ public class ImplementsHashCode implements UnitTest {
     private boolean isPassingUniqueHashCodeCheck(Object instance, Object instance2) {
         LOGGER.test("Unique hash code check -> instance.hashCode() == otherInstance.hashCode()");
         return instance.hashCode() == instance2.hashCode();
-    }
-
-    private boolean hasDeclaredHashCodeMethod(Unit unit) {
-        return unit.hasMethodMatching(Methods::isHashCodeMethod);
     }
 
     private String details(Unit unit, String detail) {
