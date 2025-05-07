@@ -38,6 +38,8 @@ public class ImplementsEquals implements UnitTest {
 
     @Override
     public void test(Unit unit) {
+        LOGGER.info("Testing unit: {0}", unit.getName());
+
         if (!unit.hasMethodMatching(Methods::isEqualsMethod)) {
             LOGGER.fail(details(unit, "was nowhere to be found"), "to have an equals method", "it was not found");
             throw new UnitAssertionError(unit.getName() + " was expected to implement the equals method");

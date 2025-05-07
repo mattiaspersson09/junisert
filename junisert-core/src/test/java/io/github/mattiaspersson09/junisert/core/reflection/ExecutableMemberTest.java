@@ -100,30 +100,30 @@ public class ExecutableMemberTest {
     void hasParameterAssignableFrom_whenExactType_orSubtype_thenIsTrue() {
         doReturn(Base.class).when(parameter).getType();
 
-        assertThat(member.hasParameterAssignableFrom(Base.class)).isTrue();
-        assertThat(member.hasParameterAssignableFrom(Impl.class)).isTrue();
+        assertThat(member.hasParameterFrom(Base.class)).isTrue();
+        assertThat(member.hasParameterFrom(Impl.class)).isTrue();
     }
 
     @Test
     void hasParameterAssignableFrom_whenSuperType_thenIsFalse() {
         doReturn(Base.class).when(parameter).getType();
 
-        assertThat(member.hasParameterAssignableFrom(Super.class)).isFalse();
+        assertThat(member.hasParameterFrom(Super.class)).isFalse();
     }
 
     @Test
     void hasParameterAssignableTo_whenExactType_orSuperType_thenIsTrue() {
         doReturn(Base.class).when(parameter).getType();
 
-        assertThat(member.hasParameterAssignableTo(Base.class)).isTrue();
-        assertThat(member.hasParameterAssignableTo(Super.class)).isTrue();
+        assertThat(member.hasParameterTo(Base.class)).isTrue();
+        assertThat(member.hasParameterTo(Super.class)).isTrue();
     }
 
     @Test
     void hasParameterAssignableTo_whenSubtype_thenIsFalse() {
         doReturn(Base.class).when(parameter).getType();
 
-        assertThat(member.hasParameterAssignableTo(Impl.class)).isFalse();
+        assertThat(member.hasParameterTo(Impl.class)).isFalse();
     }
 
     @Test

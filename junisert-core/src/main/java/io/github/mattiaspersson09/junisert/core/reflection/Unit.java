@@ -15,7 +15,6 @@
  */
 package io.github.mattiaspersson09.junisert.core.reflection;
 
-import io.github.mattiaspersson09.junisert.core.reflection.util.Methods;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,19 +61,7 @@ public final class Unit implements Reflected {
                 .forEach(unit.fields::add);
 
         Stream.of(origin.getDeclaredMethods())
-                .map(method -> {
-                    Method unitMethod = new Method(method);
-
-                    for (Field unitField : unit.getFields()) {
-                        if (Methods.isSetterForField(unitMethod, unitField)) {
-                            unitField.addSetter(unitMethod);
-                        } else if (Methods.isGetterForField(unitMethod, unitField)) {
-                            unitField.addGetter(unitMethod);
-                        }
-                    }
-
-                    return unitMethod;
-                })
+                .map(Method::new)
                 .forEach(unit.methods::add);
 
         return unit;

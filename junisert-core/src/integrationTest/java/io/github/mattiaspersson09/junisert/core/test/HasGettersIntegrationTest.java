@@ -18,13 +18,15 @@ package io.github.mattiaspersson09.junisert.core.test;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.core.reflection.Unit;
-import io.github.mattiaspersson09.junisert.testunits.getter.BeanAndBuilderStyle;
+import io.github.mattiaspersson09.junisert.testunits.getter.BeanAndRecordStyle;
 import io.github.mattiaspersson09.junisert.testunits.getter.BeanStyle;
 import io.github.mattiaspersson09.junisert.testunits.getter.BooleanBeanStyle;
-import io.github.mattiaspersson09.junisert.testunits.getter.BooleanBuilderStyle;
-import io.github.mattiaspersson09.junisert.testunits.getter.BuilderStyle;
+import io.github.mattiaspersson09.junisert.testunits.getter.BooleanRecordStyle;
+import io.github.mattiaspersson09.junisert.testunits.getter.BooleanTwoAlternatives;
 import io.github.mattiaspersson09.junisert.testunits.getter.MissingGetter;
 import io.github.mattiaspersson09.junisert.testunits.getter.NotGettingField;
+import io.github.mattiaspersson09.junisert.testunits.getter.PolymorphicGetter;
+import io.github.mattiaspersson09.junisert.testunits.getter.RecordStyle;
 import io.github.mattiaspersson09.junisert.testunits.getter.TwoButOnlyOneWorking;
 import io.github.mattiaspersson09.junisert.testunits.getter.TwoLettersOrLessBeanStyle;
 import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
@@ -55,17 +57,24 @@ public class HasGettersIntegrationTest {
     @Test
     void givenUnit_whenAllFieldsHaveGetters_andIsAcceptableGetters_thenPassesTest() {
         hasGetters.test(Unit.of(BeanStyle.class));
-        hasGetters.test(Unit.of(BuilderStyle.class));
+        hasGetters.test(Unit.of(RecordStyle.class));
         hasGetters.test(Unit.of(TwoLettersOrLessBeanStyle.class));
         hasGetters.test(Unit.of(BooleanBeanStyle.class));
-        hasGetters.test(Unit.of(BooleanBuilderStyle.class));
-        hasGetters.test(Unit.of(BeanAndBuilderStyle.class));
-        hasGetters.test(Unit.of(TwoButOnlyOneWorking.class));
+        hasGetters.test(Unit.of(BooleanRecordStyle.class));
+        hasGetters.test(Unit.of(BeanAndRecordStyle.class));
+        hasGetters.test(Unit.of(PolymorphicGetter.class));
+    }
+
+    @Test
+    void givenUnit_whenTwoAlternativesForBooleanField_thenTestsBoth_andPassesTest() {
+        hasGetters.test(Unit.of(BooleanTwoAlternatives.class));
     }
 
     @Test
     void givenUnit_whenAllFieldsHaveGetters_butSomeGetterIsNotWorking_thenFailsTest() {
         assertThatThrownBy(() -> hasGetters.test(Unit.of(NotGettingField.class)))
+                .isInstanceOf(UnitAssertionError.class);
+        assertThatThrownBy(() -> hasGetters.test(Unit.of(TwoButOnlyOneWorking.class)))
                 .isInstanceOf(UnitAssertionError.class);
     }
 

@@ -45,30 +45,42 @@ public interface Executable {
 
     /**
      * Checks if this executable has any parameter matching exactly {@code type}. To check polymorphic types then
-     * {@link #hasParameterAssignableFrom(Class)} and {@link #hasParameterAssignableTo(Class)} should be used instead.
+     * {@link #hasParameterFrom(Class)} and {@link #hasParameterTo(Class)} should be used instead.
      *
      * @param type to find
      * @return true if a parameter of type is present
-     * @see #hasParameterAssignableFrom(Class)
-     * @see #hasParameterAssignableTo(Class)
+     * @see #hasParameterFrom(Class)
+     * @see #hasParameterTo(Class)
      */
     boolean hasParameterType(Class<?> type);
 
     /**
-     * Checks if this executable has a parameter which is a super type of or is given {@code type}.
+     * Checks if this executable has a parameter which is a super type of or is given {@code type}. Meaning
+     * that a parameter can be assigned/cast <em>from</em> given {@code type}, pseudo example:
+     * <p>
+     * <pre>
+     * Parameter parameter = (Parameter) type;
+     * </pre>
      *
      * @param type of any parameter
-     * @return true if a parameter is of given type
+     * @return true if a parameter is assignable from given type
+     * @see #hasParameterTo(Class)
      */
-    boolean hasParameterAssignableFrom(Class<?> type);
+    boolean hasParameterFrom(Class<?> type);
 
     /**
-     * Checks if this executable has any parameter which is a subtype of or is given {@code type}.
+     * Checks if this executable has any parameter which is a subtype of or is given {@code type}. Meaning
+     * that a parameter can be assigned/cast <em>to</em> given {@code type}, pseudo example:
+     * <p>
+     * <pre>
+     * Type type = (Type) parameter;
+     * </pre>
      *
-     * @param type of any parameter
-     * @return true if a parameter is subtype of or is given type
+     * @param type for any parameter
+     * @return true if a parameter is assignable to given type
+     * @see #hasParameterFrom(Class)
      */
-    boolean hasParameterAssignableTo(Class<?> type);
+    boolean hasParameterTo(Class<?> type);
 
     /**
      * Parameter types this executable accepts as arguments in declaration order.

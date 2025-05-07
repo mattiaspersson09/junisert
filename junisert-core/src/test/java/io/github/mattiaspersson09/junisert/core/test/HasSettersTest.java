@@ -22,8 +22,8 @@ import io.github.mattiaspersson09.junisert.core.reflection.Unit;
 import io.github.mattiaspersson09.junisert.testunits.setter.BeanAndBuilderStyle;
 import io.github.mattiaspersson09.junisert.testunits.setter.BeanStyle;
 import io.github.mattiaspersson09.junisert.testunits.setter.BuilderStyle;
-import io.github.mattiaspersson09.junisert.testunits.setter.HybridStyle;
 import io.github.mattiaspersson09.junisert.testunits.setter.NotSettingField;
+import io.github.mattiaspersson09.junisert.testunits.setter.RecordStyle;
 import io.github.mattiaspersson09.junisert.testunits.setter.TwoButOnlyOneWorking;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -66,21 +66,22 @@ public class HasSettersTest {
     void acceptsHybridStyleSetters() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(any());
 
-        hasSetters.test(Unit.of(HybridStyle.class));
+        hasSetters.test(Unit.of(RecordStyle.class));
     }
 
     @Test
-    void whenMoreThanOneSetter_thenIsSatisfiedWithAnyWorking() {
+    void givenMoreThanOneSetter_whenBothAreSettingValue_thenAcceptsBoth() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(any());
 
         hasSetters.test(Unit.of(BeanAndBuilderStyle.class));
     }
 
     @Test
-    void whenMoreThanOneSetter_andOnlyOneIsWorking_thenIsSatisfiedWithOneWorking() {
+    void givenMoreThanOneSetter_whenNotAllWorking_thenThrowsUnitAssertionError() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(any());
 
-        hasSetters.test(Unit.of(TwoButOnlyOneWorking.class));
+        assertThatThrownBy(() -> hasSetters.test(Unit.of(TwoButOnlyOneWorking.class)))
+                .isInstanceOf(UnitAssertionError.class);
     }
 
     @Test

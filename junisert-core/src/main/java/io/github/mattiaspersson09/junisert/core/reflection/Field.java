@@ -16,10 +16,8 @@
 package io.github.mattiaspersson09.junisert.core.reflection;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -27,16 +25,11 @@ import java.util.Objects;
  */
 public class Field extends Member implements Invokable {
     private final java.lang.reflect.Field origin;
-    // Can have several different style methods
-    private final List<Method> setters;
-    private final List<Method> getters;
 
     Field(java.lang.reflect.Field origin) {
         super(origin);
         this.origin = origin;
         this.origin.setAccessible(true);
-        this.setters = new ArrayList<>();
-        this.getters = new ArrayList<>();
     }
 
     /**
@@ -47,32 +40,6 @@ public class Field extends Member implements Invokable {
      */
     public static Field of(java.lang.reflect.Field origin) {
         return new Field(origin);
-    }
-
-    void addSetter(Method setter) {
-        setters.add(setter);
-    }
-
-    void addGetter(Method getter) {
-        getters.add(getter);
-    }
-
-    /**
-     * Gets an unmodifiable view of the setter methods associated with this field.
-     *
-     * @return setters associated with this field
-     */
-    public List<Method> getSetters() {
-        return Collections.unmodifiableList(setters);
-    }
-
-    /**
-     * Gets an unmodifiable view of the getter methods associated with this field.
-     *
-     * @return getters associated with this field
-     */
-    public List<Method> getGetters() {
-        return Collections.unmodifiableList(getters);
     }
 
     /**
@@ -189,6 +156,7 @@ public class Field extends Member implements Invokable {
      * public class ImmutableFields {
      *   private final Object privateImmutable;
      *   public final Object publicImmutable;
+     *   protected final Object publicImmutable;
      *   final Object packageImmutable;
      *
      *   ImmutableFields(Object privateImmutable, Object publicImmutable, Object packageImmutable) {
@@ -206,6 +174,16 @@ public class Field extends Member implements Invokable {
      */
     public boolean isInstanceImmutable() {
         return isInstanceMember() && isImmutable();
+    }
+
+    /**
+     * Checks if this field is exactly or subtype of given {@code type}.
+     *
+     * @param type of field
+     * @return true if this field is
+     */
+    public boolean isTypeOf(Class<?> type) {
+        return getType().isAssignableFrom(type);
     }
 
     @Override

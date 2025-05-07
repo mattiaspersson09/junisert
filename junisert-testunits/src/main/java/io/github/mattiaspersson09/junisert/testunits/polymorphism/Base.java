@@ -20,7 +20,7 @@ import java.util.Objects;
 public abstract class Base implements Super {
     private final int value;
 
-    public Base(int value) {
+    protected Base(int value) {
         this.value = value;
     }
 

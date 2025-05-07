@@ -40,7 +40,7 @@ public class ImplementsToString implements UnitTest {
 
     @Override
     public void test(Unit unit) {
-        LOGGER.test("Testing unit: {0}", unit.getName());
+        LOGGER.info("Testing unit: {0}", unit.getName());
 
         if (!unit.hasMethodMatching(Methods::isToStringMethod)) {
             LOGGER.fail(details(unit, "was nowhere to be found"), "to have a toString method", "it was not found");

@@ -40,7 +40,7 @@ public class SupportGeneratorTest {
 
     @Test
     void mutableSupport() {
-        Implementation<Impl> implementation = new Implementation<>(Impl.class, () -> new Impl(1));
+        Implementation<Impl> implementation = new Implementation<>(Impl.class, Impl::new);
 
         assertThat(new SupportGenerator<>(Super.class).size()).isEqualTo(0);
         assertThat(new SupportGenerator<>(Super.class).addSupport(implementation).size()).isEqualTo(1);
@@ -48,7 +48,7 @@ public class SupportGeneratorTest {
 
     @Test
     void support_whenValueIsImplementationOfType_thenIsSupported() {
-        Implementation<Impl> implementation = new Implementation<>(Impl.class, () -> new Impl(1));
+        Implementation<Impl> implementation = new Implementation<>(Impl.class, Impl::new);
         SupportGenerator<Super> support = new SupportGenerator<>(Super.class, implementation);
         SupportGenerator<Impl> concreteSupport = new SupportGenerator<>(Impl.class, implementation);
 
@@ -81,7 +81,7 @@ public class SupportGeneratorTest {
 
     @Test
     void support_whenValueIsNotImplementationOfType_thenIsNotSupported() {
-        Implementation<Impl> implementation = new Implementation<>(Impl.class, () -> new Impl(1));
+        Implementation<Impl> implementation = new Implementation<>(Impl.class, Impl::new);
         SupportGenerator<Super> support = new SupportGenerator<>(Super.class, implementation);
         SupportGenerator<Impl> concreteSupport = new SupportGenerator<>(Impl.class, implementation);
 
@@ -95,7 +95,7 @@ public class SupportGeneratorTest {
 
     @Test
     void support_whenSupportIsOnlyForConcreteType_thenWiderTypeIsNotSupported_andNarrowerTypeIsNotSupported() {
-        Implementation<Impl> implementation = new Implementation<>(Impl.class, () -> new Impl(1));
+        Implementation<Impl> implementation = new Implementation<>(Impl.class, Impl::new);
         SupportGenerator<Impl> concreteSupport = new SupportGenerator<>(Impl.class, implementation);
 
         assertThat(concreteSupport.supports(Super.class)).isFalse();
@@ -131,7 +131,7 @@ public class SupportGeneratorTest {
 
     @Test
     void generate_whenTypeIsNotSupported_thenThrowsUnsupportedTypeException() {
-        Implementation<Impl> implementation = new Implementation<>(Impl.class, () -> new Impl(1));
+        Implementation<Impl> implementation = new Implementation<>(Impl.class, Impl::new);
         SupportGenerator<Super> support = new SupportGenerator<>(Super.class, implementation);
 
         assertThatThrownBy(() -> support.generate(ExtendingImpl.class)).isInstanceOf(UnsupportedTypeError.class);
@@ -140,8 +140,8 @@ public class SupportGeneratorTest {
 
     @Test
     void equals_whenSupportingSameType_andSameImplementationType_thenIsEqual() {
-        Implementation<Super> implementation = new Implementation<>(Super.class, () -> new Impl(1));
-        Implementation<Super> otherImplementation = new Implementation<>(Super.class, () -> new OtherImpl(1));
+        Implementation<Super> implementation = new Implementation<>(Super.class, Impl::new);
+        Implementation<Super> otherImplementation = new Implementation<>(Super.class, OtherImpl::new);
 
         SupportGenerator<?> support = new SupportGenerator<>(Super.class, implementation);
         SupportGenerator<?> otherSupport = new SupportGenerator<>(Super.class, otherImplementation);
@@ -151,7 +151,7 @@ public class SupportGeneratorTest {
 
     @Test
     void equals_whenIsReference_thenIsEqual() {
-        Implementation<Super> implementation = new Implementation<>(Super.class, () -> new Impl(1));
+        Implementation<Super> implementation = new Implementation<>(Super.class, Impl::new);
         SupportGenerator<?> support = new SupportGenerator<>(Super.class, implementation);
 
         assertThat(support).isEqualTo((Object) support);
@@ -159,8 +159,8 @@ public class SupportGeneratorTest {
 
     @Test
     void equals_whenSupportingSameType_butDifferentImplementationType_thenIsNotEqual() {
-        Implementation<Impl> implementation = new Implementation<>(Impl.class, () -> new Impl(1));
-        Implementation<OtherImpl> otherImplementation = new Implementation<>(OtherImpl.class, () -> new OtherImpl(1));
+        Implementation<Impl> implementation = new Implementation<>(Impl.class, Impl::new);
+        Implementation<OtherImpl> otherImplementation = new Implementation<>(OtherImpl.class, OtherImpl::new);
 
         SupportGenerator<?> support = new SupportGenerator<>(Super.class, implementation);
         SupportGenerator<?> otherSupport = new SupportGenerator<>(Super.class, otherImplementation);
@@ -172,7 +172,7 @@ public class SupportGeneratorTest {
 
     @Test
     void equals_whenIsNotTheSameClass_thenIsNotEqual() {
-        Implementation<Impl> implementation = new Implementation<>(Impl.class, () -> new Impl(1));
+        Implementation<Impl> implementation = new Implementation<>(Impl.class, Impl::new);
 
         SupportGenerator<Super> support = new SupportGenerator<>(Super.class, implementation);
         ValueGenerator<Super> other = new ValueGenerator<Super>() {
@@ -192,7 +192,7 @@ public class SupportGeneratorTest {
 
     @Test
     void equals_whenIsNull_thenIsNotEqual() {
-        Implementation<Impl> implementation = new Implementation<>(Impl.class, () -> new Impl(1));
+        Implementation<Impl> implementation = new Implementation<>(Impl.class, Impl::new);
 
         SupportGenerator<?> support = new SupportGenerator<>(Super.class, implementation);
 
@@ -201,8 +201,8 @@ public class SupportGeneratorTest {
 
     @Test
     void hashCode_whenSupportingSameType_andSameImplementationType_thenIsEqual() {
-        Implementation<Super> implementation = new Implementation<>(Super.class, () -> new Impl(1));
-        Implementation<Super> otherImplementation = new Implementation<>(Super.class, () -> new OtherImpl(1));
+        Implementation<Super> implementation = new Implementation<>(Super.class, Impl::new);
+        Implementation<Super> otherImplementation = new Implementation<>(Super.class, OtherImpl::new);
 
         SupportGenerator<?> support = new SupportGenerator<>(Super.class, implementation);
         SupportGenerator<?> otherSupport = new SupportGenerator<>(Super.class, otherImplementation);
@@ -212,8 +212,8 @@ public class SupportGeneratorTest {
 
     @Test
     void hashCode_whenSupportingSameType_butDifferentImplementationType_thenIsNotEqual() {
-        Implementation<Impl> implementation = new Implementation<>(Impl.class, () -> new Impl(1));
-        Implementation<OtherImpl> otherImplementation = new Implementation<>(OtherImpl.class, () -> new OtherImpl(1));
+        Implementation<Impl> implementation = new Implementation<>(Impl.class, Impl::new);
+        Implementation<OtherImpl> otherImplementation = new Implementation<>(OtherImpl.class, OtherImpl::new);
 
         SupportGenerator<?> support = new SupportGenerator<>(Super.class, implementation);
         SupportGenerator<?> otherSupport = new SupportGenerator<>(Super.class, otherImplementation);

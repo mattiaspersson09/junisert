@@ -16,13 +16,12 @@
 package io.github.mattiaspersson09.junisert.core.reflection.util;
 
 import io.github.mattiaspersson09.junisert.core.reflection.Field;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
+import io.github.mattiaspersson09.junisert.core.reflection.Method;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,16 +34,14 @@ public class MethodsTest {
     Method method;
     @Mock
     Field field;
-    @Mock
-    Parameter parameter;
 
     @Test
     void methodIsSetterForField_whenSetterIsBeanStyle_thenIsTrue() {
         when(field.getName()).thenReturn("field");
-        doReturn(FieldType.class).when(field).getType();
         when(method.getName()).thenReturn("setField");
-        when(method.getParameters()).thenReturn(new Parameter[]{parameter});
-        doReturn(FieldType.class).when(parameter).getType();
+        doReturn(Object.class).when(field).getType();
+        when(method.hasParameterCount(1)).thenReturn(true);
+        when(method.hasParameterTo(Object.class)).thenReturn(true);
 
         assertThat(Methods.isSetterForField(method, field)).isTrue();
     }
@@ -52,60 +49,171 @@ public class MethodsTest {
     @Test
     void methodIsSetterForField_whenSetterIsBuilderStyle_thenIsTrue() {
         when(field.getName()).thenReturn("field");
-        doReturn(FieldType.class).when(field).getType();
         when(method.getName()).thenReturn("field");
-        when(method.getParameters()).thenReturn(new Parameter[]{parameter});
-        doReturn(FieldType.class).when(parameter).getType();
+        doReturn(Object.class).when(field).getType();
+        when(method.hasParameterCount(1)).thenReturn(true);
+        when(method.hasParameterTo(Object.class)).thenReturn(true);
 
         assertThat(Methods.isSetterForField(method, field)).isTrue();
     }
 
     @Test
-    void methodIsSetterForField_whenMethodParameterIsSubType_thenIsTrue() {
+    void methodIsSetterForField_whenMethodHasMoreOrLessThanOneParameter_thenIsFalse() {
         when(field.getName()).thenReturn("field");
-        doReturn(FieldType.class).when(field).getType();
         when(method.getName()).thenReturn("setField");
-        when(method.getParameters()).thenReturn(new Parameter[]{parameter});
-        doReturn(PolymorphicParameterType.class).when(parameter).getType();
+        when(method.hasParameterCount(1)).thenReturn(false);
+
+        assertThat(Methods.isSetterForField(method, field)).isFalse();
+    }
+
+    @Test
+    void methodIsGetterForField_whenGetterIsBeanStyle_thenIsTrue() {
+        when(field.getName()).thenReturn("field");
+        when(method.getName()).thenReturn("getField");
+        doReturn(Object.class).when(field).getType();
+        when(method.isProducing(Object.class)).thenReturn(true);
+
+        assertThat(Methods.isGetterForField(method, field)).isTrue();
+    }
+
+    @Test
+    void methodIsGetterForField_whenSetterIsRecordStyle_thenIsTrue() {
+        when(field.getName()).thenReturn("field");
+        when(method.getName()).thenReturn("field");
+        doReturn(Object.class).when(field).getType();
+        when(method.isProducing(Object.class)).thenReturn(true);
+
+        assertThat(Methods.isGetterForField(method, field)).isTrue();
+    }
+
+    @Test
+    void methodIsGetterForField_whenMethodProducesOtherType_thenIsFalse() {
+        when(field.getName()).thenReturn("field");
+        when(method.getName()).thenReturn("field");
+        doReturn(Object.class).when(field).getType();
+        when(method.isProducing(Object.class)).thenReturn(false);
+
+        assertThat(Methods.isGetterForField(method, field)).isFalse();
+    }
+
+    @Test
+    void givenPrimitiveBooleanField_withIsPrefix_whenMethodName_getIsField_thenIsGetter() {
+        when(field.getName()).thenReturn("isField");
+        when(method.getName()).thenReturn("getIsField");
+        doReturn(boolean.class).when(field).getType();
+        when(method.isProducing(boolean.class)).thenReturn(true);
+
+        assertThat(Methods.isGetterForField(method, field)).isTrue();
+    }
+
+    @Test
+    void givenPrimitiveBooleanField_withIsPrefix_whenMethodName_isField_thenIsGetter() {
+        when(field.getName()).thenReturn("isField");
+        when(method.getName()).thenReturn("isField");
+        doReturn(boolean.class).when(field).getType();
+        when(method.isProducing(boolean.class)).thenReturn(true);
+
+        assertThat(Methods.isGetterForField(method, field)).isTrue();
+    }
+
+    @Test
+    void givenPrimitiveBooleanField_withIsPrefix_whenMethodName_getField_andIsProducingPrimitiveBoolean_thenIsGetter() {
+        when(field.getName()).thenReturn("isField");
+        when(method.getName()).thenReturn("getField");
+        when(field.isTypeOf(boolean.class)).thenReturn(true);
+        doReturn(boolean.class).when(field).getType();
+        when(method.isProducing(boolean.class)).thenReturn(true);
+
+        assertThat(Methods.isGetterForField(method, field)).isTrue();
+    }
+
+    @Test
+    void givenPrimitiveBooleanField_withIsPrefix_whenMethodName_setIsField_andHasParameterPrimitiveBoolean_thenIsSetter() {
+        when(field.getName()).thenReturn("isField");
+        when(method.getName()).thenReturn("setIsField");
+        doReturn(boolean.class).when(field).getType();
+        when(method.hasParameterCount(1)).thenReturn(true);
+        when(method.hasParameterTo(boolean.class)).thenReturn(true);
 
         assertThat(Methods.isSetterForField(method, field)).isTrue();
     }
 
     @Test
-    void methodIsSetterForField_whenMethodParameterIsOtherType_thenIsFalse() {
-        when(field.getName()).thenReturn("field");
-        doReturn(FieldType.class).when(field).getType();
+    void givenPrimitiveBooleanField_withIsPrefix_whenMethodName_setField_andParameterIsPrimitiveBoolean_thenIsSetter() {
+        when(field.getName()).thenReturn("isField");
         when(method.getName()).thenReturn("setField");
-        when(method.getParameters()).thenReturn(new Parameter[]{parameter});
-        doReturn(WrongFieldType.class).when(parameter).getType();
+        doReturn(boolean.class).when(field).getType();
+        when(field.isTypeOf(boolean.class)).thenReturn(true);
+        when(method.hasParameterCount(1)).thenReturn(true);
+        when(method.hasParameterTo(boolean.class)).thenReturn(true);
 
-        assertThat(Methods.isSetterForField(method, field)).isFalse();
+        assertThat(Methods.isSetterForField(method, field)).isTrue();
     }
 
     @Test
-    void methodIsSetterForField_whenMethodHasNoParameters_thenIsFalse() {
-        when(field.getName()).thenReturn("field");
-        when(method.getName()).thenReturn("setField");
-        when(method.getParameters()).thenReturn(new Parameter[]{});
+    void givenPrimitiveBooleanField_withIsPrefix_whenMethodName_setField_andOverloadingMethod_thenOnlyBooleanSetterIsSetter() {
+        Method overloadingNonBooleanMethod = Mockito.mock(Method.class);
 
-        assertThat(Methods.isSetterForField(method, field)).isFalse();
+        when(field.getName()).thenReturn("isField");
+        when(method.getName()).thenReturn("setField");
+        doReturn(boolean.class).when(field).getType();
+        when(field.isTypeOf(boolean.class)).thenReturn(true);
+        when(method.hasParameterCount(1)).thenReturn(true);
+        when(method.hasParameterTo(boolean.class)).thenReturn(true);
+
+        when(overloadingNonBooleanMethod.getName()).thenReturn("setField");
+        when(overloadingNonBooleanMethod.hasParameterCount(1)).thenReturn(true);
+        when(overloadingNonBooleanMethod.hasParameterTo(boolean.class)).thenReturn(false);
+
+        assertThat(Methods.isSetterForField(method, field)).isTrue();
+        assertThat(Methods.isSetterForField(overloadingNonBooleanMethod, field)).isFalse();
     }
 
     @Test
-    void methodIsSetterForField_whenMethodHasMoreParameters_thenIsFalse() {
-        when(field.getName()).thenReturn("field");
-        when(method.getName()).thenReturn("setField");
-        when(method.getParameters()).thenReturn(new Parameter[]{parameter, parameter});
+    void isEqualsMethod_whenMethodNameIs_equals_andIsFunctionOf_inputObject_resultPrimitiveBoolean_thenIsTrue() {
+        when(method.getName()).thenReturn("equals");
+        when(method.isFunctionOf(Object.class, boolean.class)).thenReturn(true);
 
-        assertThat(Methods.isSetterForField(method, field)).isFalse();
+        assertThat(Methods.isEqualsMethod(method)).isTrue();
     }
 
-    private static class FieldType {
+    @Test
+    void isEqualsMethod_whenMethodNameIs_equals_butIsNotFunctionOf_inputObject_resultPrimitiveBoolean_thenIsFalse() {
+        when(method.getName()).thenReturn("equals");
+        when(method.isFunctionOf(Object.class, boolean.class)).thenReturn(false);
+
+        assertThat(Methods.isEqualsMethod(method)).isFalse();
     }
 
-    private static class PolymorphicParameterType extends FieldType {
+    @Test
+    void isHashCodeMethod_whenMethodNameIs_hashCode_andMethodOnlyProducePrimitiveInt_thenIsTrue() {
+        when(method.getName()).thenReturn("hashCode");
+        when(method.isProducing(int.class)).thenReturn(true);
+
+        assertThat(Methods.isHashCodeMethod(method)).isTrue();
     }
 
-    private static class WrongFieldType {
+    @Test
+    void isHashCodeMethod_whenMethodNameIs_hashCode_butMethodIsNotProducingPrimitiveInt_thenIsFalse() {
+        when(method.getName()).thenReturn("hashCode");
+        when(method.isProducing(int.class)).thenReturn(false);
+
+        assertThat(Methods.isHashCodeMethod(method)).isFalse();
+    }
+
+    @Test
+    void isToStringMethod_whenMethodNameIs_toString_andMethodOnlyProduceString_thenIsTrue() {
+        when(method.getName()).thenReturn("toString");
+        when(method.isProducing(String.class)).thenReturn(true);
+
+        assertThat(Methods.isToStringMethod(method)).isTrue();
+    }
+
+    @Test
+    void isToStringMethod_whenMethodNameIs_toString_butNotProducingString_thenIsFalse() {
+        when(method.getName()).thenReturn("toString");
+        when(method.isProducing(String.class)).thenReturn(false);
+
+        assertThat(Methods.isToStringMethod(method)).isFalse();
     }
 }

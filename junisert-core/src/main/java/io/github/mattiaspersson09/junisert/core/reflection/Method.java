@@ -43,41 +43,58 @@ public class Method extends ExecutableMember implements Invokable {
 
     /**
      * Checks if this method is returning exactly given {@code type}. To check polymorphic types then
-     * {@link #hasReturnTypeAssignableFrom(Class)} and {@link #hasReturnTypeAssignableTo(Class)} should be used instead.
+     * {@link #hasReturnTypeFrom(Class)} and {@link #hasReturnTypeTo(Class)} should be used instead.
      *
      * @param type this method might return
      * @return true if given type is returned by this method
-     * @see #hasReturnTypeAssignableFrom(Class)
-     * @see #hasReturnTypeAssignableTo(Class)
+     * @see #hasReturnTypeFrom(Class)
+     * @see #hasReturnTypeTo(Class)
      */
     public boolean hasReturnType(Class<?> type) {
         return getType().equals(type);
     }
 
     /**
-     * Checks if this method is returning a super type of or exactly given {@code subType}.
+     * Checks if this method is returning a super type of or exactly given {@code subType}. Meaning
+     * that the returning type can be assigned/cast <em>from</em> given {@code type}, pseudo example:
+     * <p>
+     * <pre>
+     * ReturnType result = (ReturnType) type;
+     * </pre>
      *
      * @param type of the returning type
-     * @return true if returning type
+     * @return true if result is assignable from given type
      * @see #isProducing(Class)
+     * @see #hasReturnTypeTo(Class)
      */
-    public boolean hasReturnTypeAssignableFrom(Class<?> type) {
+    public boolean hasReturnTypeFrom(Class<?> type) {
         return getType().isAssignableFrom(type);
     }
 
     /**
-     * Checks if this method is returning a subtype of or exactly given {@code superType}.
+     * Checks if this method is returning a subtype of or exactly given {@code superType}. Meaning
+     * that the returning type can be assigned/cast <em>to</em> given {@code type}, pseudo example:
+     * <p>
+     * <pre>
+     * Type type = (Type) result;
+     * </pre>
      *
-     * @param type of the returning type
-     * @return true if returning type
+     * @param type for the returning type
+     * @return true if result is assignable to given type
+     * @see #hasReturnTypeFrom(Class)
      */
-    public boolean hasReturnTypeAssignableTo(Class<?> type) {
+    public boolean hasReturnTypeTo(Class<?> type) {
         return type.isAssignableFrom(getType());
     }
 
     /**
      * Checks if this method is considered an action method, having no return value other than {@code void}
      * and accepts no arguments.
+     * <p>
+     * Example action:
+     * <pre>
+     * public void close();
+     * </pre>
      *
      * @return true if this method is considered an action
      * @see #isConsumingOnly(Class)
@@ -89,6 +106,11 @@ public class Method extends ExecutableMember implements Invokable {
     /**
      * Checks if this method is considered a consuming method, having no return value other than {@code void} and
      * accepts at least one argument for consumption.
+     * <p>
+     * Example consumer:
+     * <pre>
+     * public void accept(Object arg, Object arg2, ...);
+     * </pre>
      *
      * @return true if this method is considered a consumer
      * @see #isAction()
@@ -109,12 +131,17 @@ public class Method extends ExecutableMember implements Invokable {
      * @see #isConsumingOnly(Class)
      */
     public boolean isConsuming(Class<?> type) {
-        return isConsumer() && hasParameterAssignableFrom(type);
+        return isConsumer() && hasParameterFrom(type);
     }
 
     /**
      * Checks if this method consumes a single argument of given {@code type} and does not produce any result.
-     * Can be seen as equivalent of a setter or an action accepting an argument.
+     * Can be seen as equivalent of a standard bean setter or an action accepting an argument.
+     * <p>
+     * Example pseudo consumer:
+     * <pre>
+     * public void accept(Type arg);
+     * </pre>
      *
      * @param type or subtype this method can consume
      * @return true if this method only consumes given type
@@ -125,6 +152,11 @@ public class Method extends ExecutableMember implements Invokable {
 
     /**
      * Checks if this method is considered a producing method, producing a result and accepting no arguments.
+     * <p>
+     * Example producer:
+     * <pre>
+     * public String toString();
+     * </pre>
      *
      * @return true if this method is considered a producer
      * @see #isFunction()
@@ -137,6 +169,11 @@ public class Method extends ExecutableMember implements Invokable {
     /**
      * Checks if this method is a producer for given {@code type} and can be seen as
      * equivalent to a getter or factory method.
+     * <p>
+     * Example pseudo producer:
+     * <pre>
+     * public Type getType();
+     * </pre>
      *
      * @param type this method is producing
      * @return true if this method is producing given {@code type}
@@ -144,7 +181,7 @@ public class Method extends ExecutableMember implements Invokable {
      * @see #isFunctionOf(Class, Class)
      */
     public boolean isProducing(Class<?> type) {
-        return isProducer() && hasReturnTypeAssignableFrom(type);
+        return isProducer() && hasReturnTypeFrom(type);
     }
 
     /**
@@ -161,15 +198,40 @@ public class Method extends ExecutableMember implements Invokable {
     /**
      * Checks if this method is considered a function that only accepts {@code input} as argument and producing
      * {@code result}. Can be seen as equivalent of a mapping- or builder-method.
+     * <p>
+     * Example pseudo functions:
+     * <pre>
+     * public Result map(Input input);
+     * public Builder withProperty(Property property);
+     * </pre>
      *
      * @param input  only accepted argument
      * @param result produced after handling input
      * @return true if this method is only accepting given input and producing given result
-     * @see #isConsumingOnly(Class)
      * @see #isProducing(Class)
+     * @see #isFunctionOf(Class)
      */
     public boolean isFunctionOf(Class<?> input, Class<?> result) {
-        return hasReturnTypeAssignableFrom(result) && hasParameterCount(1) && hasParameterAssignableFrom(input);
+        return hasReturnTypeFrom(result) && hasParameterCount(1) && hasParameterFrom(input);
+    }
+
+    /**
+     * Checks if this method is considered a function that only accepts {@code inputAndResult} as argument and producing
+     * {@code inputAndResult}. Can be seen as equivalent of a unary operation for filtering, formatting or processing.
+     * <br>
+     * Is equivalent of using {@link #isFunctionOf(Class, Class)} with the same type for input and argument.
+     * <p>
+     * Example pseudo function:
+     * <pre>
+     * public String format(String string);
+     * </pre>
+     *
+     * @param inputAndResult handled by this method
+     * @return true if this method is only accepting given input and producing the same type of result
+     * @see #isFunctionOf(Class, Class)
+     */
+    public boolean isFunctionOf(Class<?> inputAndResult) {
+        return isFunctionOf(inputAndResult, inputAndResult);
     }
 
     @Override

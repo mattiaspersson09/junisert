@@ -127,10 +127,10 @@ public class MethodIntegrationTest {
     void givenProducer_whenProducingSuperType_thenCanProduceSubTypes() throws NoSuchMethodException {
         Method producingBase = Method.of(PolymorphicMethods.class.getDeclaredMethod("publicBaseNoParameters"));
 
-        assertThat(producingBase.hasReturnTypeAssignableTo(Super.class)).isTrue();
-        assertThat(producingBase.hasReturnTypeAssignableFrom(Super.class)).isFalse();
-        assertThat(producingBase.hasReturnTypeAssignableTo(Impl.class)).isFalse();
-        assertThat(producingBase.hasReturnTypeAssignableFrom(Impl.class)).isTrue();
+        assertThat(producingBase.hasReturnTypeTo(Super.class)).isTrue();
+        assertThat(producingBase.hasReturnTypeFrom(Super.class)).isFalse();
+        assertThat(producingBase.hasReturnTypeTo(Impl.class)).isFalse();
+        assertThat(producingBase.hasReturnTypeFrom(Impl.class)).isTrue();
 
         assertThat(producingBase.isProducing(Super.class)).isFalse();
         assertThat(producingBase.isProducing(Base.class)).isTrue();
@@ -172,12 +172,12 @@ public class MethodIntegrationTest {
                 Base.class));
 
         assertThat(inputBaseResultBase.isFunction()).isTrue();
-        assertThat(inputBaseResultBase.isFunctionOf(Base.class, Base.class)).isTrue();
-        assertThat(inputBaseResultBase.isFunctionOf(Impl.class, Impl.class)).isTrue();
+        assertThat(inputBaseResultBase.isFunctionOf(Base.class)).isTrue();
+        assertThat(inputBaseResultBase.isFunctionOf(Impl.class)).isTrue();
         assertThat(inputBaseResultBase.isFunctionOf(Base.class, Impl.class)).isTrue();
         assertThat(inputBaseResultBase.isFunctionOf(Impl.class, Base.class)).isTrue();
 
-        assertThat(inputBaseResultBase.isFunctionOf(Super.class, Super.class)).isFalse();
+        assertThat(inputBaseResultBase.isFunctionOf(Super.class)).isFalse();
         assertThat(inputBaseResultBase.isFunctionOf(Base.class, Super.class)).isFalse();
         assertThat(inputBaseResultBase.isFunctionOf(Super.class, Base.class)).isFalse();
     }
@@ -189,10 +189,10 @@ public class MethodIntegrationTest {
 
         assertThat(inputSuperAndBaseResultSuper.isFunction()).isTrue();
 
-        assertThat(inputSuperAndBaseResultSuper.isFunctionOf(Base.class, Base.class)).isFalse();
-        assertThat(inputSuperAndBaseResultSuper.isFunctionOf(Super.class, Super.class)).isFalse();
+        assertThat(inputSuperAndBaseResultSuper.isFunctionOf(Base.class)).isFalse();
+        assertThat(inputSuperAndBaseResultSuper.isFunctionOf(Super.class)).isFalse();
         assertThat(inputSuperAndBaseResultSuper.isFunctionOf(Super.class, Base.class)).isFalse();
-        assertThat(inputSuperAndBaseResultSuper.isFunctionOf(Base.class, Base.class)).isFalse();
+        assertThat(inputSuperAndBaseResultSuper.isFunctionOf(Base.class, Super.class)).isFalse();
     }
 
     @Test

@@ -19,13 +19,13 @@ import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.core.reflection.Unit;
-import io.github.mattiaspersson09.junisert.testunits.getter.BeanAndBuilderStyle;
+import io.github.mattiaspersson09.junisert.testunits.getter.BeanAndRecordStyle;
 import io.github.mattiaspersson09.junisert.testunits.getter.BeanStyle;
 import io.github.mattiaspersson09.junisert.testunits.getter.BooleanBeanStyle;
-import io.github.mattiaspersson09.junisert.testunits.getter.BooleanBuilderStyle;
-import io.github.mattiaspersson09.junisert.testunits.getter.BuilderStyle;
+import io.github.mattiaspersson09.junisert.testunits.getter.BooleanRecordStyle;
 import io.github.mattiaspersson09.junisert.testunits.getter.MissingGetter;
 import io.github.mattiaspersson09.junisert.testunits.getter.NotGettingField;
+import io.github.mattiaspersson09.junisert.testunits.getter.RecordStyle;
 import io.github.mattiaspersson09.junisert.testunits.getter.TwoButOnlyOneWorking;
 import io.github.mattiaspersson09.junisert.testunits.getter.TwoLettersOrLessBeanStyle;
 
@@ -66,22 +66,23 @@ public class HasGettersTest {
         doReturn((Value<?>) Object::new).when(valueService).getValue(Object.class);
         doReturn(new BooleanValue()).when(valueService).getValue(boolean.class);
 
-        hasGetters.test(Unit.of(BuilderStyle.class));
-        hasGetters.test(Unit.of(BooleanBuilderStyle.class));
+        hasGetters.test(Unit.of(RecordStyle.class));
+        hasGetters.test(Unit.of(BooleanRecordStyle.class));
     }
 
     @Test
-    void whenMoreThanOneGetter_thenIsSatisfiedWithAnyWorking() {
+    void givenMoreThanOneGetter_whenBothAreGettingValue_thenAcceptsBoth() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(any());
 
-        hasGetters.test(Unit.of(BeanAndBuilderStyle.class));
+        hasGetters.test(Unit.of(BeanAndRecordStyle.class));
     }
 
     @Test
-    void whenMoreThanOneGetter_andOnlyOneIsWorking_thenIsSatisfiedWithOneWorking() {
+    void givenMoreThanOneGetter_whenNotAllWorking_thenThrowsUnitAssertionError() {
         doReturn((Value<?>) Object::new).when(valueService).getValue(any());
 
-        hasGetters.test(Unit.of(TwoButOnlyOneWorking.class));
+        assertThatThrownBy(() -> hasGetters.test(Unit.of(TwoButOnlyOneWorking.class)))
+                .isInstanceOf(UnitAssertionError.class);
     }
 
     @Test
