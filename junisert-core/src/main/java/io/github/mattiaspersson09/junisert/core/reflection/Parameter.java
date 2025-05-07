@@ -18,9 +18,9 @@ package io.github.mattiaspersson09.junisert.core.reflection;
 import java.util.Objects;
 
 /**
- * Parameters are identifiable placeholder elements in a unit. Used as base parameter
- * for invoking constructors and methods where parameter holds information about the expected types for
- * the arguments.
+ * Reflected parameter of a constructor or method, being a wrapper for {@link java.lang.reflect.Parameter}.
+ * Used for invoking constructors and methods where parameters holds information about the accepted
+ * type of arguments.
  */
 public final class Parameter implements Reflected {
     private final java.lang.reflect.Parameter origin;
@@ -31,6 +31,12 @@ public final class Parameter implements Reflected {
         this.modifier = new Modifier(origin.getModifiers());
     }
 
+    /**
+     * Creates a reflected parameter wrapper from {@code origin} parameter.
+     *
+     * @param origin to wrap
+     * @return reflected parameter
+     */
     public static Parameter of(java.lang.reflect.Parameter origin) {
         return new Parameter(origin);
     }

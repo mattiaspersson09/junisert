@@ -1,9 +1,9 @@
 package io.github.mattiaspersson09.junisert.testunits.getter;
 
-public class BooleanBuilderStyle {
-    private boolean field;
+public class RecordStyle {
+    private Object field;
 
-    public boolean field() {
+    public Object field() {
         return field;
     }
 }

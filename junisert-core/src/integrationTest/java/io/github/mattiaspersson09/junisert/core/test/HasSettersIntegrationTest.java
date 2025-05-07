@@ -20,12 +20,20 @@ import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.core.reflection.Unit;
 import io.github.mattiaspersson09.junisert.testunits.setter.BeanAndBuilderStyle;
 import io.github.mattiaspersson09.junisert.testunits.setter.BeanStyle;
+import io.github.mattiaspersson09.junisert.testunits.setter.BooleanCollisionBeanStyle;
+import io.github.mattiaspersson09.junisert.testunits.setter.BooleanTwoAlternatives;
 import io.github.mattiaspersson09.junisert.testunits.setter.BuilderStyle;
-import io.github.mattiaspersson09.junisert.testunits.setter.HybridStyle;
 import io.github.mattiaspersson09.junisert.testunits.setter.MissingSetter;
 import io.github.mattiaspersson09.junisert.testunits.setter.NotSettingField;
+import io.github.mattiaspersson09.junisert.testunits.setter.PolymorphicSetter;
+import io.github.mattiaspersson09.junisert.testunits.setter.RecordStyle;
 import io.github.mattiaspersson09.junisert.testunits.setter.TwoButOnlyOneWorking;
+import io.github.mattiaspersson09.junisert.testunits.setter.TwoLettersOrLessBeanStyle;
+import io.github.mattiaspersson09.junisert.value.common.InterfaceValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
+import io.github.mattiaspersson09.junisert.value.common.PrimitiveValueGenerator;
+
+import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +47,11 @@ public class HasSettersIntegrationTest {
 
     @BeforeAll
     static void beforeAll() {
-        valueService = new TestValueService(new ObjectValueGenerator());
+        valueService = new TestValueService(Arrays.asList(
+                new PrimitiveValueGenerator(),
+                new InterfaceValueGenerator(),
+                new ObjectValueGenerator()
+        ));
     }
 
     @BeforeEach
@@ -51,14 +63,27 @@ public class HasSettersIntegrationTest {
     void givenUnit_whenAllFieldsHaveSetters_andIsAcceptableSetters_thenPassesTest() {
         hasSetters.test(Unit.of(BeanStyle.class));
         hasSetters.test(Unit.of(BuilderStyle.class));
-        hasSetters.test(Unit.of(HybridStyle.class));
+        hasSetters.test(Unit.of(RecordStyle.class));
         hasSetters.test(Unit.of(BeanAndBuilderStyle.class));
-        hasSetters.test(Unit.of(TwoButOnlyOneWorking.class));
+        hasSetters.test(Unit.of(TwoLettersOrLessBeanStyle.class));
+        hasSetters.test(Unit.of(PolymorphicSetter.class));
+    }
+
+    @Test
+    void givenUnit_whenTwoSimilarFields_andOneIsBooleanWithIsPrefix_andOverloadingSetters_thenPassesTest() {
+        hasSetters.test(Unit.of(BooleanCollisionBeanStyle.class));
+    }
+
+    @Test
+    void givenUnit_whenTwoAlternativesForBooleanField_thenTestsBoth_andPassesTest() {
+        hasSetters.test(Unit.of(BooleanTwoAlternatives.class));
     }
 
     @Test
     void givenUnit_whenAnyFieldIsMissingSetter_thenFailsTest() {
         assertThatThrownBy(() -> hasSetters.test(Unit.of(MissingSetter.class)))
+                .isInstanceOf(UnitAssertionError.class);
+        assertThatThrownBy(() -> hasSetters.test(Unit.of(TwoButOnlyOneWorking.class)))
                 .isInstanceOf(UnitAssertionError.class);
     }
 

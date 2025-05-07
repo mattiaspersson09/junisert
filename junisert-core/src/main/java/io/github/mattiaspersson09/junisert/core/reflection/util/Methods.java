@@ -18,30 +18,41 @@ package io.github.mattiaspersson09.junisert.core.reflection.util;
 import io.github.mattiaspersson09.junisert.core.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.reflection.Method;
 
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+
 public final class Methods {
+    private static final Predicate<String> ONE_LETTER_PREFIX_FIELD;
+
+    static {
+        ONE_LETTER_PREFIX_FIELD = Pattern.compile("^[a-z_$][A-Z0-9_$]").asPredicate();
+    }
+
     private Methods() {
     }
 
-    public static boolean isSetterForField(java.lang.reflect.Method method, Field field) {
-        return isSetterForField(Method.of(method), field);
-    }
-
-    public static boolean isGetterForField(java.lang.reflect.Method method, Field field) {
-        return isGetterForField(Method.of(method), field);
+    public static boolean isGetterForField(Method method, Field field) {
+        /*
+            Can have different styled getters:
+            1. Java bean compliant style: get<property name>
+            2. Java bean compliant style, get<property name>, removing is-prefix from boolean field name if found
+            3. Java bean compliant style: is<property name>
+            4. Builder/record style: just <property name>
+         */
+        return (isJavaBeanCompliantGetter(method, field) || isRecordStyle(method, field))
+                && method.isProducing(field.getType());
     }
 
     public static boolean isSetterForField(Method method, Field field) {
-        return (method.getName().substring("set".length()).equalsIgnoreCase(field.getName())
-                || method.getName().equalsIgnoreCase(field.getName()))
+        /*
+            Can have different styled setters:
+            1. Java bean compliant style: set<property name>
+            2. Java bean compliant style: set<property name>, removing is-prefix from boolean field name if found
+            3. Builder/record style
+         */
+        return (isJavaBeanCompliantSetter(method, field) || isRecordStyle(method, field))
                 && method.hasParameterCount(1)
-                && method.hasParameterAssignableTo(field.getType());
-    }
-
-    public static boolean isGetterForField(Method method, Field field) {
-        return (method.getName().substring("get".length()).equalsIgnoreCase(field.getName())
-                || method.getName().substring("is".length()).equalsIgnoreCase(field.getName())
-                || method.getName().equalsIgnoreCase(field.getName()))
-                && method.isProducing(field.getType());
+                && method.hasParameterTo(field.getType());
     }
 
     public static boolean isEqualsMethod(Method method) {
@@ -54,5 +65,46 @@ public final class Methods {
 
     public static boolean isToStringMethod(Method method) {
         return "toString".equals(method.getName()) && method.isProducing(String.class);
+    }
+
+    static boolean isJavaBeanCompliantGetter(Method method, Field field) {
+        String propertyName = toMethodPropertyName(field);
+
+        return method.getName().equals("get" + propertyName)
+                || method.getName().equals("is" + propertyName)
+                || method.getName().equals("get" + toBooleanMethodPropertyName(field));
+    }
+
+    static boolean isJavaBeanCompliantSetter(Method method, Field field) {
+        String propertyName = toMethodPropertyName(field);
+
+        return method.getName().equals("set" + propertyName)
+                || method.getName().equals("set" + toBooleanMethodPropertyName(field));
+    }
+
+    static boolean isRecordStyle(Method method, Field field) {
+        return method.getName().equals(field.getName());
+    }
+
+    static String toMethodPropertyName(Field field) {
+        String name = field.getName();
+
+        if (ONE_LETTER_PREFIX_FIELD.test(name)) {
+            return name;
+        }
+
+        return toUpperCaseFirstLetter(name);
+    }
+
+    static String toBooleanMethodPropertyName(Field field) {
+        if (field.isTypeOf(boolean.class) && field.getName().startsWith("is")) {
+            return toUpperCaseFirstLetter(field.getName().substring(2));
+        }
+
+        return toMethodPropertyName(field);
+    }
+
+    static String toUpperCaseFirstLetter(String str) {
+        return Character.toUpperCase(str.charAt(0)) + str.substring(1);
     }
 }
