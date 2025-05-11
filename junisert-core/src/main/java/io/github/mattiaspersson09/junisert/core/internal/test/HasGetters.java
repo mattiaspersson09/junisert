@@ -26,10 +26,8 @@ import io.github.mattiaspersson09.junisert.core.internal.reflection.Method;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.UnaryOperator;
 
 public final class HasGetters extends AbstractUnitTest {
     private static final Logger LOGGER = Logger.getLogger("Has Getters");
@@ -69,18 +67,9 @@ public final class HasGetters extends AbstractUnitTest {
                 Value<?> argument = valueService.getValue(field.getType());
                 Object value = argument.get();
 
-                UnaryOperator<Object> getterGetValue = (instance) -> {
-                    try {
-                        return method.invoke(instance);
-                    } catch (InvocationTargetException | IllegalAccessException e) {
-                        throw new UnitAssertionError("Failed to invoke getter", e);
-                    }
-                };
-
                 Injection injection = new Injection(method, instanceCreator);
                 injection.setup(instance -> field.setValue(instance, value));
-                injection.shouldResultIn(instance -> Objects.equals(value, getterGetValue.apply(instance)));
-                injection.onInjectionFail(() -> new UnitAssertionError("Failed to invoke getter"));
+                injection.shouldResultIn(instance -> Objects.equals(value, method.invoke(instance)));
 
                 if (!injection.inject()) {
                     LOGGER.fail("Expected method to get value from field but it did not",

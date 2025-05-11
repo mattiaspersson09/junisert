@@ -15,25 +15,22 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
-import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Invokable;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
- * Performs test injection of values for invokable unit members. Users can test a setup before the injection,
- * test the result after injection and throw given error if injection fails. The tests are performed on the unit
- * instance that the {@link Invokable} target is declared in.<br>
+ * Performs test injection of values for invokable unit members. Users can set up unit instance state
+ * before the injection and test the result after injection. The tests are performed on the unit instance that the
+ * {@link Invokable} target is declared in.<br>
  * <br>
- * If no setup or result is set by the user then setup and result always passes.
+ * Setup and result is not required and will be skipped if missing.
  *
  * @see Invokable
  * @see ValueService
@@ -43,9 +40,8 @@ class Injection {
 
     private final InstanceCreator instanceCreator;
     private final Invokable injectionTarget;
-    private Predicate<Object> setup;
+    private Consumer<Object> setup;
     private Predicate<Object> result;
-    private Supplier<UnitAssertionError> onInjectionFail;
 
     /**
      * Creates a new test injection.
@@ -56,7 +52,6 @@ class Injection {
     Injection(Invokable injectionTarget, InstanceCreator instanceCreator) {
         this.injectionTarget = injectionTarget;
         this.instanceCreator = instanceCreator;
-        this.setup = setup -> true;
         this.result = result -> true;
     }
 
@@ -66,7 +61,7 @@ class Injection {
      *
      * @param setup that should pass before injection
      */
-    public void setup(Predicate<Object> setup) {
+    public void setup(Consumer<Object> setup) {
         this.setup = Objects.requireNonNull(setup);
     }
 
@@ -81,49 +76,28 @@ class Injection {
     }
 
     /**
-     * Lazy error to throw if injection fails.
-     *
-     * @param onInjectionError to throw
-     */
-    public void onInjectionFail(Supplier<UnitAssertionError> onInjectionError) {
-        this.onInjectionFail = Objects.requireNonNull(onInjectionError);
-    }
-
-    /**
      * Try to inject {@code arguments} into given {@link Invokable}. The injection is only seen as successful
-     * if setup is successful, the injection does not throw and the injection gives the desired result.<br>
+     * if the injection does not throw and the injection gives the desired result.<br>
      * <ul>
-     * <li>If no setup is given then the setup test always passes.</li>
+     * <li>If no setup is given then the setup is ignored.</li>
      * <li>If no desired result is given then the result test always passes.</li>
-     * <li>If no error supplier is given for injection failure, then a generic {@link UnitAssertionError}
-     * will be thrown if injection fails.</li>
      * </ul>
      *
      * @param arguments to inject
      * @return true if setup passes, injection is successful and produces the desired result
-     * @see #setup(Predicate)
+     * @see #setup(Consumer)
      * @see #shouldResultIn(Predicate)
-     * @see #onInjectionFail(Supplier)
      */
     public boolean inject(Object... arguments) {
         Object unitInstance = instanceCreator.createInstance(injectionTarget.getParent());
 
-        if (!setup.test(unitInstance)) {
-            LOGGER.warn("Injection precondition setup was unsuccessful");
-            return false;
+        if (setup != null) {
+            setup.accept(unitInstance);
         }
 
-        try {
-            LOGGER.test("Injecting: arguments({0}) -> {1}.{2}",
-                    Arrays.toString(arguments),
-                    injectionTarget.getParent().getSimpleName(),
-                    injectionTarget);
-            injectionTarget.invoke(unitInstance, arguments);
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            throw Optional.ofNullable(onInjectionFail)
-                    .map(Supplier::get)
-                    .orElseGet(() -> new UnitAssertionError("Failed to invoke: " + injectionTarget, e));
-        }
+        LOGGER.test("Injecting: arguments({0}) -> {1}.{2}", Arrays.toString(arguments),
+                injectionTarget.getParent().getSimpleName(), injectionTarget);
+        injectionTarget.invoke(unitInstance, arguments);
 
         return result.test(unitInstance);
     }

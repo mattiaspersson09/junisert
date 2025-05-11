@@ -15,7 +15,6 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.reflection;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
@@ -49,32 +48,31 @@ public class Field extends Member implements Invokable {
      *
      * @param unitInstance as constructed parent object
      * @param value        to set for this field
-     * @return true if update was successful, otherwise false
+     * @throws ReflectionException if not possible to update field state
      */
-    public boolean setValue(Object unitInstance, Object value) {
+    public void setValue(Object unitInstance, Object value) throws ReflectionException {
         try {
             origin.set(unitInstance, value);
-            return true;
         } catch (Exception e) {
-            return false;
+            throw new ReflectionException("Unable to set value for field: " + this, e);
         }
     }
 
     /**
      * Getting value from this field from a constructed parent instance using reflection.
-     * {@link IllegalAccessException} will be thrown if access is not possible because of restriction or
+     * {@link ReflectionException} will be thrown if access is not possible because of restriction or
      * unknown {@code unitInstance}.
      *
      * @param unitInstance as constructed parent object
      * @return current value
-     * @throws IllegalAccessException if not possible to access this field
+     * @throws ReflectionException if not possible to access this field
      * @see #getValueOrElse(Object, Object)
      */
-    public Object getValue(Object unitInstance) throws IllegalAccessException {
+    public Object getValue(Object unitInstance) throws ReflectionException {
         try {
             return origin.get(unitInstance);
         } catch (Exception e) {
-            throw new IllegalAccessException("Tried to get value from " + getName() + " but it was not possible");
+            throw new ReflectionException("Unable to get value from " + this + ", but it was not possible");
         }
     }
 
@@ -186,6 +184,39 @@ public class Field extends Member implements Invokable {
         return type.isAssignableFrom(getType());
     }
 
+    /**
+     * Checks if this field's type is a primitive type.
+     *
+     * @return true if it's primitive
+     */
+    public boolean isPrimitive() {
+        return getType().isPrimitive();
+    }
+
+    /**
+     * Checks if this field's type is an array.
+     *
+     * @return true if it's an array
+     */
+    public boolean isArray() {
+        return getType().isArray();
+    }
+
+    /**
+     * Checks if this field's type is an enumeration.
+     *
+     * @return true if it's an enumeration
+     */
+    public boolean isEnum() {
+        return getType().isEnum();
+    }
+
+    /**
+     * Checks if this field's type is a boolean, primitive or the wrapper variant.
+     *
+     * @return true if boolean
+     * @see #isPrimitive()
+     */
     public boolean isBoolean() {
         return isTypeOf(boolean.class) || isTypeOf(Boolean.class);
     }
@@ -196,21 +227,20 @@ public class Field extends Member implements Invokable {
     }
 
     @Override
-    public Object invoke(Object instance, Object... args) throws IllegalAccessException, InvocationTargetException {
+    public Object invoke(Object instance, Object... args) throws ReflectionException {
         Object value;
 
         if (getType().isArray()) {
             value = args;
         } else {
             if (args.length > 1) {
-                throw new InvocationTargetException(
-                        new IllegalArgumentException(getName() + " only accepts a single value"));
+                throw new ReflectionException(new IllegalArgumentException(this + " only accepts a single value"));
             }
 
             value = args[0];
         }
 
-        origin.set(instance, value);
+        setValue(instance, value);
 
         return getValue(instance);
     }
@@ -236,6 +266,6 @@ public class Field extends Member implements Invokable {
 
     @Override
     public String toString() {
-        return String.format("%s(%s)", getName(), getType());
+        return String.format("%s.%s(%s)", getParent().getSimpleName(), getName(), getType());
     }
 }

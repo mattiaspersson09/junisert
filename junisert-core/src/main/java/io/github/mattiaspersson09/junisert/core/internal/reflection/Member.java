@@ -79,4 +79,9 @@ public abstract class Member implements Reflected {
     public int hashCode() {
         return Objects.hash(origin);
     }
+
+    @Override
+    public String toString() {
+        return getParent().getSimpleName() + "." + getName();
+    }
 }

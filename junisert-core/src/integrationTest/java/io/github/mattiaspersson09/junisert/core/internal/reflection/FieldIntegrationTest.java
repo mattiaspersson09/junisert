@@ -35,21 +35,25 @@ public class FieldIntegrationTest {
     }
 
     @Test
-    void setValue_whenParentInstance_thenIsTrue() throws NoSuchFieldException, NoSuchMethodException,
-                                                  InvocationTargetException, InstantiationException,
-                                                  IllegalAccessException {
+    void setValue_whenParentInstance_thenSetsValue() throws NoSuchFieldException, NoSuchMethodException,
+                                                     InvocationTargetException, InstantiationException,
+                                                     IllegalAccessException {
         Object instance = ValueFields.class.getConstructor().newInstance();
         Field privateField = Field.of(ValueFields.class.getDeclaredField("immutableStringValueField"));
 
-        assertThat(privateField.setValue(instance, "value")).isTrue();
+        privateField.setValue(instance, "value");
+
+        assertThat(privateField.getValue(instance)).isEqualTo("value");
     }
 
     @Test
-    void setValue_whenNotParentInstance_thenIsFalse() throws NoSuchFieldException {
+    void setValue_whenNotParentInstance_thenThrowsReflectionException() throws NoSuchFieldException {
         Field privateField = Field.of(ValueFields.class.getDeclaredField("immutableStringValueField"));
 
-        assertThat(privateField.setValue(null, "value")).isFalse();
-        assertThat(privateField.setValue(new Object(), "value")).isFalse();
+        assertThatThrownBy(() -> privateField.setValue(null, "value"))
+                .isInstanceOf(ReflectionException.class);
+        assertThatThrownBy(() -> privateField.setValue(new Object(), "value"))
+                .isInstanceOf(ReflectionException.class);
     }
 
     @Test
@@ -65,11 +69,11 @@ public class FieldIntegrationTest {
     }
 
     @Test
-    void getValue_whenNotParentInstance_thenThrowsIllegalAccessException() throws NoSuchFieldException {
+    void getValue_whenNotParentInstance_thenThrowsReflectionException() throws NoSuchFieldException {
         Field field = Field.of(ValueFields.class.getDeclaredField("immutableStringValueField"));
 
-        assertThatThrownBy(() -> field.getValue(null)).isInstanceOf(IllegalAccessException.class);
-        assertThatThrownBy(() -> field.getValue(new Object())).isInstanceOf(IllegalAccessException.class);
+        assertThatThrownBy(() -> field.getValue(null)).isInstanceOf(ReflectionException.class);
+        assertThatThrownBy(() -> field.getValue(new Object())).isInstanceOf(ReflectionException.class);
     }
 
     @Test
@@ -84,9 +88,13 @@ public class FieldIntegrationTest {
         Field packageField = Field.of(NotAccessible.class.getDeclaredField("packageField"));
         Field immutableField = Field.of(NotAccessible.class.getDeclaredField("immutableField"));
 
-        assertThat(privateField.setValue(instance, null)).isTrue();
-        assertThat(packageField.setValue(instance, null)).isTrue();
-        assertThat(immutableField.setValue(instance, null)).isTrue();
+        privateField.setValue(instance, null);
+        packageField.setValue(instance, null);
+        immutableField.setValue(instance, null);
+
+        assertThat(privateField.getValue(instance)).isNull();
+        assertThat(packageField.getValue(instance)).isNull();
+        assertThat(immutableField.getValue(instance)).isNull();
     }
 
     @Test
@@ -192,16 +200,16 @@ public class FieldIntegrationTest {
     }
 
     @Test
-    void invoke_whenSingleObjectField_andInvokingWithArrayValues_thenThrowsInvocationTargetException() throws NoSuchMethodException,
-                                                                                                       InvocationTargetException,
-                                                                                                       InstantiationException,
-                                                                                                       IllegalAccessException,
-                                                                                                       NoSuchFieldException {
+    void invoke_whenSingleObjectField_andInvokingWithArrayValues_thenThrowsReflectionException() throws NoSuchMethodException,
+                                                                                                 InvocationTargetException,
+                                                                                                 InstantiationException,
+                                                                                                 IllegalAccessException,
+                                                                                                 NoSuchFieldException {
         Object instance = ValueFields.class.getConstructor().newInstance();
         Field field = Field.of(ValueFields.class.getDeclaredField("immutableStringValueField"));
 
         assertThatThrownBy(() -> field.invoke(instance, "updated", "value"))
-                .isInstanceOf(InvocationTargetException.class)
+                .isInstanceOf(ReflectionException.class)
                 .cause()
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("only accepts a single value");
@@ -340,6 +348,6 @@ public class FieldIntegrationTest {
     void toStringTest() throws NoSuchFieldException {
         Field field = Field.of(ValueFields.class.getDeclaredField("immutableStringValueField"));
 
-        assertThat(field.toString()).isEqualTo("immutableStringValueField(class java.lang.String)");
+        assertThat(field.toString()).isEqualTo("ValueFields.immutableStringValueField(class java.lang.String)");
     }
 }

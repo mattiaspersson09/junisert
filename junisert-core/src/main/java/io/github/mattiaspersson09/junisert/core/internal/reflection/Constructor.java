@@ -16,7 +16,7 @@
 package io.github.mattiaspersson09.junisert.core.internal.reflection;
 
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -58,15 +58,16 @@ public class Constructor extends ExecutableMember implements Invokable {
     }
 
     @Override
-    public Object invoke(Object instance, Object... args) throws InvocationTargetException, IllegalAccessException {
+    public Object invoke(Object instance, Object... args) throws ReflectionException {
         if (instance != null && !origin.getDeclaringClass().equals(instance.getClass())) {
-            throw new IllegalArgumentException("Instance class does not have the same origin as this constructor");
+            throw new ReflectionException(
+                    new IllegalArgumentException("Instance class does not have the same origin as this constructor"));
         }
 
         try {
             return origin.newInstance(args);
-        } catch (InstantiationException e) {
-            throw new InvocationTargetException(e);
+        } catch (Exception e) {
+            throw new ReflectionException("Unable to invoke constructor with arguments: " + Arrays.toString(args), e);
         }
     }
 
