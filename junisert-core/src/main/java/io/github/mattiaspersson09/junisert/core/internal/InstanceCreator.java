@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.api.internal.service;
+package io.github.mattiaspersson09.junisert.core.internal;
 
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
-import io.github.mattiaspersson09.junisert.api.value.Value;
-import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
+import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 
-public interface ValueService {
-    void registerSupport(ValueGenerator<?> generator);
+public interface InstanceCreator {
+    Object createInstance(Class<?> unitClass);
 
-    void registerNamedSupport(ValueGenerator<?> generator, String supportName);
-
-    Value<?> getValue(Class<?> type) throws UnsupportedTypeError;
+    default Object createInstance(Unit unit) {
+        return createInstance(unit.getType());
+    }
 }

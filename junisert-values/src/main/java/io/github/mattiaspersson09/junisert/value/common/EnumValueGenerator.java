@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 
 public class EnumValueGenerator implements ValueGenerator<Object> {
     @Override
-    public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError, UnsupportedConstructionError {
+    public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
         if (!supports(fromType)) {
             throw new UnsupportedTypeError(fromType);
         }

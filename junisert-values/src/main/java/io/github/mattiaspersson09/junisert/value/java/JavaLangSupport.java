@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 
 final class JavaLangSupport {
     private static final Supplier<Runnable> RUNNABLE = () -> () -> Logger.getLogger("Anonymous runnable")
-            .info("running");
+            .test("running");
 
     private JavaLangSupport() {
     }

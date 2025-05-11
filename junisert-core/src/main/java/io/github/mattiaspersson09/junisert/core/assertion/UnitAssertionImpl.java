@@ -18,25 +18,71 @@ package io.github.mattiaspersson09.junisert.core.assertion;
 import io.github.mattiaspersson09.junisert.api.assertion.PlainObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
-import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
-import io.github.mattiaspersson09.junisert.core.reflection.Unit;
+import io.github.mattiaspersson09.junisert.common.logging.Logger;
+import io.github.mattiaspersson09.junisert.core.internal.SharedResource;
+import io.github.mattiaspersson09.junisert.core.internal.convention.Convention;
+import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
+import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
+import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods;
+import io.github.mattiaspersson09.junisert.core.internal.test.HasGetters;
+import io.github.mattiaspersson09.junisert.core.internal.test.HasSetters;
+
+import java.io.Serializable;
 
 public class UnitAssertionImpl implements UnitAssertion {
-    private final Unit unit;
-    private final ValueService valueService;
+    private static final Logger LOGGER = Logger.getLogger("Unit assertion");
 
-    public UnitAssertionImpl(Unit unit, ValueService valueService) {
-        this.unit = unit;
-        this.valueService = valueService;
+    private final SharedResource testResource;
+
+    public UnitAssertionImpl(SharedResource testResource) {
+        this.testResource = testResource;
     }
 
-    @Override
-    public UnitAssertion isPlainOldJavaObject() throws UnitAssertionError {
-        return null;
-    }
 
     @Override
     public PlainObjectAssertion asPojo() {
-        return new PlainObjectAssertionImpl(unit, valueService);
+        return new PlainObjectAssertionImpl(testResource);
+    }
+
+    @Override
+    public UnitAssertion isJavaBeanCompliant() throws UnitAssertionError {
+        Unit unit = testResource.getUnitUnderAssertion();
+
+        if (unit.hasNoDefaultConstructor()) {
+            throw new UnitAssertionError(unit.getName() + " were expected to have a default constructor");
+        }
+
+        if (unit.hasFieldMatching(field -> Fields.isInstanceField(field) && !field.modifier().isPrivate())) {
+            throw new UnitAssertionError(unit.getName() + " were expected to only have private properties");
+        }
+
+        Convention beanConvention = Convention.javaBeanCompliant();
+
+        HasGetters hasGetters = new HasGetters(testResource.getValueService(), testResource.getInstanceCreator());
+        hasGetters.setActiveConvention(beanConvention);
+        hasGetters.test(testResource.getUnitUnderAssertion());
+
+        HasSetters hasSetters = new HasSetters(testResource.getValueService(), testResource.getInstanceCreator());
+        hasSetters.setActiveConvention(beanConvention);
+        hasSetters.test(testResource.getUnitUnderAssertion());
+
+        if (!Serializable.class.isAssignableFrom(unit.getType())) {
+            LOGGER.warn("{0} should implement {1}, it is not enforced but recommended to ensure serialization",
+                    unit.getName(), Serializable.class.getName());
+        }
+
+        if (!unit.hasMethodMatching(Methods::isEqualsMethod)) {
+            LOGGER.warn("{0} should override equals(Object)", unit.getName());
+        }
+
+        if (!unit.hasMethodMatching(Methods::isHashCodeMethod)) {
+            LOGGER.warn("{0} should override hashCode()", unit.getName());
+        }
+
+        if (!unit.hasMethodMatching(Methods::isToStringMethod)) {
+            LOGGER.warn("{0} should override toString()", unit.getName());
+        }
+
+        return this;
     }
 }

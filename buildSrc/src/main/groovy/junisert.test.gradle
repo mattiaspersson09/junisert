@@ -5,6 +5,7 @@ plugins {
 
 configurations {
     integrationTestImplementation.extendsFrom(testImplementation)
+    functionalTestImplementation.extendsFrom(testImplementation)
 }
 
 repositories {
@@ -15,6 +16,20 @@ repositories {
 testing {
     suites {
         integrationTest(JvmTestSuite) {
+            dependencies {
+                implementation project()
+            }
+
+            targets {
+                configureEach {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                    }
+                }
+            }
+        }
+
+        functionalTest(JvmTestSuite) {
             dependencies {
                 implementation project()
             }
@@ -38,6 +53,7 @@ tasks.named("test", Test) {
 
 tasks.named("check") {
     dependsOn(testing.suites.integrationTest)
+    dependsOn(testing.suites.functionalTest)
     finalizedBy(jacocoTestReport)
 }
 
