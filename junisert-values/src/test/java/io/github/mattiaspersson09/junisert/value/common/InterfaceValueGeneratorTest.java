@@ -65,10 +65,25 @@ public class InterfaceValueGeneratorTest {
     void notSupportingProxyInvocation_whenConstructedProxy_thenCanNotInvokeMethods() {
         Value<?> proxyValue = generator.generate(Interface.class);
         Interface proxy = (Interface) proxyValue.get();
+        FakeEqualsProxy fakeEqualsProxy = (FakeEqualsProxy) generator.generate(FakeEqualsProxy.class).get();
 
         assertThatThrownBy(proxy::invoke)
                 .isInstanceOf(UnsupportedOperationException.class)
                 .hasMessageContaining("Unable to invoke");
+
+        assertThatThrownBy(fakeEqualsProxy::equals)
+                .isInstanceOf(UnsupportedOperationException.class)
+                .hasMessageContaining("Unable to invoke");
+
+        assertThatThrownBy(() -> fakeEqualsProxy.equals(null))
+                .isInstanceOf(UnsupportedOperationException.class)
+                .hasMessageContaining("Unable to invoke");
+    }
+
+    private interface FakeEqualsProxy {
+        boolean equals();
+
+        Boolean equals(FakeEqualsProxy object);
     }
 
     private interface Interface {
