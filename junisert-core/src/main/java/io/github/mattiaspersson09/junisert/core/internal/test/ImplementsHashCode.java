@@ -64,15 +64,8 @@ public class ImplementsHashCode implements UnitTest {
 
             Object value = valueService.getValue(field.getType()).get();
 
-            if (!field.setValue(instance, value)) {
-                LOGGER.warn("Failed to invoke field {0} with value of type {1}", field.getName(), value.getClass());
-                throw new UnitAssertionError("Failed to setup field values");
-            }
-
-            if (!field.setValue(instance2, value)) {
-                LOGGER.warn("Failed to invoke field {0} with value of type {1}", field.getName(), value.getClass());
-                throw new UnitAssertionError("Failed to setup field values");
-            }
+            field.setValue(instance, value);
+            field.setValue(instance2, value);
         }
 
         if (!isPassingEmptyHashCodeCheck(instance)) {
@@ -104,11 +97,7 @@ public class ImplementsHashCode implements UnitTest {
             }
 
             Object value = valueService.getValue(field.getType()).asEmpty();
-
-            if (!field.setValue(instance2, value)) {
-                LOGGER.warn("Failed to invoke field {0} with value of type {1}", field.getName(), value.getClass());
-                throw new UnitAssertionError("Failed to setup field values");
-            }
+            field.setValue(instance2, value);
         }
 
         if (isPassingUniqueHashCodeCheck(instance, instance2)) {

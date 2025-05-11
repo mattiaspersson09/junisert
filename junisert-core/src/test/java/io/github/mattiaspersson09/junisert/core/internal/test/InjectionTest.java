@@ -15,14 +15,12 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
-import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedConstructionError;
-import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Invokable;
+import io.github.mattiaspersson09.junisert.core.internal.reflection.ReflectionException;
 import io.github.mattiaspersson09.junisert.testunits.setter.BeanStyle;
-
-import java.lang.reflect.InvocationTargetException;
+import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanCompliantModel;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,7 +51,7 @@ public class InjectionTest {
     @Test
     void inject_whenInjectionIsSuccessful_thenReturnsTrue() {
         doReturn(BeanStyle.class).when(target).getParent();
-        doReturn((Value<?>) BeanStyle::new).when(instanceCreator).createInstance(BeanStyle.class);
+        when(instanceCreator.createInstance(BeanStyle.class)).thenReturn(new BeanStyle());
 
         assertThat(injection.inject()).isTrue();
     }
@@ -61,7 +59,7 @@ public class InjectionTest {
     @Test
     void inject_whenInjectionIsUnsuccessful_thenReturnsFalse() {
         doReturn(BeanStyle.class).when(target).getParent();
-        doReturn((Value<?>) BeanStyle::new).when(instanceCreator).createInstance(BeanStyle.class);
+        when(instanceCreator.createInstance(BeanStyle.class)).thenReturn(new BeanStyle());
 
         injection.shouldResultIn(instance -> false);
 
@@ -69,43 +67,32 @@ public class InjectionTest {
     }
 
     @Test
-    void inject_whenCanNotConstructInstance_thenPropagatesServiceFailure() {
+    void inject_whenCanNotConstructInstance_thenPropagatesFailure() {
         when(instanceCreator.createInstance(target.getParent())).thenThrow(UnsupportedConstructionError.class);
 
         assertThatThrownBy(() -> injection.inject()).isInstanceOf(UnsupportedConstructionError.class);
     }
 
     @Test
-    void inject_whenSetupIsUnsuccessful_thenReturnsFalse() {
-        doReturn(BeanStyle.class).when(target).getParent();
-        doReturn((Value<?>) BeanStyle::new).when(instanceCreator).createInstance(BeanStyle.class);
+    void inject_whenThereIsAnSetup_thenSetsUpInstance() {
+        BeanCompliantModel modelInstance = new BeanCompliantModel();
 
-        injection.setup(instance -> false);
+        doReturn(BeanCompliantModel.class).when(target).getParent();
+        when(instanceCreator.createInstance(BeanCompliantModel.class)).thenReturn(modelInstance);
 
-        assertThat(injection.inject()).isFalse();
+        injection.setup(instance -> ((BeanCompliantModel) instance).setName("model"));
+        injection.inject();
+
+        assertThat(modelInstance.getName()).isEqualTo("model");
     }
 
     @Test
-    void inject_whenInjectionFails_thenThrowsGivenError() throws InvocationTargetException, IllegalAccessException {
+    void inject_whenInjectionFails_thenThrowsPropagatedException() {
         doReturn(BeanStyle.class).when(target).getParent();
-        when(target.invoke(any(), any())).thenThrow(InvocationTargetException.class);
-
-        injection.onInjectionFail(() -> new UnitAssertionError("injection failure"));
+        when(instanceCreator.createInstance(BeanStyle.class)).thenReturn(new BeanStyle());
+        when(target.invoke(any(), any())).thenThrow(ReflectionException.class);
 
         assertThatThrownBy(() -> injection.inject(new Object()))
-                .isInstanceOf(UnitAssertionError.class)
-                .hasMessage("injection failure");
-    }
-
-    @Test
-    void inject_whenInjectionFails_andNoGivenErrorSupplier_thenThrowsGenericUnitAssertionError() throws InvocationTargetException,
-                                                                                                 IllegalAccessException {
-        doReturn(BeanStyle.class).when(target).getParent();
-        doReturn((Value<?>) BeanStyle::new).when(instanceCreator).createInstance(BeanStyle.class);
-        when(target.invoke(any(), any())).thenThrow(InvocationTargetException.class);
-
-        assertThatThrownBy(() -> injection.inject(new Object()))
-                .isInstanceOf(UnitAssertionError.class)
-                .hasMessageContaining("Failed to invoke");
+                .isInstanceOf(ReflectionException.class);
     }
 }

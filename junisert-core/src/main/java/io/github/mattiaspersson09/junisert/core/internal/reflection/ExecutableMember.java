@@ -91,6 +91,6 @@ public abstract class ExecutableMember extends Member implements Executable {
 
     @Override
     public String toString() {
-        return String.format("%s(%s)", origin.getName(), getParameterTypes());
+        return String.format("%s(%s)", getName(), getParameterTypes());
     }
 }

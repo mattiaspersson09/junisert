@@ -15,6 +15,9 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.reflection;
 
+/**
+ * Used when a reflective operation fails and should be unchecked, might wrap reflective cause.
+ */
 public class ReflectionException extends RuntimeException {
     public ReflectionException(String message) {
         super(message);

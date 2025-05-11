@@ -75,15 +75,8 @@ public class ImplementsEquals implements UnitTest {
 
             Object value = valueService.getValue(field.getType()).get();
 
-            if (!field.setValue(instance, value)) {
-                LOGGER.warn("Failed to invoke field {0} with value of type {1}", field.getName(), value.getClass());
-                throw new UnitAssertionError("Failed to setup field values");
-            }
-
-            if (!field.setValue(instance2, value)) {
-                LOGGER.warn("Failed to invoke field {0} with value of type {1}", field.getName(), value.getClass());
-                throw new UnitAssertionError("Failed to setup field values");
-            }
+            field.setValue(instance, value);
+            field.setValue(instance2, value);
         }
 
         if (!isPassingSelfCheck(instance, instance)) {
@@ -108,11 +101,7 @@ public class ImplementsEquals implements UnitTest {
             }
 
             Object value = valueService.getValue(field.getType()).asEmpty();
-
-            if (!field.setValue(instance2, value)) {
-                LOGGER.warn("Failed to reset field {0}", field.getName());
-                throw new UnitAssertionError("Failed to reset field values");
-            }
+            field.setValue(instance2, value);
         }
 
         if (instance.equals(instance2)) {

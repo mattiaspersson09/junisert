@@ -15,7 +15,6 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.reflection;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 /**
@@ -47,11 +46,10 @@ public interface Invokable {
      * @param instance of the parent unit
      * @param args     values to inject to update or get state
      * @return some state
-     * @throws InvocationTargetException if invocation fails
-     * @throws IllegalAccessException    if the invocation isn't possible or allowed
+     * @throws ReflectionException if invocation fails
      * @see #accepts()
      */
-    Object invoke(Object instance, Object... args) throws InvocationTargetException, IllegalAccessException;
+    Object invoke(Object instance, Object... args) throws ReflectionException;
 
     /**
      * Types this invokable accepts as values for invocation arguments.
@@ -65,7 +63,9 @@ public interface Invokable {
      *
      * @return declaring unit
      */
-    Class<?> getParent();
+    default Class<?> getParent() {
+        return getClass().getDeclaringClass();
+    }
 
     /**
      * Name of this invokable, can be a descriptive signature of the unit member or

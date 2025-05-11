@@ -21,7 +21,6 @@ import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Member;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Method;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
@@ -74,21 +73,16 @@ public class HasSetters extends AbstractUnitTest {
 
                 Injection injection = new Injection(method, instanceCreator);
                 injection.setup(instance -> field.setValue(instance, empty));
-                injection.shouldResultIn(instance -> !Objects.equals(empty, field.getValueOrElse(instance, empty)));
-                injection.onInjectionFail(() -> new UnitAssertionError("Failed to invoke setter"));
+                injection.shouldResultIn(instance -> !Objects.equals(empty, field.getValue(instance)));
 
                 if (!injection.inject(methodArguments)) {
                     LOGGER.fail("Expected method to set value for field but it did not",
-                            concatName(unit, method) + " to set value for " + concatName(unit, field),
+                            method + " to set value for " + field,
                             "it did not");
                     throw new UnitAssertionError(String.format("Found setter: %s, but it was not setting for field: %s",
                             method.getName(), field.getName()));
                 }
             }
         }
-    }
-
-    private String concatName(Unit unit, Member member) {
-        return unit.getName() + "." + member;
     }
 }

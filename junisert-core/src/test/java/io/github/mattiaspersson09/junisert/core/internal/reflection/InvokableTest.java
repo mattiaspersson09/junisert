@@ -28,6 +28,11 @@ public class InvokableTest {
         assertThat(new InvokableName().getName()).isEqualTo("InvokableName");
     }
 
+    @Test
+    void getParent_givesDefaultParent() {
+        assertThat(new InvokableName().getParent()).isEqualTo(InvokableTest.class);
+    }
+
     private static class InvokableName implements Invokable {
         @Override
         public Object invoke(Object instance, Object... args) {
@@ -36,11 +41,6 @@ public class InvokableTest {
 
         @Override
         public Collection<Class<?>> accepts() {
-            return null;
-        }
-
-        @Override
-        public Class<?> getParent() {
             return null;
         }
     }

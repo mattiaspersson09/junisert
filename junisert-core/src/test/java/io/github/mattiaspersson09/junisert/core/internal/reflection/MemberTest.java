@@ -119,6 +119,14 @@ public class MemberTest {
         assertThat(member.hashCode()).isNotEqualTo(new UnitMember(mock(java.lang.reflect.Member.class)).hashCode());
     }
 
+    @Test
+    void toString_whenNotOverridden_thenShowsUnitAndMemberName() {
+        when(mockMember.getName()).thenReturn("memberName");
+        doReturn(UnitMember.class).when(mockMember).getDeclaringClass();
+
+        assertThat(member.toString()).isEqualTo("UnitMember.memberName");
+    }
+
     private static class UnitMember extends Member {
         private UnitMember(java.lang.reflect.Member origin) {
             super(origin);

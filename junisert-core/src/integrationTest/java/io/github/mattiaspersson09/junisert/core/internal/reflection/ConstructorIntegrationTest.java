@@ -22,7 +22,6 @@ import io.github.mattiaspersson09.junisert.testunits.constructor.DefaultPrivateC
 import io.github.mattiaspersson09.junisert.testunits.constructor.DefaultProtectedConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.DefaultPublicConstructor;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
@@ -70,9 +69,7 @@ public class ConstructorIntegrationTest {
     }
 
     @Test
-    void invoke_givenNoInstance_andEmptyArray_whenDefaultConstructor_thenInvokes() throws NoSuchMethodException,
-                                                                                   InvocationTargetException,
-                                                                                   IllegalAccessException {
+    void invoke_givenNoInstance_andEmptyArray_whenDefaultConstructor_thenInvokes() throws NoSuchMethodException {
         Constructor publicConstructor = Constructor.of(DefaultAndArgConstructor.class.getDeclaredConstructor());
         Object[] emptyArgument = new Object[]{};
 
@@ -81,9 +78,7 @@ public class ConstructorIntegrationTest {
     }
 
     @Test
-    void invoke_givenNoInstance_butGivenArgument_whenArgumentConstructor_thenInvokes() throws NoSuchMethodException,
-                                                                                       InvocationTargetException,
-                                                                                       IllegalAccessException {
+    void invoke_givenNoInstance_butGivenArgument_whenArgumentConstructor_thenInvokes() throws NoSuchMethodException {
         Constructor publicConstructor = Constructor.of(
                 DefaultAndArgConstructor.class.getDeclaredConstructor(String.class));
         Object[] argument = new Object[]{""};
@@ -92,9 +87,7 @@ public class ConstructorIntegrationTest {
     }
 
     @Test
-    void invoke_givenInstance_whenInstanceHasSameOriginAsConstructor_thenInvokes() throws NoSuchMethodException,
-                                                                                   InvocationTargetException,
-                                                                                   IllegalAccessException {
+    void invoke_givenInstance_whenInstanceHasSameOriginAsConstructor_thenInvokes() throws NoSuchMethodException {
         Constructor publicConstructor = Constructor.of(DefaultAndArgConstructor.class.getDeclaredConstructor());
         Constructor argConstructor = Constructor.of(
                 DefaultAndArgConstructor.class.getDeclaredConstructor(String.class));
@@ -105,20 +98,23 @@ public class ConstructorIntegrationTest {
     }
 
     @Test
-    void invoke_givenInstance_whenUnknownInstanceOrigin_thenThrowsIllegalArgumentException() throws NoSuchMethodException {
+    void invoke_givenInstance_whenUnknownInstanceOrigin_thenThrowsReflectionException() throws NoSuchMethodException {
         Constructor publicConstructor = Constructor.of(DefaultAndArgConstructor.class.getDeclaredConstructor());
         Object instance = new DefaultPublicConstructor();
 
-        assertThatThrownBy(() -> publicConstructor.invoke(instance)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> publicConstructor.invoke(instance))
+                .isInstanceOf(ReflectionException.class)
+                .cause()
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void invoke_whenAbstractClass_thenInvocationTargetException() throws NoSuchMethodException {
+    void invoke_whenAbstractClass_thenThrowsReflectionException() throws NoSuchMethodException {
         Constructor publicConstructor = Constructor.of(AbstractConstructor.class.getDeclaredConstructor());
         Object[] argument = new Object[]{};
 
         assertThatThrownBy(() -> publicConstructor.invoke(null, argument))
-                .isInstanceOf(InvocationTargetException.class);
+                .isInstanceOf(ReflectionException.class);
     }
 
     @Test

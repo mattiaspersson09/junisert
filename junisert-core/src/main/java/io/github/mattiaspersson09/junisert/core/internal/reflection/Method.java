@@ -15,7 +15,6 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.reflection;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -242,8 +241,12 @@ public class Method extends ExecutableMember implements Invokable {
     }
 
     @Override
-    public Object invoke(Object instance, Object... args) throws InvocationTargetException, IllegalAccessException {
-        return origin.invoke(instance, args);
+    public Object invoke(Object instance, Object... args) throws ReflectionException {
+        try {
+            return origin.invoke(instance, args);
+        } catch (Exception e) {
+            throw new ReflectionException("Unable to invoke method: " + this, e);
+        }
     }
 
     @Override
@@ -263,5 +266,10 @@ public class Method extends ExecutableMember implements Invokable {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), origin);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s.%s(%s)", getParent().getSimpleName(), getName(), getParameterTypes());
     }
 }
