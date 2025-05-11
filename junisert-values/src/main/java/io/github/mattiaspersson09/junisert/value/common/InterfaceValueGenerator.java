@@ -22,6 +22,7 @@ import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Objects;
 
 public class InterfaceValueGenerator implements ValueGenerator<Object> {
     @Override
@@ -42,16 +43,21 @@ public class InterfaceValueGenerator implements ValueGenerator<Object> {
     private static class AnonymousInvocation implements InvocationHandler {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) {
-            switch (method.getName()) {
-                case "equals":
-                    return false;
-                case "hashCode":
-                    return 1;
-                case "toString":
-                    return "Anonymous proxy";
+            if (isEquals(method)) {
+                return Objects.hashCode(proxy) == Objects.hashCode(args[0]);
+            } else if (method.getReturnType().equals(int.class)) {
+                return 1;
+            } else if (method.getReturnType().equals(String.class)) {
+                return "Junisert$InterfaceProxy";
             }
 
             throw new UnsupportedOperationException("Unable to invoke on an anonymously constructed proxy object");
+        }
+
+        private boolean isEquals(Method method) {
+            return method.getName().equals("equals")
+                    && method.getReturnType().equals(boolean.class)
+                    && method.getParameterCount() == 1;
         }
     }
 }
