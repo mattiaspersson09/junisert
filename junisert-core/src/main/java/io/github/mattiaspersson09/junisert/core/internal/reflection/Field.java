@@ -72,7 +72,7 @@ public class Field extends Member implements Invokable {
         try {
             return origin.get(unitInstance);
         } catch (Exception e) {
-            throw new ReflectionException("Unable to get value from " + this + ", but it was not possible");
+            throw new ReflectionException("Unable to get value from " + this);
         }
     }
 
