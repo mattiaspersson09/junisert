@@ -16,7 +16,36 @@
 package io.github.mattiaspersson09.junisert.api.assertion;
 
 public interface UnitAssertion {
-    UnitAssertion isPlainOldJavaObject() throws UnitAssertionError;
+    /**
+     * Assumes this unit is a plain object for assertion, which doesn't necessarily follow a convention.
+     *
+     * @return a plain object assertion
+     */
+    PlainObjectAssertion asPojo();
 
-    PlainObjectAssertion asPojo() throws UnitAssertionError;
+    /**
+     * Is a convenience assertion to assert that a unit complies with the <em>Java Bean Specification</em>. This
+     * should make sure that a unit follows convention, which <strong>requires</strong> that:
+     * <ul>
+     * <li>Unit <em>must</em> have a default constructor (accepting no arguments).</li>
+     * <li>All instance properties <em>must</em> be private.</li>
+     * <li>All instance properties <em>must</em> have a working getter.</li>
+     * <li>All instance properties <em>must</em> have a working setter.</li>
+     * </ul>
+     *
+     * Other than enforcing convention, this assertion might still check for but not enforce:
+     * <ul>
+     * <li>Unit <em>should</em> implement {@link java.io.Serializable}, directly or indirectly</li>
+     * <li>Unit <em>should</em> override {@code equals and hashCode}</li>
+     * <li>Unit <em>should</em> override {@code toString}</li>
+     * </ul>
+     * Above checks might log a warning but not be enforced. If the user wants to enforce non required checks they
+     * should
+     * treat the unit as a <em>POJO</em> (Plain Old Java Object) and use {@link #asPojo()}.
+     *
+     * @return this assertion, chained to be able to assert more
+     * @throws UnitAssertionError if some requirement is not met
+     * @see #asPojo()
+     */
+    UnitAssertion isJavaBeanCompliant() throws UnitAssertionError;
 }

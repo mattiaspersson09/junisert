@@ -15,13 +15,34 @@
  */
 package io.github.mattiaspersson09.junisert.core;
 
+import io.github.mattiaspersson09.junisert.api.assertion.PlainObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertion;
+import io.github.mattiaspersson09.junisert.core.assertion.PlainObjectAssertionImpl;
+import io.github.mattiaspersson09.junisert.core.assertion.UnitAssertionImpl;
+import io.github.mattiaspersson09.junisert.core.internal.DefaultInstanceCreator;
+import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
+import io.github.mattiaspersson09.junisert.core.internal.SharedResource;
+import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 
 public final class Junisert {
+    private static final InstanceCreator DEFAULT_INSTANCE_CREATOR = new DefaultInstanceCreator();
+
     private Junisert() {
     }
 
     public static UnitAssertion assertThatUnit(Class<?> unitClass) {
-        return null;
+        return new UnitAssertionImpl(getDefaultTestResource(unitClass));
+    }
+
+    public static PlainObjectAssertion assertThatPojo(Class<?> pojoClass) {
+        return new PlainObjectAssertionImpl(getDefaultTestResource(pojoClass));
+    }
+
+    static SharedResource getDefaultTestResource(Class<?> unitUnderAssertion) {
+        return new SharedResource(
+                Unit.of(unitUnderAssertion),
+                DEFAULT_INSTANCE_CREATOR,
+                SingletonValueService.getInstance()
+        );
     }
 }

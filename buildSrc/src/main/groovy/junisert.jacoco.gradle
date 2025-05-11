@@ -6,7 +6,8 @@ plugins {
 jacocoTestReport {
     executionData.from(
             project.layout.buildDirectory.dir("jacoco/test.exec"),
-            project.layout.buildDirectory.dir("jacoco/integrationTest.exec")
+            project.layout.buildDirectory.dir("jacoco/integrationTest.exec"),
+            project.layout.buildDirectory.dir("jacoco/functionalTest.exec")
     )
 
     reports {

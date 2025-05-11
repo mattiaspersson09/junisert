@@ -18,39 +18,53 @@ package io.github.mattiaspersson09.junisert.core.assertion;
 import io.github.mattiaspersson09.junisert.api.assertion.PlainObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
-import io.github.mattiaspersson09.junisert.core.reflection.Unit;
+import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
+import io.github.mattiaspersson09.junisert.core.internal.SharedResource;
+import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
+import io.github.mattiaspersson09.junisert.core.internal.test.HasGetters;
+import io.github.mattiaspersson09.junisert.core.internal.test.HasSetters;
+import io.github.mattiaspersson09.junisert.core.internal.test.ImplementsEquals;
+import io.github.mattiaspersson09.junisert.core.internal.test.ImplementsHashCode;
+import io.github.mattiaspersson09.junisert.core.internal.test.ImplementsToString;
+
 
 public class PlainObjectAssertionImpl implements PlainObjectAssertion {
-    private final Unit unit;
     private final ValueService valueService;
+    private final InstanceCreator instanceCreator;
+    private final Unit unitUnderAssertion;
 
-    public PlainObjectAssertionImpl(Unit unit, ValueService valueService) {
-        this.unit = unit;
-        this.valueService = valueService;
-    }
-
-    @Override
-    public PlainObjectAssertion hasSetters() throws UnitAssertionError {
-        return null;
+    public PlainObjectAssertionImpl(SharedResource sharedResource) {
+        this.valueService = sharedResource.getValueService();
+        this.instanceCreator = sharedResource.getInstanceCreator();
+        this.unitUnderAssertion = sharedResource.getUnitUnderAssertion();
     }
 
     @Override
     public PlainObjectAssertion hasGetters() throws UnitAssertionError {
-        return null;
+        new HasGetters(valueService, instanceCreator).test(unitUnderAssertion);
+
+        return this;
     }
 
     @Override
-    public PlainObjectAssertion implementsEquals() throws UnitAssertionError {
-        return null;
+    public PlainObjectAssertion hasSetters() throws UnitAssertionError {
+        new HasSetters(valueService, instanceCreator).test(unitUnderAssertion);
+
+        return this;
     }
 
     @Override
-    public PlainObjectAssertion implementsHashCode() throws UnitAssertionError {
-        return null;
+    public PlainObjectAssertion implementsEqualsAndHashCode() throws UnitAssertionError {
+        new ImplementsEquals(valueService, instanceCreator).test(unitUnderAssertion);
+        new ImplementsHashCode(valueService, instanceCreator).test(unitUnderAssertion);
+
+        return this;
     }
 
     @Override
     public PlainObjectAssertion implementsToString() throws UnitAssertionError {
-        return null;
+        new ImplementsToString(valueService, instanceCreator).test(unitUnderAssertion);
+
+        return this;
     }
 }

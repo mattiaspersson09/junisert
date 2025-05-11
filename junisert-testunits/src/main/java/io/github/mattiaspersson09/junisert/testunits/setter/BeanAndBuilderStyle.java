@@ -8,7 +8,8 @@ public class BeanAndBuilderStyle {
         return this;
     }
 
-    public void setField(Object field) {
+    public BeanAndBuilderStyle setField(Object field) {
         this.field = field;
+        return this;
     }
 }
