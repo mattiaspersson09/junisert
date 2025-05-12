@@ -18,29 +18,24 @@ package io.github.mattiaspersson09.junisert.core.internal.test;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
-import io.github.mattiaspersson09.junisert.core.internal.DefaultInstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods;
+import io.github.mattiaspersson09.junisert.core.internal.test.util.Equals;
 
-import java.util.Objects;
 
-public class ImplementsEquals implements UnitTest {
+public class ImplementsEquals extends AbstractUnitTest {
     private static final Logger LOGGER = Logger.getLogger("Implements Equals");
-
-    private final ValueService valueService;
-    private final InstanceCreator instanceCreator;
+    private static final int TIMES_CONSISTENCY_CHECK = 3;
 
     ImplementsEquals(ValueService valueService) {
-        this.valueService = valueService;
-        this.instanceCreator = new DefaultInstanceCreator();
+        super(valueService);
     }
 
     public ImplementsEquals(ValueService valueService, InstanceCreator instanceCreator) {
-        this.valueService = valueService;
-        this.instanceCreator = instanceCreator;
+        super(valueService, instanceCreator);
     }
 
     @Override
@@ -48,23 +43,14 @@ public class ImplementsEquals implements UnitTest {
         LOGGER.info("Testing unit: {0}", unit.getName());
 
         if (!unit.hasMethodMatching(Methods::isEqualsMethod)) {
-            LOGGER.fail(details(unit, "was nowhere to be found"), "to have an equals method", "it was not found");
+            LOGGER.fail(unit.getName() + ".equals(Object) " + "was nowhere to be found",
+                    "to have an equals method", "it was not found");
             throw new UnitAssertionError(unit.getName() + " was expected to implement the equals method");
         }
 
         Object instance = instanceCreator.createInstance(unit);
         Object instance2 = instanceCreator.createInstance(unit);
-
-        if (!isPassingNullCheck(instance)) {
-            LOGGER.fail(details(unit, "fails null check"), "to not equal null objects", "it did");
-            throw new UnitAssertionError("Was expected to NOT equal null objects");
-        }
-
-        // Boilerplate usually adds getClass() check, lowering code coverage without this check
-        if (!isPassingTypeCheck(instance)) {
-            LOGGER.fail(details(unit, "fails type check"), "to not equal objects of other types", "it did");
-            throw new UnitAssertionError("Was expected to NOT equal other object types");
-        }
+        Object instance3 = instanceCreator.createInstance(unit);
 
         LOGGER.info("Setting up fields for equality comparison");
 
@@ -74,71 +60,31 @@ public class ImplementsEquals implements UnitTest {
             }
 
             Object value = valueService.getValue(field.getType()).get();
-
             field.setValue(instance, value);
             field.setValue(instance2, value);
+            field.setValue(instance3, value);
         }
 
-        if (!isPassingSelfCheck(instance, instance)) {
-            LOGGER.fail(details(unit, "fails self check"), "to equal reference of itself", "it did not");
-            throw new UnitAssertionError("Was expected to equal itself as reference");
-        }
+        Equals.ofInstance(instance)
+                .isReflexive()
+                .isSymmetricWith(instance2)
+                .isTransitiveWith(instance2, instance3)
+                .isConsistentWith(instance2, TIMES_CONSISTENCY_CHECK)
+                .isNotSymmetricWith((Object) null)
+                .isNotSymmetricWith(new Object())
+                .isNotSymmetricWith(() -> resetFieldsInInstance(unit, instance2));
+    }
 
-        if (!isPassingSymmetryCheck(instance, instance2)) {
-            LOGGER.fail(details(unit, "fails symmetry check"), "to be symmetric", "it was not");
-            throw new UnitAssertionError("Was expected to equal other instances with the same values");
-        }
-
-        if (!isPassingConsistencyCheck(instance, instance2)) {
-            LOGGER.fail(details(unit, "fails consistency check"), "to be consistent", "it was not");
-            throw new UnitAssertionError("Was expected to be return the same result every time");
-        }
-
-        // Passing other sanity checks, different field value instances should not be equal
+    public Object resetFieldsInInstance(Unit unit, Object instance) {
         for (Field field : unit.getFields()) {
-            if (field.isSynthetic() || field.modifier().isStatic()) {
+            if (!Fields.isInstanceField(field)) {
                 continue;
             }
 
             Object value = valueService.getValue(field.getType()).asEmpty();
-            field.setValue(instance2, value);
+            field.setValue(instance, value);
         }
 
-        if (instance.equals(instance2)) {
-            LOGGER.fail(details(unit, "fails negative check"), "to not equal instance with other values", "it did");
-            throw new UnitAssertionError("Was expected to NOT equal another instance with different values");
-        }
-    }
-
-    private boolean isPassingSelfCheck(Object instance, Object selfReference) {
-        LOGGER.test("Self check -> instance.equals(instance)");
-        return instance.equals(selfReference);
-    }
-
-    private boolean isPassingSymmetryCheck(Object instance, Object instance2) {
-        LOGGER.test("Symmetry check -> instance.equals(otherInstance)");
-        return instance.equals(instance2) && instance2.equals(instance);
-    }
-
-    private boolean isPassingConsistencyCheck(Object instance, Object instance2) {
-        LOGGER.test("Consistency check -> instance.equals(otherInstance) x 2");
-        return isPassingSymmetryCheck(instance, instance2) && isPassingSymmetryCheck(instance, instance2);
-    }
-
-    private boolean isPassingTypeCheck(Object instance) {
-        LOGGER.test("Type check -> instance.equals(nonRelatedInstance)");
-        return !instance.equals(new NonEqualClass());
-    }
-
-    private boolean isPassingNullCheck(Object instance) {
-        LOGGER.test("Null check -> instance.equals(null)");
-        return !Objects.equals(instance, null);
-    }
-
-    private String details(Unit unit, String detail) {
-        return unit.getName() + ".equals(...) " + detail;
-    }
-
-    private static class NonEqualClass {
+        return instance;
     }
 }
