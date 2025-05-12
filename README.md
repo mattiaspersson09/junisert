@@ -1,6 +1,5 @@
 # Junisert
 
----
 [![CI](https://github.com/mattiaspersson09/junisert/actions/workflows/ci.yaml/badge.svg)](https://github.com/mattiaspersson09/junisert/actions/workflows/ci.yaml)
 [![codecov](https://codecov.io/gh/mattiaspersson09/junisert/branch/main/graph/badge.svg?token=SEE3IT4F86)](https://codecov.io/gh/mattiaspersson09/junisert)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -28,8 +27,6 @@ reviewed and considered for future versions.*
 
 ## Project information
 
----
-
 This project were created from a need and desire to test structural boilerplate code with or without behavior, with 
 continuous support where users should have ability to register their own support without needing to wait for 
 new support for Java types.
@@ -45,8 +42,6 @@ with testing boilerplate code in units to ensure structural integrity and behavi
 for laying groundwork and inspiration that sparked the birth of this project.*
 
 ## Goals
-
----
 
 - Be free from external code dependencies to not clutter users code base when it's not needed.
 - Be a complement to users already favorite testing frameworks.
