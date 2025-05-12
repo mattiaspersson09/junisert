@@ -35,15 +35,20 @@ public final class Equals {
         this.instance = Objects.requireNonNull(instance);
     }
 
+    /**
+     * Creates a new equals of given {@code instance}.
+     *
+     * @param instance non null to test
+     * @return a new equals of instance
+     */
     public static Equals ofInstance(Object instance) {
-        Objects.requireNonNull(instance);
         return new Equals(instance);
     }
 
     /**
      * <strong>Reflexivity</strong>: for any non-null reference value x, x.equals(x) should return true.
      *
-     * @return this equals to check more
+     * @return this equals to continue checking
      * @throws UnitAssertionError if instance equals check is not reflexive
      */
     @SuppressWarnings("all")
@@ -64,7 +69,7 @@ public final class Equals {
      * y.equals(x) returns true.
      *
      * @param otherInstance non null to compare
-     * @return this equals to check more
+     * @return this equals to continue checking
      * @throws UnitAssertionError if instance equals check is not symmetric
      * @see #isNotSymmetricWith(Object)
      */
