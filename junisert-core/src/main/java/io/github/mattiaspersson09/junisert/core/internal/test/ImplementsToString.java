@@ -25,7 +25,6 @@ import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,8 +98,10 @@ public class ImplementsToString implements UnitTest {
         return Optional.ofNullable(object)
                 .map(obj -> {
                     // Would otherwise show hash variant of the array instead of actual values
+                    // At this point, all arrays should be empty
+                    // Arrays.toString((Object[]) obj) is not possible for primitive arrays because of class cast issue
                     if (obj.getClass().isArray()) {
-                        return Arrays.toString((Object[]) obj);
+                        return "[]";
                     }
 
                     return obj.toString();
