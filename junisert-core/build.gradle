@@ -3,11 +3,17 @@ plugins {
     id("maven-publish")
 }
 
+configurations {
+    functionalTestAnnotationProcessor.extendsFrom(testAnnotationProcessor)
+}
+
 dependencies {
     api(project(":junisert-api"))
     api(project(":junisert-values"))
 
     testImplementation(project(":junisert-testunits"))
+    functionalTestImplementation("org.projectlombok:lombok:1.18.38")
+    functionalTestAnnotationProcessor("org.projectlombok:lombok:1.18.38")
 }
 
 publishing {

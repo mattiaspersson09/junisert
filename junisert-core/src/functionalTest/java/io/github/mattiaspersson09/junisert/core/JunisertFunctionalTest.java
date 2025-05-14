@@ -16,6 +16,9 @@
 package io.github.mattiaspersson09.junisert.core;
 
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
+import io.github.mattiaspersson09.junisert.core.units.lombok.LombokDataUnit;
+import io.github.mattiaspersson09.junisert.core.units.lombok.LombokImmutable;
+import io.github.mattiaspersson09.junisert.core.units.lombok.LombokUnit;
 import io.github.mattiaspersson09.junisert.testunits.constructor.ArgConstructor;
 import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanCompliantButNotRecommended;
 import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanCompliantModel;
@@ -30,12 +33,18 @@ public class JunisertFunctionalTest {
     @Test
     void givenPlainObject_whenAssertingWellImplementedPojo_thenShouldPassAssertion() {
         Junisert.assertThatPojo(BeanCompliantModel.class).isWellImplemented();
+        Junisert.assertThatPojo(LombokDataUnit.class).isWellImplemented();
+        Junisert.assertThatPojo(LombokUnit.class).isWellImplemented();
     }
 
     @Test
     void givenImmutable_whenAssertingPojo_thenShouldPassAssertion() {
         Junisert.assertThatUnit(ImmutableModel.class)
                 .asPojo()
+                .hasGetters()
+                .implementsEqualsAndHashCode()
+                .implementsToString();
+        Junisert.assertThatPojo(LombokImmutable.class)
                 .hasGetters()
                 .implementsEqualsAndHashCode()
                 .implementsToString();
