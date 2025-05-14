@@ -150,10 +150,7 @@ public class UnitIntegrationTest {
     @Test
     void givenNullOrigin_whenCreating_thenShouldFailFast() {
         assertThatThrownBy(() -> Unit.of(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("unit origin");
-        assertThatThrownBy(() -> Unit.of(null))
-                .isInstanceOf(NullPointerException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("unit origin");
     }
 

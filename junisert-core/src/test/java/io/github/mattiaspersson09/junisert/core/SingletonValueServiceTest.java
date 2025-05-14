@@ -72,7 +72,7 @@ public class SingletonValueServiceTest {
     void registerNamedSupport_whenAddingSupport_thenSupportIsAddedToGenerators() {
         int supportBefore = valueService.supportSize();
 
-        valueService.registerSupport(support);
+        valueService.registerNamedSupport(support, "support name");
 
         assertThat(valueService.supportSize()).isGreaterThan(supportBefore);
     }
