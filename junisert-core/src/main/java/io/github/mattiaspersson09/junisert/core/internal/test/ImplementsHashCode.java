@@ -84,9 +84,9 @@ public class ImplementsHashCode implements UnitTest {
 
         if (!isPassingUniqueHashCodeCheck(instance, instance2)) {
             LOGGER.fail(details(unit, "fails uniqueness check"),
-                    "to have unique hash code",
+                    "to have the same unique hash code for equal instances",
                     "it did not");
-            throw new UnitAssertionError("Was expected to have unique hash code");
+            throw new UnitAssertionError("Was expected to have equal unique hash code");
         }
 
         LOGGER.info("Resetting fields for an instance");

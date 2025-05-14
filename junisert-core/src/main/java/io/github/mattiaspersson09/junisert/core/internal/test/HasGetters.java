@@ -21,7 +21,6 @@ import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Member;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Method;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
@@ -73,7 +72,7 @@ public final class HasGetters extends AbstractUnitTest {
 
                 if (!injection.inject()) {
                     LOGGER.fail("Expected method to get value from field but it did not",
-                            concatName(unit, method) + " to get value from " + concatName(unit, field),
+                            method + " to get value from " + field,
                             "it did not");
                     throw new UnitAssertionError(
                             String.format("Found getter: %s, but it was not getting value from field: %s",
@@ -81,9 +80,5 @@ public final class HasGetters extends AbstractUnitTest {
                 }
             }
         }
-    }
-
-    private String concatName(Unit unit, Member member) {
-        return unit.getName() + "." + member;
     }
 }

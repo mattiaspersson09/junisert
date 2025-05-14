@@ -95,8 +95,7 @@ class Injection {
             setup.accept(unitInstance);
         }
 
-        LOGGER.test("Injecting: arguments({0}) -> {1}.{2}", Arrays.toString(arguments),
-                injectionTarget.getParent().getSimpleName(), injectionTarget);
+        LOGGER.test("Injecting: arguments({0}) -> {1}", Arrays.toString(arguments), injectionTarget);
         injectionTarget.invoke(unitInstance, arguments);
 
         return result.test(unitInstance);
