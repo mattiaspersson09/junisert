@@ -17,15 +17,30 @@ package io.github.mattiaspersson09.junisert.core;
 
 import io.github.mattiaspersson09.junisert.api.assertion.PlainObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertion;
+import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedSupportGenerator;
+import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedValueGenerator;
+import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.core.assertion.PlainObjectAssertionImpl;
 import io.github.mattiaspersson09.junisert.core.assertion.UnitAssertionImpl;
-import io.github.mattiaspersson09.junisert.core.internal.DefaultInstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.SharedResource;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
+import io.github.mattiaspersson09.junisert.value.common.ArrayValueGenerator;
+import io.github.mattiaspersson09.junisert.value.common.EnumValueGenerator;
+import io.github.mattiaspersson09.junisert.value.common.InterfaceValueGenerator;
+import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
+import io.github.mattiaspersson09.junisert.value.common.PrimitiveValueGenerator;
+import io.github.mattiaspersson09.junisert.value.common.WrapperPrimitiveValueGenerator;
+import io.github.mattiaspersson09.junisert.value.java.JavaInternals;
+
+import java.util.Arrays;
+import java.util.List;
+
 
 public final class Junisert {
-    private static final InstanceCreator DEFAULT_INSTANCE_CREATOR = new DefaultInstanceCreator();
+    static final int INSTANCE_DEPENDENCY_DEPTH = 3;
+    private static volatile InstanceCreator defaultInstanceCreator;
+    private static volatile ValueCache valueCache;
 
     private Junisert() {
     }
@@ -38,10 +53,41 @@ public final class Junisert {
         return new PlainObjectAssertionImpl(getDefaultTestResource(pojoClass));
     }
 
-    static SharedResource getDefaultTestResource(Class<?> unitUnderAssertion) {
+    static List<ValueGenerator<?>> defaultValueSupport() {
+        return Arrays.asList(
+                new PrimitiveValueGenerator(),
+                new WrapperPrimitiveValueGenerator(),
+                new ArrayValueGenerator(),
+                new EnumValueGenerator(),
+                JavaInternals.getSupported(),
+                new InterfaceValueGenerator(),
+                new ObjectValueGenerator(),
+                ObjectValueGenerator.withForcedAccess()
+        );
+    }
+
+    static AggregatedValueGenerator aggregatedDefaultValueSupport() {
+        return new AggregatedSupportGenerator(defaultValueSupport());
+    }
+
+    static synchronized ValueCache valueCache() {
+        if (valueCache == null) {
+            valueCache = new ValueCache();
+        }
+
+        return valueCache;
+    }
+
+    static synchronized SharedResource getDefaultTestResource(Class<?> unitUnderAssertion) {
+        if (defaultInstanceCreator == null) {
+            ValueGenerator<Object> dependencyGenerator = new CachingDependencyGenerator(
+                    aggregatedDefaultValueSupport(), valueCache());
+            defaultInstanceCreator = new ConstructorInstanceCreator(dependencyGenerator, INSTANCE_DEPENDENCY_DEPTH);
+        }
+
         return new SharedResource(
                 Unit.of(unitUnderAssertion),
-                DEFAULT_INSTANCE_CREATOR,
+                defaultInstanceCreator,
                 SingletonValueService.getInstance()
         );
     }

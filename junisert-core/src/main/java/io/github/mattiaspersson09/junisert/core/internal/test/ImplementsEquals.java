@@ -30,10 +30,6 @@ public class ImplementsEquals extends AbstractUnitTest {
     private static final Logger LOGGER = Logger.getLogger("Implements Equals");
     private static final int TIMES_CONSISTENCY_CHECK = 3;
 
-    ImplementsEquals(ValueService valueService) {
-        super(valueService);
-    }
-
     public ImplementsEquals(ValueService valueService, InstanceCreator instanceCreator) {
         super(valueService, instanceCreator);
     }

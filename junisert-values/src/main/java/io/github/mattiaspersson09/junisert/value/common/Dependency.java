@@ -95,8 +95,6 @@ final class Dependency {
                 invokingConstructor.setAccessible(true);
             }
 
-            LOGGER.info("Finding dependency support for constructor: {0}", invokingConstructor);
-
             Object[] arguments = Stream.of(invokingConstructor.getParameters())
                     .map(this::toValue)
                     .toArray();

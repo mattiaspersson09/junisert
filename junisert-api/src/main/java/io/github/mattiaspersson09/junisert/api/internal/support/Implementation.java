@@ -17,8 +17,8 @@ package io.github.mattiaspersson09.junisert.api.internal.support;
 
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
-import io.github.mattiaspersson09.junisert.common.sort.NaturalSort;
 import io.github.mattiaspersson09.junisert.common.sort.Order;
+import io.github.mattiaspersson09.junisert.common.sort.Sortable;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -34,15 +34,15 @@ import java.util.function.Supplier;
  * so that specific implementations can be prioritized.
  *
  * @param <T> concrete implementation in a polymorphic chain
- * @see NaturalSort
  * @see Value
  */
-public final class Implementation<T> extends NaturalSort<Implementation<T>> implements Value<T> {
+public final class Implementation<T> implements Value<T>, Sortable {
     private final Class<T> implementationType;
     private final Supplier<? extends T> value;
+    private Order order;
 
     public Implementation(Class<T> implementationType, Supplier<? extends T> value) {
-        super(Order.DEFAULT);
+        this.order = Order.DEFAULT;
         this.implementationType = Objects.requireNonNull(implementationType, "Must have an implementation type");
         this.value = Objects.requireNonNull(value, "Can't construct a lazy value object without a value supplier");
     }
@@ -64,9 +64,22 @@ public final class Implementation<T> extends NaturalSort<Implementation<T>> impl
         return origin.isAssignableFrom(this.implementationType);
     }
 
+    public Implementation<T> order(Order order) {
+        if (order != null) {
+            this.order = order;
+        }
+
+        return this;
+    }
+
     @Override
     public T get() {
         return value.get();
+    }
+
+    @Override
+    public Order order() {
+        return order;
     }
 
     @Override

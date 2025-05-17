@@ -57,7 +57,7 @@ import java.util.Optional;
  * @see Order
  */
 public abstract class NaturalSort<SELF extends NaturalSort<SELF> & Sortable> implements Sortable {
-    private static final String UNEXPECTED_GENERIC = "Unexpected generic self\nexpected: %s\nbut found: %s";
+    private static final String UNEXPECTED_GENERIC = "Unexpected generic self%nexpected: %s%nbut found: %s";
 
     private Order order;
 

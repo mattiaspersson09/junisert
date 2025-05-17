@@ -18,21 +18,22 @@ package io.github.mattiaspersson09.junisert.api.internal.support;
 
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
 public final class SupportBuilder {
     private final Set<ValueGenerator<?>> generators;
 
-    private SupportBuilder(Collection<ValueGenerator<?>> initialGenerators) {
-        this.generators = new HashSet<>(initialGenerators);
+    private SupportBuilder() {
+        this.generators = new HashSet<>();
     }
 
     public static SupportBuilder createSupport() {
-        return new SupportBuilder(new HashSet<>());
+        return new SupportBuilder();
     }
 
     public <T> Support<T> support(Class<T> superType) {
@@ -66,12 +67,12 @@ public final class SupportBuilder {
 
     public static final class Support<T> {
         private final Class<T> superType;
-        private final LinkedList<Implementation<? extends T>> implementations;
+        private final List<Implementation<? extends T>> implementations;
         private final SupportBuilder builder;
 
         public Support(Class<T> superType, SupportBuilder builder) {
             this.superType = superType;
-            this.implementations = new LinkedList<>();
+            this.implementations = new ArrayList<>();
             this.builder = builder;
         }
 

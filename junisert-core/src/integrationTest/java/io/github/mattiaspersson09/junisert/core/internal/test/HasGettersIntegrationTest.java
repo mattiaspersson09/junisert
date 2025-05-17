@@ -18,6 +18,8 @@ package io.github.mattiaspersson09.junisert.core.internal.test;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.core.NoCacheTestValueService;
+import io.github.mattiaspersson09.junisert.core.TestInstanceCreator;
+import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.convention.Convention;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.testunits.getter.BeanAndRecordStyle;
@@ -40,16 +42,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class HasGettersIntegrationTest {
     private static ValueService valueService;
+    private static InstanceCreator instanceCreator;
     private HasGetters hasGetters;
 
     @BeforeAll
     static void beforeAll() {
         valueService = NoCacheTestValueService.withAllValueGenerators();
+        instanceCreator = new TestInstanceCreator();
     }
 
     @BeforeEach
     void setUp() {
-        hasGetters = new HasGetters(valueService);
+        hasGetters = new HasGetters(valueService, instanceCreator);
     }
 
     @Test

@@ -13,24 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core.internal;
+package io.github.mattiaspersson09.junisert.core;
 
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedSupportGenerator;
-import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedValueGenerator;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
-import io.github.mattiaspersson09.junisert.value.common.ArrayValueGenerator;
+import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.value.common.DependencyObjectValueGenerator;
-import io.github.mattiaspersson09.junisert.value.common.EnumValueGenerator;
-import io.github.mattiaspersson09.junisert.value.common.InterfaceValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
-import io.github.mattiaspersson09.junisert.value.common.PrimitiveValueGenerator;
-import io.github.mattiaspersson09.junisert.value.common.WrapperPrimitiveValueGenerator;
-import io.github.mattiaspersson09.junisert.value.java.JavaInternals;
 
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.Objects;
 
 /**
  * Helps create unit instances for tests. Using supplied {@link ValueGenerator} or default object generators,
@@ -41,32 +35,22 @@ import java.util.Optional;
  * Unit instances needs to be <em>unique</em>, caching instances will force references to be used
  * and updating a field in one instance will affect other instances of the same type.
  */
-public final class DefaultInstanceCreator implements InstanceCreator {
+final class ConstructorInstanceCreator implements InstanceCreator {
     private final ValueGenerator<Object> instanceGenerator;
 
-    public DefaultInstanceCreator() {
-        this(null);
+    ConstructorInstanceCreator(ValueGenerator<Object> instanceGenerator) {
+        this.instanceGenerator = instanceGenerator;
     }
 
-    public DefaultInstanceCreator(ValueGenerator<Object> instanceGenerator) {
-        this.instanceGenerator = Optional.ofNullable(instanceGenerator)
-                .orElseGet(this::getDefaultObjectGenerators);
-    }
+    ConstructorInstanceCreator(ValueGenerator<Object> dependencySupport, int dependencyDepth) {
+        Objects.requireNonNull(dependencySupport);
 
-    private AggregatedValueGenerator getDefaultObjectGenerators() {
-        ValueGenerator<?> argumentGenerator = new AggregatedSupportGenerator(Arrays.asList(
-                new PrimitiveValueGenerator(),
-                new WrapperPrimitiveValueGenerator(),
-                new ArrayValueGenerator(),
-                new EnumValueGenerator(),
-                JavaInternals.getSupported(),
-                new InterfaceValueGenerator(),
-                ObjectValueGenerator.withForcedAccess()
-        ));
-
-        return new AggregatedSupportGenerator(Arrays.asList(
+        this.instanceGenerator = new AggregatedSupportGenerator(Arrays.asList(
                 ObjectValueGenerator.withForcedAccess(),
-                DependencyObjectValueGenerator.withForcedAccess(argumentGenerator)
+                DependencyObjectValueGenerator.buildDependencySupport(dependencySupport)
+                        .withForcedAccess()
+                        .withMaxDependencyDepth(dependencyDepth)
+                        .build()
         ));
     }
 

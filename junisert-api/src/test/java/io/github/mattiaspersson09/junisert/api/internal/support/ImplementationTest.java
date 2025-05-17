@@ -136,9 +136,9 @@ public class ImplementationTest {
 
     @Test
     void implementationsCanBeOrdered() {
-        Implementation<?> valuePrioritized = new Implementation<>(Super.class, ExtendingImpl::new).ordered(Order.FIRST);
-        Implementation<?> value = new Implementation<>(Super.class, Impl::new).ordered(Order.DEFAULT);
-        Implementation<?> valueOther = new Implementation<>(Super.class, OtherImpl::new).ordered(Order.LAST);
+        Implementation<?> valuePrioritized = new Implementation<>(Super.class, ExtendingImpl::new).order(Order.FIRST);
+        Implementation<?> value = new Implementation<>(Super.class, Impl::new).order(Order.DEFAULT);
+        Implementation<?> valueOther = new Implementation<>(Super.class, OtherImpl::new).order(Order.LAST);
 
         List<Implementation<?>> implementations = Stream.of(valueOther, valuePrioritized, value)
                 .sorted()

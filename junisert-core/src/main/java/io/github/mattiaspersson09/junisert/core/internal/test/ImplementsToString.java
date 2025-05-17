@@ -18,7 +18,6 @@ package io.github.mattiaspersson09.junisert.core.internal.test;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
-import io.github.mattiaspersson09.junisert.core.internal.DefaultInstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
@@ -33,11 +32,6 @@ public class ImplementsToString implements UnitTest {
 
     private final ValueService valueService;
     private final InstanceCreator instanceCreator;
-
-    ImplementsToString(ValueService valueService) {
-        this.valueService = valueService;
-        this.instanceCreator = new DefaultInstanceCreator();
-    }
 
     public ImplementsToString(ValueService valueService, InstanceCreator instanceCreator) {
         this.valueService = valueService;

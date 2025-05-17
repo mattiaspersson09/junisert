@@ -120,7 +120,7 @@ public class SupportGeneratorTest {
 
     @Test
     void generate_order() {
-        Implementation<Impl> impl = new Implementation<>(Impl.class, Impl::new).ordered(Order.FIRST);
+        Implementation<Impl> impl = new Implementation<>(Impl.class, Impl::new).order(Order.FIRST);
         Implementation<ExtendingImpl> impl2 = new Implementation<>(ExtendingImpl.class, ExtendingImpl::new);
         Implementation<OtherImpl> impl3 = new Implementation<>(OtherImpl.class, OtherImpl::new);
 

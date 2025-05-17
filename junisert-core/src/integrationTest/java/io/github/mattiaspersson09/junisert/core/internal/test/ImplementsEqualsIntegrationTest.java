@@ -18,6 +18,8 @@ package io.github.mattiaspersson09.junisert.core.internal.test;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.core.NoCacheTestValueService;
+import io.github.mattiaspersson09.junisert.core.TestInstanceCreator;
+import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.testunits.equals.WellImplementedEquals;
 import io.github.mattiaspersson09.junisert.testunits.equals.WellImplementedEqualsExtendingBase;
@@ -36,16 +38,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ImplementsEqualsIntegrationTest {
     private static ValueService valueService;
+    private static InstanceCreator instanceCreator;
     private ImplementsEquals implementsEquals;
 
     @BeforeAll
     static void beforeAll() {
         valueService = NoCacheTestValueService.withAllValueGenerators();
+        instanceCreator = new TestInstanceCreator();
     }
 
     @BeforeEach
     void setUp() {
-        implementsEquals = new ImplementsEquals(valueService);
+        implementsEquals = new ImplementsEquals(valueService, instanceCreator);
     }
 
     @Test

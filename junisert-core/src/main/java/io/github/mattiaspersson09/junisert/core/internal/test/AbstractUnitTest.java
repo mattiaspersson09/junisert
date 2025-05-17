@@ -16,7 +16,6 @@
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
-import io.github.mattiaspersson09.junisert.core.internal.DefaultInstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.convention.Convention;
 
@@ -24,10 +23,6 @@ public abstract class AbstractUnitTest implements UnitTest {
     protected final ValueService valueService;
     protected final InstanceCreator instanceCreator;
     protected Convention activeConvention;
-
-    AbstractUnitTest(ValueService valueService) {
-        this(valueService, new DefaultInstanceCreator());
-    }
 
     public AbstractUnitTest(ValueService valueService, InstanceCreator instanceCreator) {
         this.valueService = valueService;
