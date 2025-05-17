@@ -45,17 +45,17 @@ public class ObjectValueGenerator implements ValueGenerator<Object> {
         }
 
         try {
-            Constructor<?> noArgConstructor = fromType.getDeclaredConstructor();
+            Constructor<?> defaultConstructor = fromType.getDeclaredConstructor();
 
             if (forceConstructorAccess) {
-                noArgConstructor.setAccessible(true);
+                defaultConstructor.setAccessible(true);
             }
 
             /*
                 We choose to fail fast instead of letting user figure out why reflection fails later
                 if we were to use lazy construction.
              */
-            return Value.ofEager(noArgConstructor.newInstance());
+            return Value.ofEager(defaultConstructor.newInstance());
         } catch (Exception e) {
             throw new UnsupportedConstructionError(fromType, e);
         }

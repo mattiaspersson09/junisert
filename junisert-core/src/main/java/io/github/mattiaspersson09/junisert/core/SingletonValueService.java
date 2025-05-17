@@ -16,28 +16,25 @@
 package io.github.mattiaspersson09.junisert.core;
 
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
-import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedSupportGenerator;
-import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedValueGenerator;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.value.common.ArrayValueGenerator;
+import io.github.mattiaspersson09.junisert.value.common.DependencyObjectValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.EnumValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.InterfaceValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
-import io.github.mattiaspersson09.junisert.value.common.ParameterObjectValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.PrimitiveValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.WrapperPrimitiveValueGenerator;
 import io.github.mattiaspersson09.junisert.value.java.JavaInternals;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-final class SingletonValueService implements ValueService {
+final class SingletonValueService implements ValueService, ValueGenerator<Object> {
     private static final Logger LOGGER = Logger.getLogger("Junisert");
     private static volatile SingletonValueService INSTANCE;
 
@@ -52,26 +49,17 @@ final class SingletonValueService implements ValueService {
     }
 
     private void registerDefaultValueSupport() {
-        ValueGenerator<?> javaInternals = JavaInternals.getSupported();
-        AggregatedValueGenerator aggregatedArgumentGenerator = new AggregatedSupportGenerator(Arrays.asList(
-                new PrimitiveValueGenerator(),
-                new WrapperPrimitiveValueGenerator(),
-                new ArrayValueGenerator(),
-                new EnumValueGenerator(),
-                javaInternals,
-                new InterfaceValueGenerator(),
-                ObjectValueGenerator.withForcedAccess()
-        ));
-
         registerNamedSupport(new PrimitiveValueGenerator(), "primitive support");
         registerNamedSupport(new WrapperPrimitiveValueGenerator(), "wrapper primitive support");
         registerNamedSupport(new ArrayValueGenerator(), "array support");
         registerNamedSupport(new EnumValueGenerator(), "enum support");
-        registerNamedSupport(javaInternals, "predefined Java internals support");
+        registerNamedSupport(JavaInternals.getSupported(), "predefined Java internals support");
         registerNamedSupport(new InterfaceValueGenerator(), "interface proxy support");
         registerNamedSupport(ObjectValueGenerator.withForcedAccess(), "object (from default constructor) support");
-        registerNamedSupport(ParameterObjectValueGenerator.withForcedAccess(aggregatedArgumentGenerator),
-                "object (from argument constructor) support");
+        registerNamedSupport(DependencyObjectValueGenerator.buildDependencySupport(this)
+                .withForcedAccess()
+                .withMaxDependencyDepth(1)
+                .build(), "object dependency (from argument constructor) support");
     }
 
     static synchronized SingletonValueService getInstance() {
@@ -109,6 +97,17 @@ final class SingletonValueService implements ValueService {
         }
 
         throw new UnsupportedTypeError(type);
+    }
+
+    @Override
+    public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
+        return getValue(fromType);
+    }
+
+    @Override
+    public boolean supports(Class<?> type) {
+        return generators.stream()
+                .anyMatch(generator -> generator.supports(type));
     }
 
     int supportSize() {

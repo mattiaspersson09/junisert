@@ -23,13 +23,14 @@ import io.github.mattiaspersson09.junisert.testunits.constructor.ArgConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.DefaultPackageConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.DefaultPrivateConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.DefaultPublicConstructor;
+import io.github.mattiaspersson09.junisert.testunits.constructor.InceptionArgConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.PackageArgConstructor;
-import io.github.mattiaspersson09.junisert.testunits.constructor.PackageRecursiveArgConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.RecursiveArgConstructor;
-import io.github.mattiaspersson09.junisert.testunits.constructor.RecursiveArgThrowingConstructor;
-import io.github.mattiaspersson09.junisert.testunits.constructor.SeveralArgAndRecursiveConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.SeveralArgConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.SeveralParameterConstructors;
+import io.github.mattiaspersson09.junisert.testunits.unit.pojo.ImmutableModel;
+
+import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,21 +42,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ParameterObjectValueGeneratorTest {
+public class DependencyObjectValueGeneratorTest {
     @Mock
     ValueGenerator<Object> argumentGenerator;
 
-    private ParameterObjectValueGenerator generator;
+    private DependencyObjectValueGenerator generator;
 
     @BeforeEach
     void setUp() {
-        generator = new ParameterObjectValueGenerator(argumentGenerator);
+        generator = new DependencyObjectValueGenerator(argumentGenerator);
     }
 
     @Test
@@ -68,19 +66,24 @@ public class ParameterObjectValueGeneratorTest {
     }
 
     @Test
-    void supports_whenThereIsAnArgumentConstructor_butArgumentGeneratorDoesNotSupport_thenIsNotSupported() {
+    void supports_whenThereIsAnArgumentConstructorWithNonConstructableDependency_andArgumentGeneratorDoesNotSupport_thenIsNotSupported() {
         when(argumentGenerator.supports(any())).thenReturn(false);
 
-        assertThat(generator.supports(ArgConstructor.class)).isFalse();
-        assertThat(generator.supports(SeveralArgConstructor.class)).isFalse();
-        assertThat(generator.supports(SeveralParameterConstructors.class)).isFalse();
+        assertThat(generator.supports(ImmutableModel.class)).isFalse();
+    }
+
+    @Test
+    void supports_whenThereIsAnArgumentConstructor_andArgumentGeneratorDoesNotSupport_butCanHandleRecursively_thenIsSupported() {
+        when(argumentGenerator.supports(any())).thenReturn(false);
+
+        assertThat(generator.supports(InceptionArgConstructor.class)).isTrue();
     }
 
     @Test
     void supports_whenForcingAccess_andArgumentGeneratorSupports_andThereIsAnInaccessibleArgConstructor_thenIsSupported() {
         when(argumentGenerator.supports(any())).thenReturn(true);
 
-        assertThat(ParameterObjectValueGenerator.withForcedAccess(argumentGenerator)
+        assertThat(DependencyObjectValueGenerator.withForcedAccess(argumentGenerator)
                 .supports(PackageArgConstructor.class))
                 .isTrue();
     }
@@ -115,19 +118,8 @@ public class ParameterObjectValueGeneratorTest {
     }
 
     @Test
-    void generate_whenArgumentConstructor_butArgumentGeneratorDoesNotSupport_thenPropagatesUnsupportedTypeError() {
-        when(argumentGenerator.generate(any())).thenThrow(UnsupportedTypeError.class);
-
-        assertThatThrownBy(() -> generator.generate(ArgConstructor.class))
-                .isInstanceOf(UnsupportedTypeError.class);
-        assertThatThrownBy(() -> generator.generate(SeveralArgConstructor.class))
-                .isInstanceOf(UnsupportedTypeError.class);
-        assertThatThrownBy(() -> generator.generate(SeveralParameterConstructors.class))
-                .isInstanceOf(UnsupportedTypeError.class);
-    }
-
-    @Test
     void generate_whenNotForcingAccess_andConstructorIsInaccessible_thenThrowsUnsupportedConstructionError() {
+        when(argumentGenerator.supports(Object.class)).thenReturn(true);
         doReturn(((Value<?>) Object::new)).when(argumentGenerator).generate(Object.class);
 
         assertThatThrownBy(() -> generator.generate(PackageArgConstructor.class))
@@ -136,15 +128,17 @@ public class ParameterObjectValueGeneratorTest {
 
     @Test
     void generate_whenForcingAccess_andConstructorIsInaccessible_andArgumentGeneratorSupports_thenGeneratesValue() {
+        when(argumentGenerator.supports(Object.class)).thenReturn(true);
         doReturn(((Value<?>) Object::new)).when(argumentGenerator).generate(Object.class);
 
-        assertThat(ParameterObjectValueGenerator.withForcedAccess(argumentGenerator)
+        assertThat(DependencyObjectValueGenerator.withForcedAccess(argumentGenerator)
                 .generate(PackageArgConstructor.class))
                 .isNotNull();
     }
 
     @Test
     void generate_whenSeveralConstructorsWithParameters_thenGeneratesFromLessParameters() {
+        when(argumentGenerator.supports(Object.class)).thenReturn(true);
         doReturn(((Value<?>) Object::new)).when(argumentGenerator).generate(Object.class);
 
         SeveralParameterConstructors object = (SeveralParameterConstructors) generator.generate(
@@ -155,68 +149,23 @@ public class ParameterObjectValueGeneratorTest {
     }
 
     @Test
-    void generate_whenConstructorParameterThatIsRecursive_thenUsesRecursiveSafeConstruction() {
-        when(argumentGenerator.supports(RecursiveArgConstructor.class)).thenReturn(false);
-        doReturn(((Value<?>) Object::new)).when(argumentGenerator).generate(Object.class);
+    void givenNegativeMaxDependencyDepth_whenBuilding_thenIsBuiltWithZeroDepth() {
+        DependencyObjectValueGenerator generator = DependencyObjectValueGenerator
+                .buildDependencySupport(argumentGenerator)
+                .withMaxDependencyDepth(-1)
+                .build();
 
-        RecursiveArgConstructor recursiveObject = (RecursiveArgConstructor) generator
-                .generate(RecursiveArgConstructor.class)
-                .get();
-        SeveralArgAndRecursiveConstructor objectWithRecursive = (SeveralArgAndRecursiveConstructor) generator
-                .generate(SeveralArgAndRecursiveConstructor.class)
-                .get();
-
-        assertThat(recursiveObject).isNotNull();
-        assertThat(recursiveObject.getRecursed()).isNotNull();
-        assertThat(recursiveObject.getRecursed().getRecursed()).isNull();
-
-        assertThat(objectWithRecursive).isNotNull();
-        assertThat(objectWithRecursive.getField()).isNotNull();
-        assertThat(objectWithRecursive.getRecursed()).isNotNull();
-        assertThat(objectWithRecursive.getRecursed().getRecursed()).isNull();
+        assertThat(generator.getMaxDependencyDepth()).isZero();
     }
 
     @Test
-    void generate_whenRecursiveConstructorParameter_andRecursiveConstructionFails_thenThrowsUnsupportedConstructionError() {
-        assertThatThrownBy(() -> generator.generate(RecursiveArgThrowingConstructor.class))
-                .isInstanceOf(UnsupportedConstructionError.class);
+    void givenTooLargeDepth_whenBuilding_thenThrowsIllegalArgumentException() {
+        DependencyObjectValueGenerator.Builder builder = DependencyObjectValueGenerator
+                .buildDependencySupport(argumentGenerator)
+                .withMaxDependencyDepth(DependencyObjectValueGenerator.MAX_DEPENDENCY_DEPTH + 1);
 
-        verify(argumentGenerator, times(1)).supports(any());
-        verifyNoMoreInteractions(argumentGenerator);
-    }
-
-    @Test
-    void generate_whenNotForcingAccess_andRecursiveConstructorParameter_thenThrowsUnsupportedConstructionError() {
-        when(argumentGenerator.supports(PackageRecursiveArgConstructor.class)).thenReturn(false);
-
-        assertThatThrownBy(() -> generator.generate(PackageRecursiveArgConstructor.class))
-                .isInstanceOf(UnsupportedConstructionError.class);
-
-        verify(argumentGenerator, times(1)).supports(any());
-        verifyNoMoreInteractions(argumentGenerator);
-    }
-
-    @Test
-    void generate_whenForcingAccess_andInaccessibleRecursiveConstructorParameter_thenGeneratesValue() {
-        ParameterObjectValueGenerator generator = ParameterObjectValueGenerator.withForcedAccess(argumentGenerator);
-
-        when(argumentGenerator.supports(PackageRecursiveArgConstructor.class)).thenReturn(false);
-
-        assertThat(generator.generate(PackageRecursiveArgConstructor.class).get()).isNotNull();
-
-        verify(argumentGenerator, times(1)).supports(any());
-        verifyNoMoreInteractions(argumentGenerator);
-    }
-
-    @Test
-    void generate_whenRecursiveParameter_andArgumentGeneratorDoesSupport_thenGeneratesArgument() {
-        when(argumentGenerator.supports(RecursiveArgConstructor.class)).thenReturn(true);
-        doReturn(((Value<?>) () -> new RecursiveArgConstructor(null)))
-                .when(argumentGenerator)
-                .generate(RecursiveArgConstructor.class);
-
-        generator.generate(RecursiveArgConstructor.class);
-
-        verify(argumentGenerator, times(1)).generate(RecursiveArgConstructor.class);
+        assertThatThrownBy(builder::build).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Dependency depth isn't allowed be larger than")
+                .hasMessageContaining(Objects.toString(DependencyObjectValueGenerator.MAX_DEPENDENCY_DEPTH));
     }
 }

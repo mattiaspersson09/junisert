@@ -23,19 +23,18 @@ import java.util.ArrayList;
 import java.util.function.Supplier;
 
 final class JavaLangSupport {
-    private static final Supplier<Runnable> RUNNABLE = () -> () -> Logger.getLogger("Anonymous runnable")
-            .test("running");
+    private static final Supplier<Runnable> RUNNABLE = () -> () -> Logger.getLogger("Junisert -> Anonymous runnable")
+            .test("running...");
 
     private JavaLangSupport() {
     }
 
     static AggregatedValueGenerator getLangSupport() {
         return SupportBuilder.createSupport()
-                .supportSingle(Appendable.class, StringBuilder.class, StringBuilder::new)
+                .supportSingle(Appendable.class, StringBuilder.class, () -> new StringBuilder("Junisert"))
                 .support(CharSequence.class)
-                .withImplementation(String.class, String::new)
-                .withImplementation(StringBuilder.class, StringBuilder::new)
-                .withImplementation(StringBuffer.class, StringBuffer::new)
+                .withImplementation(String.class, () -> "Junisert")
+                .withImplementation(StringBuffer.class, () -> new StringBuffer("Junisert"))
                 .supportSingle(Iterable.class, ArrayList.class, ArrayList::new)
                 .supportSingle(Runnable.class, RUNNABLE)
                 .support(Throwable.class)
