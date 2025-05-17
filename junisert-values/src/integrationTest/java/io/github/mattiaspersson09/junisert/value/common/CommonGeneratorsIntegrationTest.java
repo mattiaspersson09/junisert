@@ -56,7 +56,7 @@ public class CommonGeneratorsIntegrationTest {
                 new WrapperPrimitiveValueGenerator(),
                 new InterfaceValueGenerator(),
                 ObjectValueGenerator.withForcedAccess(),
-                ParameterObjectValueGenerator.withForcedAccess(ObjectValueGenerator.withForcedAccess()),
+                DependencyObjectValueGenerator.withForcedAccess(ObjectValueGenerator.withForcedAccess()),
                 new EnumValueGenerator(),
                 new ArrayValueGenerator()
         );
@@ -97,11 +97,11 @@ public class CommonGeneratorsIntegrationTest {
 
     @Test
     void parameterObjectValueGeneratorIsOnlySupporter() {
-        assertNoCompetitionFor(ArgConstructor.class, ParameterObjectValueGenerator.class);
-        assertNoCompetitionFor(RecursiveArgConstructor.class, ParameterObjectValueGenerator.class);
-        assertNoCompetitionFor(SeveralArgConstructor.class, ParameterObjectValueGenerator.class);
-        assertNoCompetitionFor(SeveralParameterConstructors.class, ParameterObjectValueGenerator.class);
-        assertNoCompetitionFor(SeveralArgAndRecursiveConstructor.class, ParameterObjectValueGenerator.class);
+        assertNoCompetitionFor(ArgConstructor.class, DependencyObjectValueGenerator.class);
+        assertNoCompetitionFor(RecursiveArgConstructor.class, DependencyObjectValueGenerator.class);
+        assertNoCompetitionFor(SeveralArgConstructor.class, DependencyObjectValueGenerator.class);
+        assertNoCompetitionFor(SeveralParameterConstructors.class, DependencyObjectValueGenerator.class);
+        assertNoCompetitionFor(SeveralArgAndRecursiveConstructor.class, DependencyObjectValueGenerator.class);
     }
 
     @ParameterizedTest

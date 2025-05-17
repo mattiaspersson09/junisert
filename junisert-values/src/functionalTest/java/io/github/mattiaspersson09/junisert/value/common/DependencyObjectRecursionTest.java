@@ -16,6 +16,7 @@
 package io.github.mattiaspersson09.junisert.value.common;
 
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedSupportGenerator;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,82 +24,92 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class ParameterObjectValueGeneratorRecursionTest {
+public class DependencyObjectRecursionTest {
     @Test
-    void generate_whenRecursiveSelfParameter_andRecursiveConstructorHasNonNullableTypes_thenCanConstruct() {
+    void generate_whenRecursiveSelfParameter_andRecursiveConstructorHasConstructableOrSupportedTypes_thenCanConstruct() {
         AggregatedSupportGenerator argumentGenerator = new AggregatedSupportGenerator(Arrays.asList(
                 ObjectValueGenerator.withForcedAccess(),
                 new PrimitiveValueGenerator()
         ));
-        ParameterObjectValueGenerator generator = new ParameterObjectValueGenerator(argumentGenerator);
+        DependencyObjectValueGenerator generator = DependencyObjectValueGenerator
+                .buildDependencySupport(argumentGenerator)
+                .withForcedAccess()
+                .withMaxDependencyDepth(0)
+                .build();
 
         RecursiveWithNonNullableParameters value = (RecursiveWithNonNullableParameters) generator
                 .generate(RecursiveWithNonNullableParameters.class)
                 .get();
 
-        // shallow object
         assertThat(value).isNotNull();
         assertThat(value.nullableSelf).isNotNull();
         assertThat(value.nullableObject).isNotNull();
         assertThat(value.nonNullableInt).isEqualTo(1);
         assertThat(value.nonNullableBoolean).isTrue();
 
-        // deep object
         assertThat(value.nullableSelf.nullableSelf).isNull();
-        assertThat(value.nullableSelf.nullableObject).isNull();
-        assertThat(value.nullableSelf.nonNullableInt).isEqualTo(0);
-        assertThat(value.nullableSelf.nonNullableBoolean).isFalse();
+        assertThat(value.nullableSelf.nullableObject).isNotNull();
+        assertThat(value.nullableSelf.nonNullableInt).isEqualTo(1);
+        assertThat(value.nullableSelf.nonNullableBoolean).isTrue();
     }
 
     @Test
-    void generate_whenRecursiveParameter_andRecursiveConstructorHasNonNullableTypes_thenCanConstruct() {
-        AggregatedSupportGenerator argumentGenerator = new AggregatedSupportGenerator(Collections.singletonList(
+    void generate_whenRecursiveParameter_andConstructableOrSupportedDependency_thenCanConstruct() {
+        AggregatedSupportGenerator argumentGenerator = new AggregatedSupportGenerator(Arrays.asList(
+                ObjectValueGenerator.withForcedAccess(),
                 new PrimitiveValueGenerator()
         ));
-        ParameterObjectValueGenerator generator = new ParameterObjectValueGenerator(argumentGenerator);
+        DependencyObjectValueGenerator generator = DependencyObjectValueGenerator
+                .buildDependencySupport(argumentGenerator)
+                .withForcedAccess()
+                .withMaxDependencyDepth(0)
+                .build();
 
         HasRecursiveParameter value = (HasRecursiveParameter) generator
                 .generate(HasRecursiveParameter.class)
                 .get();
 
-        // shallow object
         assertThat(value).isNotNull();
         assertThat(value.recursive).isNotNull();
         assertThat(value.nonNullableInt).isEqualTo(1);
         assertThat(value.nonNullableBoolean).isTrue();
 
-        // deep object
         assertThat(value.recursive.nullableSelf).isNull();
-        assertThat(value.recursive.nullableObject).isNull();
-        assertThat(value.recursive.nonNullableInt).isEqualTo(0);
-        assertThat(value.recursive.nonNullableBoolean).isFalse();
+        assertThat(value.recursive.nullableObject).isNotNull();
+        assertThat(value.recursive.nonNullableInt).isEqualTo(1);
+        assertThat(value.recursive.nonNullableBoolean).isTrue();
     }
 
     @Test
-    void generate_whenCyclicParameter_andCycleHasRecursiveConstructor_thenCanConstruct() {
+    void generate_whenCyclicParameterLeadingToRecursion_andNotSupportedDependency_thenThrowsUnsupportedTypeError() {
         AggregatedSupportGenerator argumentGenerator = new AggregatedSupportGenerator(Collections.singletonList(
-                ParameterObjectValueGenerator.withForcedAccess(ObjectValueGenerator.withForcedAccess())
+                ObjectValueGenerator.withForcedAccess()
         ));
-        ParameterObjectValueGenerator generator = new ParameterObjectValueGenerator(argumentGenerator);
+        DependencyObjectValueGenerator generatorWithDepthZero = DependencyObjectValueGenerator
+                .buildDependencySupport(argumentGenerator)
+                .withForcedAccess()
+                .withMaxDependencyDepth(0)
+                .build();
 
-        CyclicRecursiveParameter value = (CyclicRecursiveParameter) generator
-                .generate(CyclicRecursiveParameter.class)
-                .get();
+        DependencyObjectValueGenerator generatorWithDepthOne = DependencyObjectValueGenerator
+                .buildDependencySupport(argumentGenerator)
+                .withForcedAccess()
+                .withMaxDependencyDepth(1)
+                .build();
 
-        // shallow object
-        assertThat(value).isNotNull();
-        assertThat(value.cycle).isNotNull();
-        assertThat(value.self).isNotNull();
-
-        // cyclic recursion
-        assertThat(value.cycle.recursive).isNotNull();
-
-        // deepest
-        assertThat(value.cycle.recursive.cycle).isNull();
-        assertThat(value.cycle.recursive.self).isNull();
+        assertThatThrownBy(() -> generatorWithDepthZero.generate(CyclicRecursiveParameter.class).get())
+                .isInstanceOf(UnsupportedTypeError.class)
+                .hasMessageContaining("support for type")
+                .hasMessageContaining(Cyclic.class.toString());
+        assertThatThrownBy(() -> generatorWithDepthOne.generate(CyclicRecursiveParameter.class).get())
+                .isInstanceOf(UnsupportedTypeError.class)
+                .hasMessageContaining("support for type")
+                .hasMessageContaining(Cyclic.class.toString());
     }
 
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private static class CyclicRecursiveParameter {
         private final Cyclic cycle;
         private final CyclicRecursiveParameter self;
@@ -109,6 +120,7 @@ public class ParameterObjectValueGeneratorRecursionTest {
         }
     }
 
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private static class Cyclic {
         private final CyclicRecursiveParameter recursive;
 

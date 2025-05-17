@@ -219,6 +219,7 @@ public class JavaInternalsIntegrationTest {
     })
     void javaLang(Class<?> type) {
         supportsJavaInternal(type);
+        lambdaTester.invoke(type, () -> generator.generate(type).get());
     }
 
     @ParameterizedTest

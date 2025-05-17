@@ -22,10 +22,10 @@ import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.ArrayValueGenerator;
+import io.github.mattiaspersson09.junisert.value.common.DependencyObjectValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.EnumValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.InterfaceValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
-import io.github.mattiaspersson09.junisert.value.common.ParameterObjectValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.PrimitiveValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.WrapperPrimitiveValueGenerator;
 import io.github.mattiaspersson09.junisert.value.java.JavaInternals;
@@ -65,7 +65,7 @@ public final class NoCacheTestValueService implements ValueService {
                 javaInternals,
                 new InterfaceValueGenerator(),
                 ObjectValueGenerator.withForcedAccess(),
-                ParameterObjectValueGenerator.withForcedAccess(aggregatedArgumentGenerator)
+                DependencyObjectValueGenerator.withForcedAccess(aggregatedArgumentGenerator)
         ));
     }
 

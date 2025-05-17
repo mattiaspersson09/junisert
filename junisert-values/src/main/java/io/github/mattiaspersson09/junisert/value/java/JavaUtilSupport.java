@@ -108,7 +108,7 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 final class JavaUtilSupport {
-    private static final Logger LOGGER = Logger.getLogger("Anonymous lambda");
+    private static final Logger LOGGER = Logger.getLogger("Junisert -> Anonymous lambda");
     private static final String CONSUMING = "consuming...";
     private static final short NUMERIC = 1;
     private static final boolean BOOLEAN = true;
