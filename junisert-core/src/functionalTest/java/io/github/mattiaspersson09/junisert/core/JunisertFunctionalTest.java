@@ -52,7 +52,8 @@ public class JunisertFunctionalTest {
             UnknownDependencyImmutable.class
     })
     void givenImmutable_whenAssertingPojo_thenShouldPassAssertion(Class<?> immutable) {
-        Junisert.assertThatUnit(immutable).asPojo()
+        Junisert.assertThatUnit(immutable)
+                .asPojo()
                 .hasGetters()
                 .implementsEqualsAndHashCode()
                 .implementsToString();
