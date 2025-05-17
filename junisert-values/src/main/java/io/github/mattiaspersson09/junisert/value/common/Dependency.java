@@ -161,7 +161,7 @@ final class Dependency {
         throw new UnsupportedTypeError(parameter.getType());
     }
 
-    Dependency createDependency(Parameter parameter) {
+    private Dependency createDependency(Parameter parameter) {
         return new Dependency(
                 constructor.getDeclaringClass(),
                 extractDependencyConstructor.apply(parameter.getType()),
