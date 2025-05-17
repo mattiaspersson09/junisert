@@ -116,8 +116,8 @@ final class Dependency {
      * <strong>Supporting generator should be prioritized</strong> to prevent unnecessary work, this check should only
      * be used after support said a parameter (dependency type) is not supported.<br>
      * <br>
-     * Conditions: instance from given constructor is only constructable if this dependency is <em>not abstract</em> or
-     * an <em>interface</em> and the constructor is either public or is forced access with reflection.
+     * Conditions: instance from given constructor is only constructable if this dependency is <em>not abstract</em>
+     * and the constructor is either public or is forced access with reflection.
      *
      * @return true if given constructor should be able to construct this dependency
      * @see ValueGenerator#supports(Class)
@@ -195,8 +195,8 @@ final class Dependency {
      * <strong>Supporting generator should be prioritized</strong> to prevent unnecessary work, this check should only
      * be used after support said a parameter (dependency type) is not supported.<br>
      * <br>
-     * Conditions: instance from given constructor is only constructable if this dependency is <em>not abstract</em> or
-     * an <em>interface</em> and the constructor is either public or is forced access with reflection.
+     * Conditions: instance from given constructor is only constructable if this dependency is <em>not abstract</em>
+     * and the constructor is either public or is forced access with reflection.
      *
      * @param constructor     this dependency will be constructed from
      * @param isForcingAccess to (potentially) inaccessible constructor with reflection
