@@ -18,6 +18,8 @@ package io.github.mattiaspersson09.junisert.core.internal.test;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.core.NoCacheTestValueService;
+import io.github.mattiaspersson09.junisert.core.TestInstanceCreator;
+import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.testunits.hashcode.PrimeHashCode;
 import io.github.mattiaspersson09.junisert.testunits.hashcode.WellImplementedHashCode;
@@ -41,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ImplementsHashCodeIntegrationTest {
     private static ValueService valueService;
+    private static InstanceCreator instanceCreator;
     private ImplementsHashCode implementsHashCode;
 
     @BeforeAll
@@ -50,11 +53,12 @@ public class ImplementsHashCodeIntegrationTest {
                 new ArrayValueGenerator(),
                 new ObjectValueGenerator()
         ));
+        instanceCreator = new TestInstanceCreator();
     }
 
     @BeforeEach
     void setUp() {
-        implementsHashCode = new ImplementsHashCode(valueService);
+        implementsHashCode = new ImplementsHashCode(valueService, instanceCreator);
     }
 
     @Test

@@ -18,6 +18,8 @@ package io.github.mattiaspersson09.junisert.core.internal.test;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.core.NoCacheTestValueService;
+import io.github.mattiaspersson09.junisert.core.TestInstanceCreator;
+import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.testunits.tostring.CustomToString;
 import io.github.mattiaspersson09.junisert.testunits.tostring.EmptyToString;
@@ -43,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ImplementsToStringIntegrationTest {
     private static ValueService valueService;
+    private static InstanceCreator instanceCreator;
     private ImplementsToString implementsToString;
 
     @BeforeAll
@@ -54,11 +57,12 @@ public class ImplementsToStringIntegrationTest {
                 JavaInternals.getSupported(),
                 new ObjectValueGenerator()
         ));
+        instanceCreator = new TestInstanceCreator();
     }
 
     @BeforeEach
     void setUp() {
-        implementsToString = new ImplementsToString(valueService);
+        implementsToString = new ImplementsToString(valueService, instanceCreator);
     }
 
     @Test

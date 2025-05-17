@@ -31,10 +31,6 @@ import java.util.Objects;
 public final class HasGetters extends AbstractUnitTest {
     private static final Logger LOGGER = Logger.getLogger("Has Getters");
 
-    HasGetters(ValueService valueService) {
-        super(valueService);
-    }
-
     public HasGetters(ValueService valueService, InstanceCreator instanceCreator) {
         super(valueService, instanceCreator);
     }

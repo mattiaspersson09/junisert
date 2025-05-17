@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core.internal;
+package io.github.mattiaspersson09.junisert.core;
 
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
+import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,19 +33,14 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class InstanceCreatorTest {
+public class ConstructorInstanceCreatorTest {
     @Mock
     ValueGenerator<Object> instanceGenerator;
     private InstanceCreator instanceCreator;
 
     @BeforeEach
     void setUp() {
-        instanceCreator = new DefaultInstanceCreator(instanceGenerator);
-    }
-
-    @Test
-    void givenNoInstanceGenerator_thenUsesDefaultObjectGenerators() {
-        assertThat(new DefaultInstanceCreator().createInstance(UnitClass.class)).isNotNull();
+        instanceCreator = new ConstructorInstanceCreator(instanceGenerator);
     }
 
     @Test

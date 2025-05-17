@@ -18,8 +18,8 @@ package io.github.mattiaspersson09.junisert.api.internal.support;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
-import io.github.mattiaspersson09.junisert.common.sort.NaturalSort;
 import io.github.mattiaspersson09.junisert.common.sort.Order;
+import io.github.mattiaspersson09.junisert.common.sort.Sortable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,9 +41,10 @@ import java.util.Objects;
  *
  * @param <T> polymorphic type this generator is supporting and generate values for.
  */
-public final class SupportGenerator<T> extends NaturalSort<SupportGenerator<T>> implements ValueGenerator<T> {
+public final class SupportGenerator<T> implements ValueGenerator<T>, Sortable {
     private final Class<T> type;
     private final List<Implementation<? extends T>> implementations;
+    private Order order;
 
     public SupportGenerator(Class<T> type) {
         this(type, Collections.emptyList());
@@ -54,7 +55,7 @@ public final class SupportGenerator<T> extends NaturalSort<SupportGenerator<T>> 
     }
 
     public SupportGenerator(Class<T> type, Collection<Implementation<? extends T>> implementations) {
-        super(Order.DEFAULT);
+        this.order = Order.DEFAULT;
         this.type = Objects.requireNonNull(type);
         this.implementations = new ArrayList<>(Objects.requireNonNull(implementations));
     }
@@ -66,6 +67,14 @@ public final class SupportGenerator<T> extends NaturalSort<SupportGenerator<T>> 
 
     public int size() {
         return implementations.size();
+    }
+
+    public SupportGenerator<T> order(Order order) {
+        if (order != null) {
+            this.order = order;
+        }
+
+        return this;
     }
 
     @Override
@@ -87,6 +96,11 @@ public final class SupportGenerator<T> extends NaturalSort<SupportGenerator<T>> 
         // specified in Java Language Specification > Assignment Contexts
         return this.type.isAssignableFrom(type) && implementations.stream()
                 .anyMatch(impl -> impl.isImplementationOf(type));
+    }
+
+    @Override
+    public Order order() {
+        return order;
     }
 
     @Override

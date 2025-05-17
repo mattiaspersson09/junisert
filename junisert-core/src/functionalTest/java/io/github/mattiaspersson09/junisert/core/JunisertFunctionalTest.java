@@ -23,37 +23,49 @@ import io.github.mattiaspersson09.junisert.testunits.constructor.ArgConstructor;
 import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanCompliantButNotRecommended;
 import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanCompliantModel;
 import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanVisibleFields;
+import io.github.mattiaspersson09.junisert.testunits.unit.pojo.DeepDependencyModel;
 import io.github.mattiaspersson09.junisert.testunits.unit.pojo.ImmutableModel;
+import io.github.mattiaspersson09.junisert.testunits.unit.pojo.UnknownDependencyImmutable;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class JunisertFunctionalTest {
-    @Test
-    void givenPlainObject_whenAssertingWellImplementedPojo_thenShouldPassAssertion() {
-        Junisert.assertThatPojo(BeanCompliantModel.class).isWellImplemented();
-        Junisert.assertThatPojo(LombokDataUnit.class).isWellImplemented();
-        Junisert.assertThatPojo(LombokUnit.class).isWellImplemented();
+    @ParameterizedTest
+    @ValueSource(classes = {
+            BeanCompliantModel.class,
+            LombokDataUnit.class,
+            LombokUnit.class,
+            DeepDependencyModel.class
+    })
+    void givenPlainObject_whenAssertingWellImplementedPojo_thenShouldPassAssertion(Class<?> plainObject) {
+        Junisert.assertThatPojo(plainObject).isWellImplemented();
     }
 
-    @Test
-    void givenImmutable_whenAssertingPojo_thenShouldPassAssertion() {
-        Junisert.assertThatUnit(ImmutableModel.class)
+    @ParameterizedTest
+    @ValueSource(classes = {
+            ImmutableModel.class,
+            LombokImmutable.class,
+            UnknownDependencyImmutable.class
+    })
+    void givenImmutable_whenAssertingPojo_thenShouldPassAssertion(Class<?> immutable) {
+        Junisert.assertThatUnit(immutable)
                 .asPojo()
                 .hasGetters()
                 .implementsEqualsAndHashCode()
                 .implementsToString();
-        Junisert.assertThatPojo(LombokImmutable.class)
-                .hasGetters()
-                .implementsEqualsAndHashCode()
-                .implementsToString();
     }
 
-    @Test
-    void givenBean_whenAssertingJavaBeanCompliant_thenShouldPassAssertion() {
-        Junisert.assertThatUnit(BeanCompliantModel.class).isJavaBeanCompliant();
-        Junisert.assertThatUnit(BeanCompliantButNotRecommended.class).isJavaBeanCompliant();
+    @ParameterizedTest
+    @ValueSource(classes = {
+            BeanCompliantModel.class,
+            BeanCompliantButNotRecommended.class
+    })
+    void givenBean_whenAssertingJavaBeanCompliant_thenShouldPassAssertion(Class<?> bean) {
+        Junisert.assertThatUnit(bean).isJavaBeanCompliant();
     }
 
     @Test

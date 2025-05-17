@@ -16,25 +16,19 @@
 package io.github.mattiaspersson09.junisert.core;
 
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
+import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedValueGenerator;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
-import io.github.mattiaspersson09.junisert.value.common.ArrayValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.DependencyObjectValueGenerator;
-import io.github.mattiaspersson09.junisert.value.common.EnumValueGenerator;
-import io.github.mattiaspersson09.junisert.value.common.InterfaceValueGenerator;
-import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
-import io.github.mattiaspersson09.junisert.value.common.PrimitiveValueGenerator;
-import io.github.mattiaspersson09.junisert.value.common.WrapperPrimitiveValueGenerator;
-import io.github.mattiaspersson09.junisert.value.java.JavaInternals;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-final class SingletonValueService implements ValueService, ValueGenerator<Object> {
+final class SingletonValueService implements ValueService {
     private static final Logger LOGGER = Logger.getLogger("Junisert");
     private static volatile SingletonValueService INSTANCE;
 
@@ -42,29 +36,24 @@ final class SingletonValueService implements ValueService, ValueGenerator<Object
     private final ValueCache valueCache;
 
     SingletonValueService(ValueCache valueCache) {
-        LOGGER.info("Initializing default value support, this construction is expensive and should only happen once");
+        LOGGER.config("Initializing default value support, this construction is expensive and should only happen once");
         this.generators = Collections.synchronizedList(new ArrayList<>());
         this.valueCache = valueCache;
-        registerDefaultValueSupport();
-    }
 
-    private void registerDefaultValueSupport() {
-        registerNamedSupport(new PrimitiveValueGenerator(), "primitive support");
-        registerNamedSupport(new WrapperPrimitiveValueGenerator(), "wrapper primitive support");
-        registerNamedSupport(new ArrayValueGenerator(), "array support");
-        registerNamedSupport(new EnumValueGenerator(), "enum support");
-        registerNamedSupport(JavaInternals.getSupported(), "predefined Java internals support");
-        registerNamedSupport(new InterfaceValueGenerator(), "interface proxy support");
-        registerNamedSupport(ObjectValueGenerator.withForcedAccess(), "object (from default constructor) support");
-        registerNamedSupport(DependencyObjectValueGenerator.buildDependencySupport(this)
+        AggregatedValueGenerator defaultSupport = Junisert.aggregatedDefaultValueSupport();
+        DependencyObjectValueGenerator dependencyObjectValueGenerator = DependencyObjectValueGenerator
+                .buildDependencySupport(defaultSupport)
                 .withForcedAccess()
-                .withMaxDependencyDepth(1)
-                .build(), "object dependency (from argument constructor) support");
+                .withMaxDependencyDepth(Junisert.INSTANCE_DEPENDENCY_DEPTH)
+                .build();
+
+        this.generators.addAll(defaultSupport.aggregated());
+        this.generators.add(dependencyObjectValueGenerator);
     }
 
     static synchronized SingletonValueService getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new SingletonValueService(new ValueCache());
+            INSTANCE = new SingletonValueService(Junisert.valueCache());
         }
 
         return INSTANCE;
@@ -73,7 +62,7 @@ final class SingletonValueService implements ValueService, ValueGenerator<Object
     @Override
     public void registerSupport(ValueGenerator<?> generator) {
         generators.add(Objects.requireNonNull(generator));
-        LOGGER.config("Registered support: {0}", generator.getClass().getName());
+        LOGGER.config("Registered support: {0}", generator);
     }
 
     @Override
@@ -97,17 +86,6 @@ final class SingletonValueService implements ValueService, ValueGenerator<Object
         }
 
         throw new UnsupportedTypeError(type);
-    }
-
-    @Override
-    public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
-        return getValue(fromType);
-    }
-
-    @Override
-    public boolean supports(Class<?> type) {
-        return generators.stream()
-                .anyMatch(generator -> generator.supports(type));
     }
 
     int supportSize() {
