@@ -152,36 +152,6 @@ public class DependencyTest {
     }
 
     @Test
-    void createInstance_whenOneDependencyDepth_andValueSupportDoesNotSupport_thenCreatesNewDependencyThatThrowsUnsupportedTypeError() {
-        Dependency dependency = createDependencyWithDependencyDepth(1);
-
-        when(constructor.getParameters()).thenReturn(new Parameter[]{parameter});
-        doReturn(Impl.class).when(constructor).getDeclaringClass();
-        doReturn(Object.class).when(parameter).getType();
-        when(valueSupport.supports(any())).thenReturn(false);
-
-        assertThatThrownBy(dependency::createInstance).isInstanceOf(UnsupportedTypeError.class);
-
-        verify(extractDependencyConstructor, times(1)).apply(parameter.getType());
-    }
-
-    @Test
-    void createInstance_whenTwoDependencyDepth_andValueSupportDoesNotSupport_thenCreatesNewDependencyPerDepth() {
-        int depth = 2;
-        Dependency dependency = createDependencyWithDependencyDepth(depth);
-        doReturn(constructor).when(extractDependencyConstructor).apply(any());
-
-        when(constructor.getParameters()).thenReturn(new Parameter[]{parameter});
-        doReturn(Impl.class).when(constructor).getDeclaringClass();
-        doReturn(Object.class).when(parameter).getType();
-        when(valueSupport.supports(any())).thenReturn(false);
-
-        assertThatThrownBy(dependency::createInstance).isInstanceOf(UnsupportedTypeError.class);
-
-        verify(extractDependencyConstructor, times(depth)).apply(any());
-    }
-
-    @Test
     void createInstance_whenSeveralDependencyDepths_butValueSupportSupportsDependencyValue_thenHandlesSupportDirectly() {
         int depth = 5;
         Dependency dependency = createDependencyWithDependencyDepth(depth);
@@ -198,26 +168,31 @@ public class DependencyTest {
         verify(extractDependencyConstructor, never()).apply(any());
     }
 
+    @SuppressWarnings("ConstantValue")
     @Test
-    void createInstance_whenSeveralDependencyDepths_butNoExtractingDependencyConstructorFunction_thenDoesNotTryToCreateNewDependency() {
+    void createInstance_whenSeveralDependencyDepths_butNoExtractingDependencyConstructorFunction_thenDoesNotTryToCreateNewDependency() throws InvocationTargetException,
+                                                                                                                                       InstantiationException,
+                                                                                                                                       IllegalAccessException {
         int depth = 5;
+        Function<Class<?>, Constructor<?>> extractDependencyConstructor = null;
         Dependency dependency = new Dependency(
                 Impl.class,
                 constructor,
                 valueSupport,
-                true,
+                false,
                 depth,
-                null
+                extractDependencyConstructor
         );
 
+        doReturn(Object.class).when(parameter).getType();
         when(constructor.getParameters()).thenReturn(new Parameter[]{parameter});
         doReturn(Impl.class).when(constructor).getDeclaringClass();
-        doReturn(Object.class).when(parameter).getType();
         when(valueSupport.supports(any())).thenReturn(false);
 
         assertThatThrownBy(dependency::createInstance).isInstanceOf(UnsupportedTypeError.class);
 
-        verify(extractDependencyConstructor, never()).apply(any());
+        // Would be invoked for every depth
+        verify(constructor, never()).newInstance(any());
     }
 
     @Test

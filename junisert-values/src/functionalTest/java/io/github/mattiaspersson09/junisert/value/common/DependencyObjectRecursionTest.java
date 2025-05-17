@@ -16,7 +16,6 @@
 package io.github.mattiaspersson09.junisert.value.common;
 
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedSupportGenerator;
-import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,7 +23,6 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class DependencyObjectRecursionTest {
     @Test
@@ -83,7 +81,7 @@ public class DependencyObjectRecursionTest {
     }
 
     @Test
-    void generate_whenCyclicParameterLeadingToRecursion_andNotSupportedDependency_thenThrowsUnsupportedTypeError() {
+    void generate_whenRecursiveParameterLeadingToCycle_andNotSupportedDependency_thenSetsToNullAtDepth() {
         AggregatedSupportGenerator argumentGenerator = new AggregatedSupportGenerator(Collections.singletonList(
                 ObjectValueGenerator.withForcedAccess()
         ));
@@ -99,14 +97,65 @@ public class DependencyObjectRecursionTest {
                 .withMaxDependencyDepth(1)
                 .build();
 
-        assertThatThrownBy(() -> generatorWithDepthZero.generate(CyclicRecursiveParameter.class).get())
-                .isInstanceOf(UnsupportedTypeError.class)
-                .hasMessageContaining("support for type")
-                .hasMessageContaining(Cyclic.class.toString());
-        assertThatThrownBy(() -> generatorWithDepthOne.generate(CyclicRecursiveParameter.class).get())
-                .isInstanceOf(UnsupportedTypeError.class)
-                .hasMessageContaining("support for type")
-                .hasMessageContaining(Cyclic.class.toString());
+        CyclicRecursiveParameter cyclicRecursiveZeroDepth = (CyclicRecursiveParameter) generatorWithDepthZero
+                .generate(CyclicRecursiveParameter.class)
+                .get();
+        CyclicRecursiveParameter cyclicRecursiveOneDepth = (CyclicRecursiveParameter) generatorWithDepthOne
+                .generate(CyclicRecursiveParameter.class)
+                .get();
+
+        assertThat(cyclicRecursiveZeroDepth).isNotNull();
+        assertThat(cyclicRecursiveZeroDepth.self).isNotNull();
+        assertThat(cyclicRecursiveZeroDepth.cycle).isNotNull();
+        assertThat(cyclicRecursiveZeroDepth.cycle.recursive).isNull();
+
+        assertThat(cyclicRecursiveOneDepth).isNotNull();
+        assertThat(cyclicRecursiveOneDepth.self).isNotNull();
+        assertThat(cyclicRecursiveOneDepth.cycle).isNotNull();
+        // First nested dependency (depth 1)
+        assertThat(cyclicRecursiveOneDepth.cycle.recursive).isNotNull();
+        assertThat(cyclicRecursiveOneDepth.cycle.recursive.self).isNull();
+        assertThat(cyclicRecursiveOneDepth.cycle.recursive.cycle).isNull();
+    }
+
+    @Test
+    void generate_whenCyclicParameterLeadingToRecursive_andNotSupportedDependency_thenSetsToNullAtDepth() {
+        AggregatedSupportGenerator argumentGenerator = new AggregatedSupportGenerator(Collections.singletonList(
+                ObjectValueGenerator.withForcedAccess()
+        ));
+        DependencyObjectValueGenerator generatorWithDepthZero = DependencyObjectValueGenerator
+                .buildDependencySupport(argumentGenerator)
+                .withForcedAccess()
+                .withMaxDependencyDepth(0)
+                .build();
+
+        DependencyObjectValueGenerator generatorWithDepthOne = DependencyObjectValueGenerator
+                .buildDependencySupport(argumentGenerator)
+                .withForcedAccess()
+                .withMaxDependencyDepth(1)
+                .build();
+
+        Cyclic cycle = (Cyclic) generatorWithDepthZero
+                .generate(Cyclic.class)
+                .get();
+
+        Cyclic cycleOneDepth = (Cyclic) generatorWithDepthOne
+                .generate(Cyclic.class)
+                .get();
+
+        assertThat(cycle).isNotNull();
+        assertThat(cycle.recursive).isNotNull();
+        assertThat(cycle.recursive.cycle).isNull();
+        assertThat(cycle.recursive.self).isNull();
+
+        assertThat(cycleOneDepth).isNotNull();
+        assertThat(cycleOneDepth.recursive).isNotNull();
+        // First nested dependency (depth 1)
+        assertThat(cycleOneDepth.recursive.cycle).isNotNull();
+        assertThat(cycleOneDepth.recursive.self).isNotNull();
+        assertThat(cycleOneDepth.recursive.cycle.recursive).isNull();
+        assertThat(cycleOneDepth.recursive.self.cycle).isNull();
+        assertThat(cycleOneDepth.recursive.self.self).isNull();
     }
 
     @SuppressWarnings({"FieldCanBeLocal", "unused"})

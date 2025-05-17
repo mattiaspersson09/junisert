@@ -83,7 +83,7 @@ public class DependencyObjectDeepConstructionTest {
                 .withForcedAccess()
                 .withMaxDependencyDepth(5)
                 .build();
-
+        ;
         assertThatThrownBy(() -> generator.generate(InceptionArgConstructor.class).get())
                 .isInstanceOf(UnsupportedTypeError.class)
                 .hasMessageContaining("support for type 'int'");

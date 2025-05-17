@@ -23,7 +23,6 @@ import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -142,7 +141,9 @@ final class Dependency {
             LOGGER.info("Found recursive or cyclic (leading to recursion) parameter: {0}", parameter.getType());
 
             if (dependencyDepthsLeft == 0) {
-                LOGGER.info("Is at deepest accepted dependency, will set value to <null> to avoid recursive cycle");
+                LOGGER.info(
+                        "Is at deepest accepted dependency, will set <null> for <{0}> to avoid vicious recursive cycle",
+                        parameter.getType());
                 return null;
             }
         }
@@ -160,7 +161,7 @@ final class Dependency {
         throw new UnsupportedTypeError(parameter.getType());
     }
 
-    private Dependency createDependency(Parameter parameter) {
+    Dependency createDependency(Parameter parameter) {
         return new Dependency(
                 constructor.getDeclaringClass(),
                 extractDependencyConstructor.apply(parameter.getType()),
@@ -176,18 +177,17 @@ final class Dependency {
 
     // A cyclic parameter is described as a parameter that; if trying to construct leads to indirect recursion
     private boolean isCyclicParameter(Parameter parameter) {
-        return Stream.of(parameter.getType().getDeclaredConstructors())
-                .anyMatch(constructor -> isRecursiveConstructor(constructor)
-                        && constructorContainsParameter(constructor, parameter.getType()));
+        if (extractDependencyConstructor == null) {
+            return false;
+        }
+
+        Constructor<?> constructorConstructionLeadsTo = extractDependencyConstructor.apply(parameter.getType());
+        return isRecursiveConstructor(constructorConstructionLeadsTo);
     }
 
     private boolean isRecursiveConstructor(Constructor<?> constructor) {
-        return Stream.of(constructor.getParameters())
+        return constructor != null && Stream.of(constructor.getParameters())
                 .anyMatch(this::isRecursiveParameter);
-    }
-
-    private boolean constructorContainsParameter(Constructor<?> constructor, Class<?> parameter) {
-        return Arrays.asList(constructor.getParameterTypes()).contains(parameter);
     }
 
     /**
