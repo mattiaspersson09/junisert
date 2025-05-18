@@ -29,15 +29,16 @@ import java.util.List;
 import java.util.Objects;
 
 final class SingletonValueService implements ValueService {
-    private static final Logger LOGGER = Logger.getLogger("Junisert");
+    private static final Logger LOGGER = Logger.getLogger(SingletonValueService.class);
     private static volatile SingletonValueService INSTANCE;
 
+    private final Object mutex = new Object();
     private final List<ValueGenerator<?>> generators;
     private final ValueCache valueCache;
 
     SingletonValueService(ValueCache valueCache) {
-        LOGGER.config("Initializing default value support, this construction is expensive and should only happen once");
-        this.generators = Collections.synchronizedList(new ArrayList<>());
+        LOGGER.config("Initializing default value support");
+        this.generators = new ArrayList<>();
         this.valueCache = valueCache;
 
         AggregatedValueGenerator defaultSupport = Junisert.aggregatedDefaultValueSupport();
@@ -61,13 +62,23 @@ final class SingletonValueService implements ValueService {
 
     @Override
     public void registerSupport(ValueGenerator<?> generator) {
-        generators.add(Objects.requireNonNull(generator));
+        Objects.requireNonNull(generator);
+
+        synchronized (mutex) {
+            generators.add(generator);
+        }
+
         LOGGER.config("Registered support: {0}", generator);
     }
 
     @Override
     public void registerNamedSupport(ValueGenerator<?> generator, String supportName) {
-        generators.add(Objects.requireNonNull(generator));
+        Objects.requireNonNull(generator);
+
+        synchronized (mutex) {
+            generators.add(generator);
+        }
+
         LOGGER.config("Registered named support: {0}", supportName);
     }
 
@@ -77,11 +88,11 @@ final class SingletonValueService implements ValueService {
             return valueCache.get(type);
         }
 
-        for (ValueGenerator<?> generator : generators) {
-            if (generator.supports(type)) {
-                Value<?> value = generator.generate(type);
-
-                return valueCache.save(type, value);
+        synchronized (mutex) {
+            for (ValueGenerator<?> generator : generators) {
+                if (generator.supports(type)) {
+                    return valueCache.save(type, generator.generate(type));
+                }
             }
         }
 
@@ -94,5 +105,9 @@ final class SingletonValueService implements ValueService {
 
     void clear() {
         generators.clear();
+    }
+
+    List<ValueGenerator<?>> getRegisteredSupport() {
+        return Collections.unmodifiableList(generators);
     }
 }

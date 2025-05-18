@@ -19,15 +19,17 @@ dependencies {
 }
 
 jmh {
-    warmupIterations = 3
-    iterations = 5
+    warmupIterations = 0
+    failOnError = true
+    iterations = 3
+    benchmarkMode = ["thrpt", "ss"]
+    timeUnit = "ms"
     timeOnIteration = "1s"
-    benchmarkMode = ["ss"]
-    timeUnit = 'ms'
     fork = 1
     batchSize = 1
-    threads = 5
+    threads = 1
     humanOutputFile.set(project.layout.buildDirectory.file("/results/jmh/human.txt"))
+    verbosity = "NORMAL"
 }
 
 publishing {

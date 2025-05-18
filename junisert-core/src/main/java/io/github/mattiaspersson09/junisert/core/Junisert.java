@@ -20,6 +20,7 @@ import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertion;
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedSupportGenerator;
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedValueGenerator;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
+import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.core.assertion.PlainObjectAssertionImpl;
 import io.github.mattiaspersson09.junisert.core.assertion.UnitAssertionImpl;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
@@ -38,9 +39,12 @@ import java.util.List;
 
 
 public final class Junisert {
+    private static final Logger LOGGER = Logger.getLogger("Junisert");
     static final int INSTANCE_DEPENDENCY_DEPTH = 3;
+
     private static volatile InstanceCreator defaultInstanceCreator;
     private static volatile ValueCache valueCache;
+    private static volatile ValueGenerator<?> javaInternalSupport;
 
     private Junisert() {
     }
@@ -53,42 +57,50 @@ public final class Junisert {
         return new PlainObjectAssertionImpl(getDefaultTestResource(pojoClass));
     }
 
+    static AggregatedValueGenerator aggregatedDefaultValueSupport() {
+        return new AggregatedSupportGenerator(defaultValueSupport());
+    }
+
+    static synchronized ValueGenerator<?> javaInternalSupport() {
+        if (javaInternalSupport == null) {
+            LOGGER.config("Initializing predefined Java internal support");
+            javaInternalSupport = JavaInternals.getSupported();
+        }
+
+        return javaInternalSupport;
+    }
+
     static List<ValueGenerator<?>> defaultValueSupport() {
         return Arrays.asList(
                 new PrimitiveValueGenerator(),
                 new WrapperPrimitiveValueGenerator(),
                 new ArrayValueGenerator(),
                 new EnumValueGenerator(),
-                JavaInternals.getSupported(),
+                javaInternalSupport(),
                 new InterfaceValueGenerator(),
                 new ObjectValueGenerator(),
                 ObjectValueGenerator.withForcedAccess()
         );
     }
 
-    static AggregatedValueGenerator aggregatedDefaultValueSupport() {
-        return new AggregatedSupportGenerator(defaultValueSupport());
-    }
-
     static synchronized ValueCache valueCache() {
         if (valueCache == null) {
+            LOGGER.config("Initializing value cache");
             valueCache = new ValueCache();
         }
 
         return valueCache;
     }
 
-    static synchronized SharedResource getDefaultTestResource(Class<?> unitUnderAssertion) {
+    static synchronized SharedResource getDefaultTestResource(Class<?> unitClass) {
         if (defaultInstanceCreator == null) {
+            LOGGER.config("Initializing default instance creator with value support");
+
             ValueGenerator<Object> dependencyGenerator = new CachingDependencyGenerator(
                     aggregatedDefaultValueSupport(), valueCache());
             defaultInstanceCreator = new ConstructorInstanceCreator(dependencyGenerator, INSTANCE_DEPENDENCY_DEPTH);
         }
 
-        return new SharedResource(
-                Unit.of(unitUnderAssertion),
-                defaultInstanceCreator,
-                SingletonValueService.getInstance()
-        );
+        return new SharedResource(Unit.of(unitClass), defaultInstanceCreator, SingletonValueService.getInstance());
     }
 }
