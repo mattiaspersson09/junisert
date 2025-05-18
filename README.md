@@ -1,6 +1,7 @@
 # Junisert
 
 [![CI](https://github.com/mattiaspersson09/junisert/actions/workflows/ci.yaml/badge.svg)](https://github.com/mattiaspersson09/junisert/actions/workflows/ci.yaml)
+[![CodeQL](https://github.com/mattiaspersson09/junisert/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/mattiaspersson09/junisert/actions/workflows/github-code-scanning/codeql)
 [![codecov](https://codecov.io/gh/mattiaspersson09/junisert/branch/main/graph/badge.svg?token=SEE3IT4F86)](https://codecov.io/gh/mattiaspersson09/junisert)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
