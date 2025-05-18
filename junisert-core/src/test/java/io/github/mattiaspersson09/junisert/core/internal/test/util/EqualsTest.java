@@ -39,13 +39,11 @@ public class EqualsTest {
     }
 
     @Test
-    @SuppressWarnings("all")
     void isReflexive_whenEqualsReference_thenIsReflexive() {
         equals.isReflexive();
     }
 
     @Test
-    @SuppressWarnings("all")
     void reflexive_whenNotEqualsReference_thenFailsReflexivity() {
         assertThatThrownBy(new Equals(new NonReflexive())::isReflexive).isInstanceOf(UnitAssertionError.class);
     }
@@ -154,7 +152,6 @@ public class EqualsTest {
         private Object field;
 
         @Override
-        @SuppressWarnings("all")
         public boolean equals(Object object) {
             if (this == object) return true;
             if (object == null || getClass() != object.getClass()) return false;

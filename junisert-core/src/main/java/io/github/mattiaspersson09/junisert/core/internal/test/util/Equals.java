@@ -97,7 +97,7 @@ public final class Equals {
      * @throws UnitAssertionError if instance equals check is not symmetric
      * @see #isSymmetricWith(Object)
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings("UnusedReturnValue")
     public Equals isSymmetricWith(Supplier<Object> otherInstance) throws UnitAssertionError {
         Objects.requireNonNull(otherInstance);
         return isSymmetricWith(otherInstance.get());
@@ -131,7 +131,7 @@ public final class Equals {
      * @return this equals to continue checking
      * @throws UnitAssertionError if instance equals check happens to be symmetric
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings("UnusedReturnValue")
     public Equals isNotSymmetricWith(Supplier<Object> otherInstance) throws UnitAssertionError {
         Objects.requireNonNull(otherInstance);
         return isNotSymmetricWith(otherInstance.get());
@@ -172,7 +172,7 @@ public final class Equals {
      * @return this equals to continue checking
      * @throws UnitAssertionError if instance equals check is not transitive
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings("UnusedReturnValue")
     public Equals isTransitiveWith(Supplier<Object> second, Supplier<Object> third) throws UnitAssertionError {
         Objects.requireNonNull(second);
         Objects.requireNonNull(third);
@@ -227,7 +227,7 @@ public final class Equals {
      * @return this equals to continue checking
      * @throws UnitAssertionError if instance equals check is not consistently true
      */
-    @SuppressWarnings("all")
+    @SuppressWarnings("UnusedReturnValue")
     public Equals isConsistentWith(Supplier<Object> otherInstance, int consistentTimes) throws UnitAssertionError {
         Objects.requireNonNull(otherInstance);
         return isConsistentWith(otherInstance.get(), consistentTimes);
