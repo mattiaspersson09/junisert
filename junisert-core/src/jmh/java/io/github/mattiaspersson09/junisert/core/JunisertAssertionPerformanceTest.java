@@ -22,8 +22,9 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
+@SuppressWarnings("unused")
 @State(Scope.Benchmark)
-public class JunisertPerformanceTest {
+public class JunisertAssertionPerformanceTest {
     @Benchmark
     public void expensiveUnit(Blackhole blackhole) {
         Junisert.assertThatPojo(ExpensivePojo.class).isWellImplemented();
