@@ -1,11 +1,10 @@
 pluginManagement {
+    includeBuild("gradle/plugins")
+
     repositories {
-        mavenLocal()
-        mavenCentral()
         gradlePluginPortal()
     }
 }
-
 rootProject.name = "junisert"
 
 include("junisert-api")

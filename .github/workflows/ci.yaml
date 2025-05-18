@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - "main"
-      - "dev/**"
       - "releases/**"
     tags-ignore:
       - "**"
@@ -19,7 +18,7 @@ jobs:
       contents: read
     strategy:
       matrix:
-        java-lts: [21]
+        java-lts: [11, 17, 21]
 
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-lts: [21]
+        java-lts: [11, 17, 21]
     permissions:
       contents: write
 
