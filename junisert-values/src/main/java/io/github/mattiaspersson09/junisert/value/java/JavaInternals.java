@@ -30,6 +30,7 @@ public final class JavaInternals {
                 .merge(JavaUtilSupport.getUtilSupport())
                 .merge(JavaUtilSupport.getFunctionalSupport())
                 .merge(JavaUtilSupport.getStreamSupport())
+                .merge(JavaTimeSupport.getTimeSupport())
                 .merge(JavaIOSupport.getIOSupport())
                 .merge(JavaTextSupport.getTextSupport())
                 .merge(JavaSecuritySupport.getSecuritySupport());
