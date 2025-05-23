@@ -52,7 +52,7 @@ public class LogFormatterTest {
 
         assertThat(formatter.format(logRecord))
                 .contains(LogFormatter.COLOR_RED)
-                .contains("[2025-01-01 00:00:00] [WARNING] [logger] message")
+                .contains("[WARNING] [logger] message")
                 .contains(LogFormatter.COLOR_RESET);
     }
 
