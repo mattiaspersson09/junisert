@@ -22,16 +22,21 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class LazyValueTest {
     @Test
-    void nullOnNotEmptyValue_failFast_throwsNullPointerException() {
-        assertThatThrownBy(() -> new LazyValue<>(null)).isInstanceOf(NullPointerException.class)
+    void nullOnNotEmptyValue_shouldFailFast_thenThrowsUncheckedException() {
+        assertThatThrownBy(() -> new LazyValue<>(null))
+                .isInstanceOf(RuntimeException.class)
                 .hasMessage("Can't construct a lazy value object without a value supplier");
+    }
+
+    @Test
+    void asEmpty_isDefaultNull() {
+        assertThat(new LazyValue<>(String::new).asEmpty()).isNull();
     }
 
     @Test
     void isPolymorphic() {
         Value<CharSequence> lazyValue = new LazyValue<>(() -> new StringBuilder("string"));
 
-        assertThat(lazyValue.get()
-                .toString()).isEqualTo("string");
+        assertThat(lazyValue.get().toString()).isEqualTo("string");
     }
 }

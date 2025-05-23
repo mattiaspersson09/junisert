@@ -148,4 +148,11 @@ public class ImplementationTest {
         assertThat(implementations.get(1)).isEqualTo(value);
         assertThat(implementations.get(2)).isEqualTo(valueOther);
     }
+
+    @Test
+    void order_whenGivenInvalidNewOrder_thenKeepsCurrentOrder() {
+        Implementation<?> value = new Implementation<>(Super.class, Impl::new).order(Order.DEFAULT);
+
+        assertThat(value.order(null).order()).isEqualTo(Order.DEFAULT);
+    }
 }

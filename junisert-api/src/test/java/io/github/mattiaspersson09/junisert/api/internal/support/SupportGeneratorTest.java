@@ -130,6 +130,21 @@ public class SupportGeneratorTest {
     }
 
     @Test
+    void canBeOrdered() {
+        SupportGenerator<?> support = new SupportGenerator<>(Super.class);
+
+        assertThat(support.order()).isEqualTo(Order.DEFAULT);
+        assertThat(support.order(Order.FIRST).order()).isEqualTo(Order.FIRST);
+    }
+
+    @Test
+    void order_whenGivenInvalidNewOrder_thenKeepsCurrentOrder() {
+        SupportGenerator<?> support = new SupportGenerator<>(Super.class).order(Order.DEFAULT);
+
+        assertThat(support.order(null).order()).isEqualTo(Order.DEFAULT);
+    }
+
+    @Test
     void generate_whenTypeIsNotSupported_thenThrowsUnsupportedTypeException() {
         Implementation<Impl> implementation = new Implementation<>(Impl.class, Impl::new);
         SupportGenerator<Super> support = new SupportGenerator<>(Super.class, implementation);

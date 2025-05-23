@@ -15,7 +15,9 @@
  */
 package io.github.mattiaspersson09.junisert.common.logging;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
@@ -28,14 +30,16 @@ final class LogFormatter extends Formatter {
     static final String COLOR_STANDARD = COLOR_RESET;
     static final String COLOR_BLUE = "\u001B[34m";
     static final String COLOR_YELLOW = "\u001B[33m";
+    static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 
     @Override
     public String format(LogRecord record) {
         LogLevel level = LogLevel.from(record.getLevel());
+        String dateTime = DATE_FORMATTER.format(new Date(record.getMillis()));
 
-        return String.format("%1$s[%2$tF %2$tT] [%3$s] [%4$s] %5$s%6$s%n",
+        return String.format("%1$s[%2$s] [%3$s] [%4$s] %5$s%6$s%n",
                 level.toColor(),
-                new Date(record.getMillis()),
+                dateTime,
                 level,
                 record.getLoggerName(),
                 record.getMessage(),
@@ -43,11 +47,10 @@ final class LogFormatter extends Formatter {
     }
 
     private enum LogLevel {
-        TEST(Level.FINE, COLOR_YELLOW),
-        CONFIG(Level.CONFIG, COLOR_BLUE),
-        INFO(Level.INFO, COLOR_STANDARD),
         WARNING(Level.WARNING, COLOR_RED),
-        MISSING(null, COLOR_RESET);
+        INFO(Level.INFO, COLOR_STANDARD),
+        CONFIG(Level.CONFIG, COLOR_BLUE),
+        TEST(Level.FINE, COLOR_YELLOW);
 
         private final Level level;
         private final String color;
@@ -61,7 +64,7 @@ final class LogFormatter extends Formatter {
             return Stream.of(values())
                     .filter(logLevel -> Objects.equals(logLevel.level, level))
                     .findAny()
-                    .orElse(MISSING);
+                    .orElseThrow(() -> new IllegalArgumentException("Unsupported log level: " + level.getName()));
         }
 
         public String toColor() {

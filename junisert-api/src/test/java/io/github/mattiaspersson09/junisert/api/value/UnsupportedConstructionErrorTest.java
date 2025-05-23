@@ -15,26 +15,27 @@
  */
 package io.github.mattiaspersson09.junisert.api.value;
 
+import io.github.mattiaspersson09.junisert.testunits.polymorphism.Impl;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ValueTest {
+public class UnsupportedConstructionErrorTest {
     @Test
-    void defaultEmptyIsNull() {
-        Value<Object> value = () -> "string";
-
-        assertThat(value.get()).isEqualTo("string");
-        assertThat(value.asEmpty()).isNull();
+    void constructionErrorWithoutCause() {
+        assertThat(new UnsupportedConstructionError(Impl.class))
+                .isInstanceOf(Error.class)
+                .hasMessage("Failed to construct concrete value of: " + Impl.class);
     }
 
     @Test
-    void ofEager_returnsNewEagerValue() {
-        assertThat(Value.ofEager("string")).isEqualTo(new EagerValue<>("string"));
-    }
-
-    @Test
-    void of_returnsNewLazyValue() {
-        assertThat(Value.of(String::new)).isInstanceOf(LazyValue.class);
+    void constructionErrorWithCause() {
+        assertThat(new UnsupportedConstructionError(Impl.class, new RuntimeException("cause")))
+                .isInstanceOf(Error.class)
+                .hasMessage("Failed to construct concrete value of: " + Impl.class)
+                .cause()
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("cause");
     }
 }

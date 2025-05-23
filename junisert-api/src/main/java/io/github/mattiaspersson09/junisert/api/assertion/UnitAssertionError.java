@@ -16,10 +16,6 @@
 package io.github.mattiaspersson09.junisert.api.assertion;
 
 public class UnitAssertionError extends AssertionError {
-    public UnitAssertionError() {
-        super();
-    }
-
     public UnitAssertionError(Object detailMessage) {
         super(detailMessage);
     }

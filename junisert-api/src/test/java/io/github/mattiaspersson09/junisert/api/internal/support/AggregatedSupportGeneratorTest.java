@@ -18,6 +18,7 @@ package io.github.mattiaspersson09.junisert.api.internal.support;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
+import io.github.mattiaspersson09.junisert.testunits.polymorphism.Super;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -68,6 +69,95 @@ public class AggregatedSupportGeneratorTest {
         AggregatedSupportGenerator aggregated = new AggregatedSupportGenerator(Collections.emptyList());
 
         assertThat(aggregated.supports(Integer.class)).isFalse();
+    }
+
+    @Test
+    void aggregated_returnsUnmodifiableView() {
+        ValueGenerator<?> wrapper = new IntegerGenerator(1_000);
+        AggregatedSupportGenerator aggregated = new AggregatedSupportGenerator(Collections.singletonList(wrapper));
+
+        assertThat(aggregated.aggregated()).hasSize(1);
+        assertThatThrownBy(() -> aggregated.aggregated().add(new IntegerGenerator(1_000)))
+                .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void merge_whenNonAggregatedValueGenerator_thenMergedWithValueGenerator() {
+        ValueGenerator<?> valueGenerator = new IntegerGenerator(1);
+
+        AggregatedSupportGenerator mergingLast = new AggregatedSupportGenerator(Collections.singletonList(
+                new IntGenerator(1, 0)));
+        AggregatedSupportGenerator mergingFirst = new AggregatedSupportGenerator(Collections.singletonList(
+                new IntGenerator(1, 0)));
+
+        assertThat(mergingLast.merge(valueGenerator).aggregated())
+                .hasSize(2)
+                .anyMatch(generator -> generator.getClass().equals(IntegerGenerator.class))
+                .anyMatch(generator -> generator.getClass().equals(IntGenerator.class));
+        assertThat(mergingFirst.mergeFirst(valueGenerator).aggregated())
+                .hasSize(2)
+                .anyMatch(generator -> generator.getClass().equals(IntegerGenerator.class))
+                .anyMatch(generator -> generator.getClass().equals(IntGenerator.class));
+    }
+
+    @Test
+    void merge_givenAggregatedValueGenerator_whenSeveralAggregated_thenMergedWithAllValueGenerators() {
+        AggregatedValueGenerator aggregatedValueGenerator = new AggregatedSupportGenerator(Arrays.asList(
+                new IntegerGenerator(1_000),
+                new IntGenerator(1, 0)
+        ));
+
+        AggregatedSupportGenerator mergingLast = new AggregatedSupportGenerator(Collections.emptyList());
+        AggregatedSupportGenerator mergingFirst = new AggregatedSupportGenerator(Collections.emptyList());
+
+        assertThat(mergingLast.merge(aggregatedValueGenerator).aggregated())
+                .hasSize(2)
+                .anyMatch(generator -> generator.getClass().equals(IntegerGenerator.class))
+                .anyMatch(generator -> generator.getClass().equals(IntGenerator.class));
+        assertThat(mergingFirst.mergeFirst(aggregatedValueGenerator).aggregated())
+                .hasSize(2)
+                .anyMatch(generator -> generator.getClass().equals(IntegerGenerator.class))
+                .anyMatch(generator -> generator.getClass().equals(IntGenerator.class));
+    }
+
+    @Test
+    void merge_whenHasAggregatedGeneratorsFromBefore_thenMerges_andAddsMergedLast() {
+        AggregatedValueGenerator aggregatedValueGenerator = new AggregatedSupportGenerator(Arrays.asList(
+                new IntegerGenerator(1_000),
+                new IntGenerator(1, 0)
+        ));
+
+        AggregatedSupportGenerator aggregated = new AggregatedSupportGenerator(
+                Collections.singletonList(new SupportGenerator<>(Super.class)));
+
+        AggregatedValueGenerator merged = aggregated.merge(aggregatedValueGenerator);
+
+        assertThat(merged.aggregated()).first().isInstanceOf(SupportGenerator.class);
+        assertThat(merged.aggregated())
+                .hasSize(3)
+                .anyMatch(generator -> generator.getClass().equals(SupportGenerator.class))
+                .anyMatch(generator -> generator.getClass().equals(IntegerGenerator.class))
+                .anyMatch(generator -> generator.getClass().equals(IntGenerator.class));
+    }
+
+    @Test
+    void mergeFirst_whenHasAggregatedGeneratorsFromBefore_thenMerges_andAddsMergedFirst() {
+        AggregatedValueGenerator aggregatedValueGenerator = new AggregatedSupportGenerator(Arrays.asList(
+                new IntegerGenerator(1_000),
+                new IntGenerator(1, 0)
+        ));
+
+        AggregatedSupportGenerator aggregated = new AggregatedSupportGenerator(
+                Collections.singletonList(new SupportGenerator<>(Super.class)));
+
+        AggregatedValueGenerator merged = aggregated.mergeFirst(aggregatedValueGenerator);
+
+        assertThat(merged.aggregated()).last().isInstanceOf(SupportGenerator.class);
+        assertThat(merged.aggregated())
+                .hasSize(3)
+                .anyMatch(generator -> generator.getClass().equals(SupportGenerator.class))
+                .anyMatch(generator -> generator.getClass().equals(IntegerGenerator.class))
+                .anyMatch(generator -> generator.getClass().equals(IntGenerator.class));
     }
 
     private static class IntGenerator implements ValueGenerator<Number> {

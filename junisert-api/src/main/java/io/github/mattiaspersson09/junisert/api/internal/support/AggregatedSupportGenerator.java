@@ -22,9 +22,7 @@ import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * <h4>INTERNAL DISCLAIMER:</h4>
@@ -66,13 +64,28 @@ public class AggregatedSupportGenerator implements AggregatedValueGenerator {
 
     @Override
     public AggregatedValueGenerator merge(ValueGenerator<?> generator) {
-        Set<ValueGenerator<?>> aggregated = new HashSet<>(generators);
+        List<ValueGenerator<?>> aggregated = new ArrayList<>(generators);
 
         if (generator instanceof AggregatedValueGenerator) {
             aggregated.addAll(((AggregatedValueGenerator) generator).aggregated());
         } else {
             aggregated.add(generator);
         }
+
+        return new AggregatedSupportGenerator(aggregated);
+    }
+
+    @Override
+    public AggregatedValueGenerator mergeFirst(ValueGenerator<?> generator) {
+        List<ValueGenerator<?>> aggregated = new ArrayList<>();
+
+        if (generator instanceof AggregatedValueGenerator) {
+            aggregated.addAll(((AggregatedValueGenerator) generator).aggregated());
+        } else {
+            aggregated.add(generator);
+        }
+
+        aggregated.addAll(generators);
 
         return new AggregatedSupportGenerator(aggregated);
     }

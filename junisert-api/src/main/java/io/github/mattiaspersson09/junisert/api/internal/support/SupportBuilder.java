@@ -15,7 +15,6 @@
  */
 package io.github.mattiaspersson09.junisert.api.internal.support;
 
-
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
 import java.util.ArrayList;
@@ -52,12 +51,11 @@ public final class SupportBuilder {
         return this;
     }
 
-    public SupportBuilder support(ValueGenerator<?> supportGenerator) {
-        generators.add(supportGenerator);
-        return this;
-    }
-
     public AggregatedValueGenerator build() {
+        if (generators.isEmpty()) {
+            throw new UnsupportedOperationException("Not allowed to build an empty support");
+        }
+
         return new AggregatedSupportGenerator(generators);
     }
 

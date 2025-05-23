@@ -16,6 +16,7 @@
 package io.github.mattiaspersson09.junisert.api.internal.support;
 
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
+import io.github.mattiaspersson09.junisert.common.sort.Order;
 import io.github.mattiaspersson09.junisert.testunits.constructor.ArgConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.NoConstructor;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.Base;
@@ -49,5 +50,12 @@ public class BlockedValueGeneratorTest {
         assertThat(blocked.supports(Super.class)).isTrue();
         assertThat(blocked.supports(Base.class)).isFalse();
         assertThat(blocked.supports(Impl.class)).isFalse();
+    }
+
+    @Test
+    void order_hasFixedFirstOrder() {
+        BlockedValueGenerator<?> blocked = new BlockedValueGenerator<>(Super.class);
+
+        assertThat(blocked.order()).isEqualTo(Order.FIRST);
     }
 }

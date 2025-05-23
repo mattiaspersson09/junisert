@@ -21,16 +21,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 final class JavaLoggerAdapter implements Logger {
-    private static final int PACKAGE_SHORTENED_CHARS = 3;
-    private static final int PACKAGE_DEEP_BREAKPOINT = 3;
+    static final int PACKAGE_SHORTENED_CHARS = 3;
+    static final int PACKAGE_DEEP_BREAKPOINT = 3;
 
-    private final java.util.logging.Logger logger;
+    final java.util.logging.Logger logger;
+    final String loggerName;
 
     JavaLoggerAdapter(Handler handler, String name) {
         logger = java.util.logging.Logger.getLogger(name);
         logger.setUseParentHandlers(false);
         logger.addHandler(handler);
         logger.setLevel(Level.FINE);
+        this.loggerName = name;
     }
 
     @Override

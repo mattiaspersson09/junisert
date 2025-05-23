@@ -18,7 +18,6 @@ package io.github.mattiaspersson09.junisert.common.logging;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.logging.Formatter;
-import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.StreamHandler;
 
@@ -29,11 +28,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class JavaLoggerAdapterTest {
     @Mock
-    Handler handler;
+    Package pack;
 
     private Logger logger;
     private ByteArrayOutputStream output;
@@ -60,6 +60,30 @@ public class JavaLoggerAdapterTest {
 
         logger.test("hello {0} {1} {2}", "new", "world", "order");
         assertThat(output.toString()).isEqualTo("hello new world order");
+    }
+
+    @Test
+    void adaptPackageToLogFormat_whenPackagePartsIsLessThanBreakpoint_thenReturnsFullPackageStructure() {
+        when(pack.getName()).thenReturn("io.github.mattiaspersson09");
+
+        assertThat(JavaLoggerAdapter.adaptPackageToLogFormat(pack)).isEqualTo("io.github.mattiaspersson09");
+    }
+
+    @Test
+    void adaptPackageToLogFormat_whenPackagePartsIsMoreThanBreakpoint_thenReturnsShortenedPackageStructure() {
+        when(pack.getName()).thenReturn("io.github.mattiaspersson09.junisert");
+
+        assertThat(JavaLoggerAdapter.adaptPackageToLogFormat(pack)).isEqualTo("io.git.mat.jun");
+    }
+
+    @Test
+    void fail() {
+        logger.fail("details", "expected", "reality");
+
+        String expectedOutput = String.format("details%n%sExpectation: expected%n%sbut%n%sReality: reality",
+                LogFormatter.COLOR_RED, LogFormatter.COLOR_RED, LogFormatter.COLOR_RED);
+
+        assertThat(output.toString()).isEqualTo(expectedOutput);
     }
 
     private static class TestHandler extends StreamHandler {
