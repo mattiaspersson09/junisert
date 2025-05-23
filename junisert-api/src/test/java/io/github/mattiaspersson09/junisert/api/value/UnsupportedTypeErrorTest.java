@@ -15,26 +15,18 @@
  */
 package io.github.mattiaspersson09.junisert.api.value;
 
+import io.github.mattiaspersson09.junisert.testunits.polymorphism.Impl;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ValueTest {
+public class UnsupportedTypeErrorTest {
     @Test
-    void defaultEmptyIsNull() {
-        Value<Object> value = () -> "string";
-
-        assertThat(value.get()).isEqualTo("string");
-        assertThat(value.asEmpty()).isNull();
-    }
-
-    @Test
-    void ofEager_returnsNewEagerValue() {
-        assertThat(Value.ofEager("string")).isEqualTo(new EagerValue<>("string"));
-    }
-
-    @Test
-    void of_returnsNewLazyValue() {
-        assertThat(Value.of(String::new)).isInstanceOf(LazyValue.class);
+    void unsupportedTypeError() {
+        assertThat(new UnsupportedTypeError(Impl.class))
+                .isInstanceOf(Error.class)
+                .hasMessageContaining("Unable to find support for type '" + Impl.class + "'")
+                .hasMessageContaining("Consider registering a custom support for your test suite");
     }
 }

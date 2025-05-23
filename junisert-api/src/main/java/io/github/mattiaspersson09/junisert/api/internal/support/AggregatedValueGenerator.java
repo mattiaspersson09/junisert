@@ -38,10 +38,22 @@ public interface AggregatedValueGenerator extends ValueGenerator<Object> {
     Collection<ValueGenerator<?>> aggregated();
 
     /**
-     * Merge this generator with another {@link ValueGenerator}.
+     * Merge this generator with another {@link ValueGenerator}. If this {@code AggregatedValueGenerator} already
+     * has aggregated generators, then the merged generator will be <em>last</em> in the resulting
+     * {@code AggregatedValueGenerator}'s aggregation.
      *
      * @param generator to merge with
-     * @return a new aggregated generator
+     * @return a new aggregated generator with the merged generator aggregated last
      */
     AggregatedValueGenerator merge(ValueGenerator<?> generator);
+
+    /**
+     * Merge this generator with another {@link ValueGenerator}. If this {@code AggregatedValueGenerator} already
+     * has aggregated generators, then the merged generator will be <em>first</em> in the resulting
+     * {@code AggregatedValueGenerator}'s aggregation.
+     *
+     * @param generator to merge with
+     * @return a new aggregated generator with the merged generator aggregated first
+     */
+    AggregatedValueGenerator mergeFirst(ValueGenerator<?> generator);
 }

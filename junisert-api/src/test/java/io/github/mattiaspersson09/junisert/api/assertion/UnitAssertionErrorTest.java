@@ -13,28 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.api.value;
+package io.github.mattiaspersson09.junisert.api.assertion;
 
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ValueTest {
+public class UnitAssertionErrorTest {
     @Test
-    void defaultEmptyIsNull() {
-        Value<Object> value = () -> "string";
-
-        assertThat(value.get()).isEqualTo("string");
-        assertThat(value.asEmpty()).isNull();
+    void unitAssertionErrorWithoutCause() {
+        assertThat(new UnitAssertionError("failed assertion"))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("failed assertion");
     }
 
     @Test
-    void ofEager_returnsNewEagerValue() {
-        assertThat(Value.ofEager("string")).isEqualTo(new EagerValue<>("string"));
-    }
-
-    @Test
-    void of_returnsNewLazyValue() {
-        assertThat(Value.of(String::new)).isInstanceOf(LazyValue.class);
+    void unitAssertionErrorWithCause() {
+        assertThat(new UnitAssertionError("failed assertion", new AssertionError("inner assertion")))
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("failed assertion")
+                .cause()
+                .isInstanceOf(AssertionError.class)
+                .hasMessage("inner assertion");
     }
 }

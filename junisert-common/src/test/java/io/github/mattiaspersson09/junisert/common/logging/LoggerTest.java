@@ -13,28 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.api.value;
+package io.github.mattiaspersson09.junisert.common.logging;
 
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ValueTest {
+public class LoggerTest {
     @Test
-    void defaultEmptyIsNull() {
-        Value<Object> value = () -> "string";
-
-        assertThat(value.get()).isEqualTo("string");
-        assertThat(value.asEmpty()).isNull();
-    }
-
-    @Test
-    void ofEager_returnsNewEagerValue() {
-        assertThat(Value.ofEager("string")).isEqualTo(new EagerValue<>("string"));
-    }
-
-    @Test
-    void of_returnsNewLazyValue() {
-        assertThat(Value.of(String::new)).isInstanceOf(LazyValue.class);
+    void getLogger() {
+        assertThat(((JavaLoggerAdapter) Logger.getLogger(LoggerTest.class)).loggerName)
+                .isEqualTo("io.git.mat.jun.com.log.LoggerTest");
     }
 }
