@@ -20,13 +20,14 @@ import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import java.util.Collection;
 
 /**
- * <h4>INTERNAL DISCLAIMER:</h4>
+ * <strong>INTERNAL DISCLAIMER:</strong>
  * <p>
  * Internal API and not considered stable for direct usage by external users of this API,
  * can be modified, become invisible, moved, renamed or removed without proper notice.
  * This class is visible because of support for Java version 8 and lack of modularity
  * and when support is dropping for version 8 this will lose visibility.
  * </p><br>
+ *
  * Generator using several other aggregated generators internally to support different kind of value types.
  */
 public interface AggregatedValueGenerator extends ValueGenerator<Object> {
@@ -39,8 +40,7 @@ public interface AggregatedValueGenerator extends ValueGenerator<Object> {
 
     /**
      * Merge this generator with another {@link ValueGenerator}. If this {@code AggregatedValueGenerator} already
-     * has aggregated generators, then the merged generator will be <em>last</em> in the resulting
-     * {@code AggregatedValueGenerator}'s aggregation.
+     * has aggregated generators, then the merged generator will be <em>last</em> in the resulting aggregation.
      *
      * @param generator to merge with
      * @return a new aggregated generator with the merged generator aggregated last
@@ -49,8 +49,7 @@ public interface AggregatedValueGenerator extends ValueGenerator<Object> {
 
     /**
      * Merge this generator with another {@link ValueGenerator}. If this {@code AggregatedValueGenerator} already
-     * has aggregated generators, then the merged generator will be <em>first</em> in the resulting
-     * {@code AggregatedValueGenerator}'s aggregation.
+     * has aggregated generators, then the merged generator will be <em>first</em> in the resulting aggregation.
      *
      * @param generator to merge with
      * @return a new aggregated generator with the merged generator aggregated first

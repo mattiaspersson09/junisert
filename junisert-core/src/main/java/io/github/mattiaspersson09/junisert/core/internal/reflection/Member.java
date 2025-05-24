@@ -25,6 +25,11 @@ public abstract class Member implements Reflected {
     private final java.lang.reflect.Member origin;
     private final Modifier modifier;
 
+    /**
+     * Creates a new member of given {@code origin}.
+     *
+     * @param origin of this member
+     */
     protected Member(java.lang.reflect.Member origin) {
         this.origin = Objects.requireNonNull(origin);
         this.modifier = new Modifier(origin.getModifiers());

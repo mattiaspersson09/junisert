@@ -29,6 +29,19 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+/**
+ * {@link ValueGenerator} supporting and creating instance values of objects using <em>argument constructors</em>.
+ * If an argument constructor (having parameters) isn't present in the class then it's not supported.
+ *
+ * <p><br>
+ * This generator supports dependency recursion, meaning that if a parameter is found that is not directly supported
+ * by a given dependency generator, this generator will try to construct instance of that object as well using
+ * reflection. This operation can be configured by building a {@code DependencyObjectValueGenerator} with a
+ * {@code maxDependencyDepth} using {@link DependencyObjectValueGenerator.Builder}. Dependency instances is
+ * recursively created until {@code maxDependencyDepth} is reached or a construction on the way there is unsupported.
+ *
+ * @see #buildDependencySupport(ValueGenerator)
+ */
 public class DependencyObjectValueGenerator implements ValueGenerator<Object> {
     private static final Logger LOGGER = Logger.getLogger(DependencyObjectValueGenerator.class);
     static final int MAX_DEPENDENCY_DEPTH = 5;
@@ -37,8 +50,14 @@ public class DependencyObjectValueGenerator implements ValueGenerator<Object> {
     private final boolean forceConstructorAccess;
     private final int maxDependencyDepth;
 
+    /**
+     * Creates a new dependency object value generator, without trying to force access to argument constructor
+     * with reflection and {@code maxDependencyDepth = 0}.
+     *
+     * @param dependencyGenerator non-null {@link ValueGenerator} creating values for supported constructor parameters
+     */
     public DependencyObjectValueGenerator(ValueGenerator<?> dependencyGenerator) {
-        this.dependencyGenerator = dependencyGenerator;
+        this.dependencyGenerator = Objects.requireNonNull(dependencyGenerator);
         this.forceConstructorAccess = false;
         this.maxDependencyDepth = 0;
     }
@@ -57,7 +76,7 @@ public class DependencyObjectValueGenerator implements ValueGenerator<Object> {
      * dependencies, to be able to handle deep dependency generation use {@link #buildDependencySupport(ValueGenerator)}
      * and build the generator with {@link Builder#withMaxDependencyDepth(int) withMaxDependencyDepth(int)} instead.
      *
-     * @param dependencyGenerator non-null that can generate dependency values
+     * @param dependencyGenerator non-null creating values for supported constructor parameters
      * @return a new {@code DependencyObjectValueGenerator}
      */
     public static DependencyObjectValueGenerator withForcedAccess(ValueGenerator<?> dependencyGenerator) {
@@ -193,11 +212,19 @@ public class DependencyObjectValueGenerator implements ValueGenerator<Object> {
         return maxDependencyDepth;
     }
 
+    /**
+     * Building new {@link DependencyObjectValueGenerator}s with desired properties.
+     */
     public static class Builder {
         private final ValueGenerator<?> dependencyGenerator;
         private boolean forcedConstructorAccess;
         private int dependencyDepth;
 
+        /**
+         * Creates a new builder.
+         *
+         * @param dependencyGenerator non-null creating values for supported constructor parameters
+         */
         public Builder(ValueGenerator<?> dependencyGenerator) {
             this.dependencyGenerator = Objects.requireNonNull(dependencyGenerator);
         }
@@ -215,10 +242,10 @@ public class DependencyObjectValueGenerator implements ValueGenerator<Object> {
         /**
          * Sets max acceptable depth dependencies can recursively handle their own dependencies with reflection
          * if needed. A dependency will first and foremost try to get dependency values from given
-         * {@code dependencySupport}, otherwise with reflection if {@code maxDependencyDepth > 0}.
-         * Depth and recursion is <em>ONLY</em> triggered if a dependency is found which is not already
-         * supported and has no accessible default constructor.
-         * Depth can be set to {@code 0} to boost test performance and time if support for all dependencies
+         * {@code dependencyGenerator}, otherwise with reflection if {@code maxDependencyDepth > 0}.
+         * Depth and recursion is <strong>only</strong> triggered if a dependency is found which is not already
+         * supported and has no accessible <em>default constructor</em>.
+         * Depth can be set to {@code 0} to boost creation time if support for all dependencies
          * are registered.<br>
          * <br>
          * Too large depth will affect performance, so it's currently capped.

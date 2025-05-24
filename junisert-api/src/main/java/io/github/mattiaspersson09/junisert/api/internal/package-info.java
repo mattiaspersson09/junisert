@@ -1,5 +1,5 @@
 /**
- * <h4>INTERNAL DISCLAIMER:</h4>
+ * <strong>INTERNAL DISCLAIMER:</strong>
  * <p>
  * Internal API and not considered stable for direct usage by external users of this API,
  * can be modified, become invisible, moved, renamed or removed without proper notice.

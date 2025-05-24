@@ -23,8 +23,8 @@ import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.core.assertion.PlainObjectAssertionImpl;
 import io.github.mattiaspersson09.junisert.core.assertion.UnitAssertionImpl;
+import io.github.mattiaspersson09.junisert.core.internal.AssertionResource;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
-import io.github.mattiaspersson09.junisert.core.internal.SharedResource;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.value.common.ArrayValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.EnumValueGenerator;
@@ -37,7 +37,12 @@ import io.github.mattiaspersson09.junisert.value.java.JavaInternals;
 import java.util.Arrays;
 import java.util.List;
 
-
+/**
+ * This is the base class of the framework, acting as facade for asserting on different type of units.
+ * All framework handling and assertions should go through this class to ensure internal caching and
+ * re-usage of already created values. Default setup and resources will be shared and injected through different
+ * assertions by this class.
+ */
 public final class Junisert {
     private static final Logger LOGGER = Logger.getLogger("Junisert");
     static final int INSTANCE_DEPENDENCY_DEPTH = 3;
@@ -49,10 +54,22 @@ public final class Junisert {
     private Junisert() {
     }
 
+    /**
+     * Creates a new fluent {@link UnitAssertion} for given {@code unitClass}.
+     *
+     * @param unitClass to assert on
+     * @return a new unit assertion
+     */
     public static UnitAssertion assertThatUnit(Class<?> unitClass) {
         return new UnitAssertionImpl(getDefaultTestResource(unitClass));
     }
 
+    /**
+     * Creates a new fluent {@link PlainObjectAssertion} for given {@code pojoClass}.
+     *
+     * @param pojoClass to assert on
+     * @return a new plain object assertion
+     */
     public static PlainObjectAssertion assertThatPojo(Class<?> pojoClass) {
         return new PlainObjectAssertionImpl(getDefaultTestResource(pojoClass));
     }
@@ -92,7 +109,7 @@ public final class Junisert {
         return valueCache;
     }
 
-    static synchronized SharedResource getDefaultTestResource(Class<?> unitClass) {
+    static synchronized AssertionResource getDefaultTestResource(Class<?> unitClass) {
         if (defaultInstanceCreator == null) {
             LOGGER.config("Initializing default instance creator with value support");
 
@@ -101,6 +118,6 @@ public final class Junisert {
             defaultInstanceCreator = new ConstructorInstanceCreator(dependencyGenerator, INSTANCE_DEPENDENCY_DEPTH);
         }
 
-        return new SharedResource(Unit.of(unitClass), defaultInstanceCreator, SingletonValueService.getInstance());
+        return new AssertionResource(Unit.of(unitClass), defaultInstanceCreator, SingletonValueService.getInstance());
     }
 }

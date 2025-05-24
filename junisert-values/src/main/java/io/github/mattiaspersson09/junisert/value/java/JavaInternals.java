@@ -18,13 +18,17 @@ package io.github.mattiaspersson09.junisert.value.java;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
 /**
- * Utility class to construct a value generator for java value types
- * that is supported right out of the box.
+ * Factory class to construct a merged {@link ValueGenerator} for all directly supported internal Java types.
  */
 public final class JavaInternals {
     private JavaInternals() {
     }
 
+    /**
+     * Creates a merged {@link ValueGenerator} with all directly supported internal Java types.
+     *
+     * @return {@link ValueGenerator} supporting internal Java types
+     */
     public static ValueGenerator<?> getSupported() {
         return JavaLangSupport.getLangSupport()
                 .merge(JavaUtilSupport.getUtilSupport())

@@ -19,10 +19,41 @@ import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
+/**
+ * <strong>INTERNAL DISCLAIMER:</strong>
+ * <p>
+ * Internal API and not considered stable for direct usage by external users of this API,
+ * can be modified, become invisible, moved, renamed or removed without proper notice.
+ * This class is visible because of support for Java version 8 and lack of modularity
+ * and when support is dropping for version 8 this will lose visibility.
+ * </p><br>
+ * <p>
+ * Providing broad support for different type of values. {@code ValueService}s should cache used values so they
+ * can be re-used to boost performance.
+ */
 public interface ValueService {
+    /**
+     * Registers a value supporting generator.
+     *
+     * @param generator that supports values for some type
+     */
     void registerSupport(ValueGenerator<?> generator);
 
+    /**
+     * Registers a value supporting generator with a given {@code supportName}.
+     *
+     * @param generator   that supports values for some type
+     * @param supportName for the value supporting generator
+     */
     void registerNamedSupport(ValueGenerator<?> generator, String supportName);
 
+    /**
+     * Gets value for given {@code type} from a registered support or cache source.
+     *
+     * @param type to get value for
+     * @return value for {@code type}
+     * @throws UnsupportedTypeError if given type isn't supported among the registered generators or
+     *                              found in a cache source
+     */
     Value<?> getValue(Class<?> type) throws UnsupportedTypeError;
 }

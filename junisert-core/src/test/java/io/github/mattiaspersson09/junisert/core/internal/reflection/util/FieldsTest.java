@@ -57,21 +57,21 @@ public class FieldsTest {
     void toMethodPropertyName_whenFieldHasOneLetterPrefix_thenSamePropertyName() {
         when(field.getName()).thenReturn("mField");
 
-        assertThat(Fields.toMethodPropertyName(field)).isEqualTo("mField");
+        assertThat(Fields.toCapitalizedPropertyName(field)).isEqualTo("mField");
     }
 
     @Test
     void toMethodPropertyName_whenFieldHasSymbolPrefix_thenSamePropertyName() {
         when(field.getName()).thenReturn("_field");
 
-        assertThat(Fields.toMethodPropertyName(field)).isEqualTo("_field");
+        assertThat(Fields.toCapitalizedPropertyName(field)).isEqualTo("_field");
     }
 
     @Test
     void toMethodPropertyName_whenFieldHasMoreThanOneLetterPrefix_thenUpperCaseFirstLetter() {
         when(field.getName()).thenReturn("isField");
 
-        assertThat(Fields.toMethodPropertyName(field)).isEqualTo("IsField");
+        assertThat(Fields.toCapitalizedPropertyName(field)).isEqualTo("IsField");
     }
 
     @Test
@@ -79,7 +79,7 @@ public class FieldsTest {
         when(field.getName()).thenReturn("field");
         when(field.isBoolean()).thenReturn(true);
 
-        assertThat(Fields.toBooleanMethodPropertyName(field)).isEqualTo("Field");
+        assertThat(Fields.toBooleanCapitalizedPropertyName(field)).isEqualTo("Field");
     }
 
     @Test
@@ -87,6 +87,6 @@ public class FieldsTest {
         when(field.getName()).thenReturn("isField");
         when(field.isBoolean()).thenReturn(true);
 
-        assertThat(Fields.toBooleanMethodPropertyName(field)).isEqualTo("Field");
+        assertThat(Fields.toBooleanCapitalizedPropertyName(field)).isEqualTo("Field");
     }
 }

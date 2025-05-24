@@ -5,14 +5,14 @@
 [![codecov](https://codecov.io/gh/mattiaspersson09/junisert/branch/main/graph/badge.svg?token=SEE3IT4F86)](https://codecov.io/gh/mattiaspersson09/junisert)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A scalable and flexible framework used as complement to standard Java unit assertion for different kind of units.
+A scalable and flexible framework used as complement to standard assertions for different kind of units.
 
 **Currently supported Java LTS:** 8+
 
 ---
 
 **Currently supported unit assertions:**
-- [x] POJO's ("Plain Old Java Object"), flexible units without a clear convention
+- [x] POJO's ("Plain Old Java Object"), plain objects carrying properties
 - [x] Java Bean compliance of a unit
 
 **Planned future support:**
@@ -28,16 +28,16 @@ reviewed and considered for future versions.*
 
 ## Project information
 
-This project were created from a need and desire to test structural boilerplate code with or without behavior, with 
-continuous support where users should have ability to register their own support without needing to wait for 
-new support for Java types.
+This project were created from a need and desire to test structural boilerplate code with or without behavior. With 
+continuous support where users should have the ability to register their own support, without needing to wait for 
+new supported Java types.
 
-This project **starts with supporting Java from version 8** but **should** be able to be used 
+This project **starts with supporting Java version 8** but **should** be able to be used 
 with newer LTS, to accommodate different teams which are not equally up to date with the current LTS.
 
-**This project is not created to replace well established Java unit testing frameworks and libraries**
-(i.e. *JUnit*, *TestNG*, *AssertJ*), but rather give a helping hand
-with testing boilerplate code in units to ensure structural integrity and behavior.
+**This project is not created to replace well established testing frameworks and libraries**
+(i.e. *JUnit*, *TestNG*, *AssertJ*) that tests values. Rather give a helping hand
+with testing boilerplate code in entire units, to ensure structural integrity and behavior.
 
 *Credit goes to [OpenPojo](https://github.com/OpenPojo/openpojo) and [pojo-tester](https://github.com/sta-szek/pojo-tester)
 for laying groundwork and inspiration that sparked the birth of this project.*

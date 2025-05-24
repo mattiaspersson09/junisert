@@ -19,27 +19,50 @@ import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 
 /**
- * Used to wrap and supply expensive resources that should only be constructed once and be injected where needed.
+ * Used to wrap and supply expensive resources that should only be constructed once and be injected where needed
+ * during assertions.
  */
-public final class SharedResource {
+public final class AssertionResource {
     private final Unit unitUnderAssertion;
     private final InstanceCreator instanceCreator;
     private final ValueService valueService;
 
-    public SharedResource(Unit unitUnderAssertion, InstanceCreator instanceCreator, ValueService valueService) {
+    /**
+     * Creates a new resource to share and inject where needed.
+     *
+     * @param unitUnderAssertion currently being asserted
+     * @param instanceCreator    creating instances of {@code unitUnderAssertion}
+     * @param valueService       providing value support with potentially caching abilities
+     */
+    public AssertionResource(Unit unitUnderAssertion, InstanceCreator instanceCreator, ValueService valueService) {
         this.unitUnderAssertion = unitUnderAssertion;
         this.instanceCreator = instanceCreator;
         this.valueService = valueService;
     }
 
+    /**
+     * Gets the {@link Unit} currently being asserted on.
+     *
+     * @return unit under assertion
+     */
     public Unit getUnitUnderAssertion() {
         return unitUnderAssertion;
     }
 
+    /**
+     * Gets the {@link InstanceCreator} that should be used for creating instances of the unit under assertion.
+     *
+     * @return instance creator to use
+     */
     public InstanceCreator getInstanceCreator() {
         return instanceCreator;
     }
 
+    /**
+     * Gets the {@link ValueService} that should provide value support.
+     *
+     * @return supporting value service
+     */
     public ValueService getValueService() {
         return valueService;
     }

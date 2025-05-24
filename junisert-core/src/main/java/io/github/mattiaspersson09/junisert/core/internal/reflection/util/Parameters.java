@@ -21,14 +21,29 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Utility class with helper methods for acting on reflected {@link Parameter}'s.
+ */
 public final class Parameters {
     private Parameters() {
     }
 
+    /**
+     * Maps given {@link java.lang.reflect.Parameter} to a {@link Parameter}.
+     *
+     * @param parameter to map
+     * @return a new {@link Parameter}
+     */
     public static Parameter map(java.lang.reflect.Parameter parameter) {
         return Parameter.of(parameter);
     }
 
+    /**
+     * Maps given {@link java.lang.reflect.Parameter}s to a list of {@link Parameter}s.
+     *
+     * @param parameters to map
+     * @return a new list of {@link Parameter}s
+     */
     public static List<Parameter> map(java.lang.reflect.Parameter[] parameters) {
         return Stream.of(parameters)
                 .map(Parameters::map)

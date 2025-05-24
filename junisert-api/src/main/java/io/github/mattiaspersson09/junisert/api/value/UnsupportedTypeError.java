@@ -23,6 +23,12 @@ public class UnsupportedTypeError extends Error {
     private static final String NOT_SUPPORTED_TYPE = "Unable to find support for type '%s'. "
             + "Consider registering a custom support for your test suite.";
 
+    /**
+     * Creates a new unsupported type error where given {@code type} weren't supported in the test suite among
+     * one or several generators.
+     *
+     * @param type which weren't supported
+     */
     public UnsupportedTypeError(Class<?> type) {
         super(String.format(NOT_SUPPORTED_TYPE, type));
     }

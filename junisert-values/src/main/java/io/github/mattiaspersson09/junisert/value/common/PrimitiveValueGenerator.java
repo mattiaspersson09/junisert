@@ -22,7 +22,18 @@ import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+/**
+ * {@link ValueGenerator} supporting and creating values for primitive types.
+ *
+ * @see WrapperPrimitiveValueGenerator
+ */
 public class PrimitiveValueGenerator implements ValueGenerator<Object> {
+    /**
+     * Creates a new primitive value generator.
+     */
+    public PrimitiveValueGenerator() {
+    }
+
     @Override
     public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
         return Primitive.from(fromType)

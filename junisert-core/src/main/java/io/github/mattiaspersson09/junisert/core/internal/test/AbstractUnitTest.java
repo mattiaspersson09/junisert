@@ -17,20 +17,44 @@ package io.github.mattiaspersson09.junisert.core.internal.test;
 
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
-import io.github.mattiaspersson09.junisert.core.internal.convention.Convention;
+import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
+import io.github.mattiaspersson09.junisert.core.internal.test.strategy.TestStrategy;
 
+/**
+ * Base class for {@link UnitTest}'s, holding needed resources for performing tests.
+ */
 public abstract class AbstractUnitTest implements UnitTest {
+    /**
+     * Providing value support with potentially caching abilities.
+     */
     protected final ValueService valueService;
+    /**
+     * Creates instances of {@link Unit}'s.
+     */
     protected final InstanceCreator instanceCreator;
-    protected Convention activeConvention;
+    /**
+     * Active testing strategy for units.
+     */
+    protected TestStrategy testStrategy;
 
+    /**
+     * Creates a new abstract unit test with needed resources.
+     *
+     * @param valueService    providing value support with potentially caching abilities
+     * @param instanceCreator of units
+     */
     public AbstractUnitTest(ValueService valueService, InstanceCreator instanceCreator) {
         this.valueService = valueService;
         this.instanceCreator = instanceCreator;
-        this.activeConvention = Convention.none();
+        this.testStrategy = TestStrategy.none();
     }
 
-    public final void setActiveConvention(Convention convention) {
-        this.activeConvention = convention;
+    /**
+     * Sets active testing strategy.
+     *
+     * @param testStrategy to be used during test
+     */
+    public final void setTestStrategy(TestStrategy testStrategy) {
+        this.testStrategy = testStrategy;
     }
 }

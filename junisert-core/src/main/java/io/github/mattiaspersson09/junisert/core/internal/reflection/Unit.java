@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Representing a reflected unit, being a wrapper for unit classes. Should not be used for and not supported for
- * other intentions other than constructing an assertable and testable unit, which were created by the user.
+ * Representing a reflected unit, being a wrapper for unit classes. Is not supported for intentions other than
+ * constructing an assertable and testable unit, which were created by the user.
  */
 public final class Unit implements Reflected {
     private final Class<?> origin;

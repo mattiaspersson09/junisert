@@ -15,11 +15,25 @@
  */
 package io.github.mattiaspersson09.junisert.api.assertion;
 
+/**
+ * Used when a unit fails an assertion, potentially with a root cause.
+ */
 public class UnitAssertionError extends AssertionError {
+    /**
+     * Creates a new assertion error with a detailed message for why the assertion failed.
+     *
+     * @param detailMessage explaining why the assertion failed
+     */
     public UnitAssertionError(Object detailMessage) {
         super(detailMessage);
     }
 
+    /**
+     * Creates a new assertion error with a detailed message for why the assertion failed.
+     *
+     * @param message explaining why the assertion failed
+     * @param cause   potential root cause of the error
+     */
     public UnitAssertionError(String message, Throwable cause) {
         super(message, cause);
     }

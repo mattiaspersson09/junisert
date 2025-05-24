@@ -20,37 +20,44 @@ import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
+import io.github.mattiaspersson09.junisert.core.internal.AssertionResource;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
-import io.github.mattiaspersson09.junisert.core.internal.SharedResource;
-import io.github.mattiaspersson09.junisert.core.internal.convention.Convention;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods;
 import io.github.mattiaspersson09.junisert.core.internal.test.HasGetters;
 import io.github.mattiaspersson09.junisert.core.internal.test.HasSetters;
+import io.github.mattiaspersson09.junisert.core.internal.test.strategy.TestStrategy;
 
 import java.io.Serializable;
 
+/**
+ * Direct implementation of {@link UnitAssertion} API.
+ */
 public class UnitAssertionImpl implements UnitAssertion {
     private static final Logger LOGGER = Logger.getLogger("Unit assertion");
 
-    private final SharedResource testResource;
+    private final AssertionResource assertionResource;
 
-    public UnitAssertionImpl(SharedResource testResource) {
-        this.testResource = testResource;
+    /**
+     * Creates a new implementation of {@link PlainObjectAssertion}.
+     *
+     * @param assertionResource needed for assertions
+     */
+    public UnitAssertionImpl(AssertionResource assertionResource) {
+        this.assertionResource = assertionResource;
     }
-
 
     @Override
     public PlainObjectAssertion asPojo() {
-        return new PlainObjectAssertionImpl(testResource);
+        return new PlainObjectAssertionImpl(assertionResource);
     }
 
     @Override
     public UnitAssertion isJavaBeanCompliant() throws UnitAssertionError {
-        Unit unit = testResource.getUnitUnderAssertion();
-        ValueService valueService = testResource.getValueService();
-        InstanceCreator instanceCreator = testResource.getInstanceCreator();
+        Unit unit = assertionResource.getUnitUnderAssertion();
+        ValueService valueService = assertionResource.getValueService();
+        InstanceCreator instanceCreator = assertionResource.getInstanceCreator();
 
         if (unit.hasNoDefaultConstructor()) {
             throw new UnitAssertionError(unit.getName() + " were expected to have a default constructor");
@@ -60,14 +67,14 @@ public class UnitAssertionImpl implements UnitAssertion {
             throw new UnitAssertionError(unit.getName() + " were expected to only have private properties");
         }
 
-        Convention beanConvention = Convention.javaBeanCompliant();
+        TestStrategy beanTestStrategy = TestStrategy.javaBeanCompliant();
 
         HasGetters hasGetters = new HasGetters(valueService, instanceCreator);
-        hasGetters.setActiveConvention(beanConvention);
+        hasGetters.setTestStrategy(beanTestStrategy);
         hasGetters.test(unit);
 
         HasSetters hasSetters = new HasSetters(valueService, instanceCreator);
-        hasSetters.setActiveConvention(beanConvention);
+        hasSetters.setTestStrategy(beanTestStrategy);
         hasSetters.test(unit);
 
         if (!Serializable.class.isAssignableFrom(unit.getType())) {

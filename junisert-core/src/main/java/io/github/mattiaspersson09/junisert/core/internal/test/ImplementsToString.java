@@ -27,12 +27,21 @@ import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Tests that a {@link Unit} overrides {@link Object#toString()} and that it's well implemented.
+ */
 public class ImplementsToString implements UnitTest {
     private static final Logger LOGGER = Logger.getLogger("Implements ToString");
 
     private final ValueService valueService;
     private final InstanceCreator instanceCreator;
 
+    /**
+     * Creates a new toString test with needed resources.
+     *
+     * @param valueService    providing value support with potentially caching abilities
+     * @param instanceCreator of units
+     */
     public ImplementsToString(ValueService valueService, InstanceCreator instanceCreator) {
         this.valueService = valueService;
         this.instanceCreator = instanceCreator;

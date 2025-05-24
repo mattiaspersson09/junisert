@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core.internal.convention;
+package io.github.mattiaspersson09.junisert.core.internal.test.strategy;
 
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Method;
@@ -21,26 +21,26 @@ import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
 
 import java.util.function.Predicate;
 
-final class JavaBeanConvention implements Convention {
+final class JavaBeanTestStrategy implements TestStrategy {
     @Override
-    public Predicate<Method> getterConvention(Field field) {
+    public Predicate<Method> isGetterForField(Field field) {
         return method -> {
-            String propertyName = Fields.toMethodPropertyName(field);
+            String propertyName = Fields.toCapitalizedPropertyName(field);
 
             return (method.getName().equals("get" + propertyName)
                     || method.getName().equals("is" + propertyName)
-                    || method.getName().equals("get" + Fields.toBooleanMethodPropertyName(field)))
+                    || method.getName().equals("get" + Fields.toBooleanCapitalizedPropertyName(field)))
                     && method.isProducing(field.getType());
         };
     }
 
     @Override
-    public Predicate<Method> setterConvention(Field field) {
+    public Predicate<Method> isSetterForField(Field field) {
         return method -> {
-            String propertyName = Fields.toMethodPropertyName(field);
+            String propertyName = Fields.toCapitalizedPropertyName(field);
 
             return (method.getName().equals("set" + propertyName)
-                    || method.getName().equals("set" + Fields.toBooleanMethodPropertyName(field)))
+                    || method.getName().equals("set" + Fields.toBooleanCapitalizedPropertyName(field)))
                     && method.hasParameterCount(1)
                     && method.hasParameterTo(field.getType());
         };

@@ -17,7 +17,7 @@ package io.github.mattiaspersson09.junisert.core;
 
 import java.util.Objects;
 
-public class InceptionModel {
+class InceptionModel {
     private final Arg arg;
 
     public InceptionModel(Arg arg) {

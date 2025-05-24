@@ -25,11 +25,19 @@ import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods;
 import io.github.mattiaspersson09.junisert.core.internal.test.util.Equals;
 
-
+/**
+ * Tests that a {@link Unit} overrides {@link Object#equals(Object)} and that it's well implemented.
+ */
 public class ImplementsEquals extends AbstractUnitTest {
     private static final Logger LOGGER = Logger.getLogger("Implements Equals");
     private static final int TIMES_CONSISTENCY_CHECK = 3;
 
+    /**
+     * Creates a new equals test with needed resources.
+     *
+     * @param valueService    providing value support with potentially caching abilities
+     * @param instanceCreator of units
+     */
     public ImplementsEquals(ValueService valueService, InstanceCreator instanceCreator) {
         super(valueService, instanceCreator);
     }
@@ -71,7 +79,7 @@ public class ImplementsEquals extends AbstractUnitTest {
                 .isNotSymmetricWith(() -> resetFieldsInInstance(unit, instance2));
     }
 
-    public Object resetFieldsInInstance(Unit unit, Object instance) {
+    private Object resetFieldsInInstance(Unit unit, Object instance) {
         for (Field field : unit.getFields()) {
             if (!Fields.isInstanceField(field)) {
                 continue;
