@@ -28,16 +28,25 @@ import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Tests that a {@link Unit} has a working getter for every non-synthetic instance field.
+ */
 public final class HasGetters extends AbstractUnitTest {
     private static final Logger LOGGER = Logger.getLogger("Has Getters");
 
+    /**
+     * Creates a new getter test with needed resources.
+     *
+     * @param valueService    providing value support with potentially caching abilities
+     * @param instanceCreator of units
+     */
     public HasGetters(ValueService valueService, InstanceCreator instanceCreator) {
         super(valueService, instanceCreator);
     }
 
     @Override
     public void test(Unit unit) {
-        LOGGER.info("Active convention: {0}", activeConvention.name());
+        LOGGER.info("Active test strategy: {0}", testStrategy.name());
         LOGGER.info("Testing unit: {0}", unit.getName());
 
         for (Field field : unit.getFields()) {
@@ -47,7 +56,7 @@ public final class HasGetters extends AbstractUnitTest {
 
             LOGGER.info("Checking field: {0}", field);
 
-            List<Method> getters = unit.findMethodsMatching(activeConvention.getterConvention(field));
+            List<Method> getters = unit.findMethodsMatching(testStrategy.isGetterForField(field));
 
             if (getters.isEmpty()) {
                 throw new UnitAssertionError(String.format("%s was expected to have getter for field: %s, "

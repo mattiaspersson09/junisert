@@ -16,6 +16,14 @@
 package io.github.mattiaspersson09.junisert.api.internal.support;
 
 /**
+ * <strong>INTERNAL DISCLAIMER:</strong>
+ * <p>
+ * Internal API and not considered stable for direct usage by external users of this API,
+ * can be modified, become invisible, moved, renamed or removed without proper notice.
+ * This class is visible because of support for Java version 8 and lack of modularity
+ * and when support is dropping for version 8 this will lose visibility.
+ * </p><br>
+ *
  * Used when a type is blocked and should not be used in the code base, but was
  * found during a test suite.
  */
@@ -23,6 +31,11 @@ public class BlockedTypeError extends Error {
     private static final String BLOCKED_TYPE = "Found blocked '%s'. Either remove the block or "
             + "consider removing the usage from code base.";
 
+    /**
+     * Creates a new type blocking error.
+     *
+     * @param type which were blocked
+     */
     public BlockedTypeError(Class<?> type) {
         super(String.format(BLOCKED_TYPE, type));
     }

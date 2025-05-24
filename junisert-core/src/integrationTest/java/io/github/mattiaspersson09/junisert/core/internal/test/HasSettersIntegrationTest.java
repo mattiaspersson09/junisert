@@ -20,8 +20,8 @@ import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.core.NoCacheTestValueService;
 import io.github.mattiaspersson09.junisert.core.TestInstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
-import io.github.mattiaspersson09.junisert.core.internal.convention.Convention;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
+import io.github.mattiaspersson09.junisert.core.internal.test.strategy.TestStrategy;
 import io.github.mattiaspersson09.junisert.testunits.setter.BeanAndBuilderStyle;
 import io.github.mattiaspersson09.junisert.testunits.setter.BeanStyle;
 import io.github.mattiaspersson09.junisert.testunits.setter.BooleanCollisionBeanStyle;
@@ -77,7 +77,7 @@ public class HasSettersIntegrationTest {
 
     @Test
     void givenUnit_whenConventionIsSetToJavaBean_andSetterIsNotBeanCompliant_thenFailsTest() {
-        hasSetters.setActiveConvention(Convention.javaBeanCompliant());
+        hasSetters.setTestStrategy(TestStrategy.javaBeanCompliant());
 
         assertThatThrownBy(() -> hasSetters.test(Unit.of(BuilderStyle.class))).isInstanceOf(UnitAssertionError.class);
         assertThatThrownBy(() -> hasSetters.test(Unit.of(RecordStyle.class))).isInstanceOf(UnitAssertionError.class);

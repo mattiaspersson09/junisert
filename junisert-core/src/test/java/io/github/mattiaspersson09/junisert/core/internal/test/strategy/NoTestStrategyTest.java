@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core.internal.convention;
+package io.github.mattiaspersson09.junisert.core.internal.test.strategy;
 
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Method;
@@ -30,16 +30,16 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class NoConventionTest {
+public class NoTestStrategyTest {
     @Mock
     Method method;
     @Mock
     Field field;
-    private NoConvention convention;
+    private NoTestStrategy convention;
 
     @BeforeEach
     void setUp() {
-        convention = new NoConvention();
+        convention = new NoTestStrategy();
     }
 
     @Test
@@ -50,7 +50,7 @@ public class NoConventionTest {
         when(method.hasParameterCount(1)).thenReturn(true);
         when(method.hasParameterTo(Object.class)).thenReturn(true);
 
-        assertThat(convention.setterConvention(field)).accepts(method);
+        assertThat(convention.isSetterForField(field)).accepts(method);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class NoConventionTest {
         when(method.getName()).thenReturn("field");
         when(method.hasParameterCount(1)).thenReturn(false);
 
-        assertThat(convention.setterConvention(field)).rejects(method);
+        assertThat(convention.isSetterForField(field)).rejects(method);
     }
 
     @Test
@@ -69,7 +69,7 @@ public class NoConventionTest {
         doReturn(Super.class).when(field).getType();
         when(method.hasParameterCount(1)).thenReturn(true);
 
-        assertThat(convention.setterConvention(field)).rejects(method);
+        assertThat(convention.isSetterForField(field)).rejects(method);
     }
 
     @Test
@@ -79,7 +79,7 @@ public class NoConventionTest {
         doReturn(Object.class).when(field).getType();
         when(method.isProducing(Object.class)).thenReturn(true);
 
-        assertThat(convention.getterConvention(field)).accepts(method);
+        assertThat(convention.isGetterForField(field)).accepts(method);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class NoConventionTest {
         doReturn(Object.class).when(field).getType();
         when(method.isProducing(Object.class)).thenReturn(false);
 
-        assertThat(convention.getterConvention(field)).rejects(method);
+        assertThat(convention.isGetterForField(field)).rejects(method);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class NoConventionTest {
         doReturn(boolean.class).when(field).getType();
         when(method.isProducing(boolean.class)).thenReturn(true);
 
-        assertThat(convention.getterConvention(field)).accepts(method);
+        assertThat(convention.isGetterForField(field)).accepts(method);
     }
 
     @Test
@@ -109,6 +109,6 @@ public class NoConventionTest {
         doReturn(Boolean.class).when(field).getType();
         when(method.isProducing(Boolean.class)).thenReturn(true);
 
-        assertThat(convention.getterConvention(field)).accepts(method);
+        assertThat(convention.isGetterForField(field)).accepts(method);
     }
 }

@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core.internal.convention;
+package io.github.mattiaspersson09.junisert.core.internal.test.strategy;
 
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Method;
 
 import java.util.function.Predicate;
 
-final class NoConvention implements Convention {
+final class NoTestStrategy implements TestStrategy {
     @Override
-    public Predicate<Method> getterConvention(Field field) {
-        return new JavaBeanConvention()
-                .getterConvention(field)
+    public Predicate<Method> isGetterForField(Field field) {
+        return new JavaBeanTestStrategy()
+                .isGetterForField(field)
                 .or(this.isRecordStyleGetter(field));
     }
 
     @Override
-    public Predicate<Method> setterConvention(Field field) {
-        return new JavaBeanConvention()
-                .setterConvention(field)
+    public Predicate<Method> isSetterForField(Field field) {
+        return new JavaBeanTestStrategy()
+                .isSetterForField(field)
                 .or(this.isBuilderStyleSetter(field));
     }
 

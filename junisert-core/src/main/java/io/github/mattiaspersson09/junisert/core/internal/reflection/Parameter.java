@@ -41,10 +41,21 @@ public final class Parameter implements Reflected {
         return new Parameter(origin);
     }
 
+    /**
+     * Checks if this parameter represents a variable argument list.
+     *
+     * @return true if this parameter represents a variable argument list
+     */
     public boolean isVarArgs() {
         return origin.isVarArgs();
     }
 
+    /**
+     * Checks if this parameter has any declared annotation directly present.
+     *
+     * @return true if any declared annotation is directly present
+     * @see java.lang.reflect.Parameter#getDeclaredAnnotations()
+     */
     public boolean isAnnotated() {
         return origin.getDeclaredAnnotations().length > 0;
     }

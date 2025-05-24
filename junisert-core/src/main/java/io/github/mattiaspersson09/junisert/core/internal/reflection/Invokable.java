@@ -21,23 +21,6 @@ import java.util.Collection;
  * Is a unit member which can be called (also known as invoked) with {@code 0..N} arguments.
  * The invokable is used to update state, retrieve current state or create a new instance
  * of some <em>potentially</em> immutable state from an instance.
- *
- * <p>
- * <h4>Potential units with invokable members:</h4>
- * <ul>
- * <li>Plain java objects</li>
- * <li>Service objects</li>
- * <li>Mapper classes</li>
- * <li>Factory classes</li>
- * <li>Utility classes</li>
- * <li>...</li>
- * </ul>
- * <h4>Typical invokable members:</h4>
- * <ul>
- * <li>Fields</li>
- * <li>Methods</li>
- * <li>Constructors</li>
- * </ul>
  */
 public interface Invokable {
     /**
@@ -63,9 +46,7 @@ public interface Invokable {
      *
      * @return declaring unit
      */
-    default Class<?> getParent() {
-        return getClass().getDeclaringClass();
-    }
+    Class<?> getParent();
 
     /**
      * Name of this invokable, can be a descriptive signature of the unit member or
@@ -73,7 +54,5 @@ public interface Invokable {
      *
      * @return name for this invokable
      */
-    default String getName() {
-        return getClass().getSimpleName();
-    }
+    String getName();
 }

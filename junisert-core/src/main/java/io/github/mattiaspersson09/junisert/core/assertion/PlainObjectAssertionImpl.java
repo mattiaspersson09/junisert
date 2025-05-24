@@ -18,8 +18,8 @@ package io.github.mattiaspersson09.junisert.core.assertion;
 import io.github.mattiaspersson09.junisert.api.assertion.PlainObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
+import io.github.mattiaspersson09.junisert.core.internal.AssertionResource;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
-import io.github.mattiaspersson09.junisert.core.internal.SharedResource;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.test.HasGetters;
 import io.github.mattiaspersson09.junisert.core.internal.test.HasSetters;
@@ -27,16 +27,23 @@ import io.github.mattiaspersson09.junisert.core.internal.test.ImplementsEquals;
 import io.github.mattiaspersson09.junisert.core.internal.test.ImplementsHashCode;
 import io.github.mattiaspersson09.junisert.core.internal.test.ImplementsToString;
 
-
+/**
+ * Direct implementation of {@link PlainObjectAssertion} API.
+ */
 public class PlainObjectAssertionImpl implements PlainObjectAssertion {
+    private final Unit unitUnderAssertion;
     private final ValueService valueService;
     private final InstanceCreator instanceCreator;
-    private final Unit unitUnderAssertion;
 
-    public PlainObjectAssertionImpl(SharedResource sharedResource) {
-        this.valueService = sharedResource.getValueService();
-        this.instanceCreator = sharedResource.getInstanceCreator();
-        this.unitUnderAssertion = sharedResource.getUnitUnderAssertion();
+    /**
+     * Creates a new implementation of {@link PlainObjectAssertion}.
+     *
+     * @param assertionResource needed for assertions
+     */
+    public PlainObjectAssertionImpl(AssertionResource assertionResource) {
+        this.unitUnderAssertion = assertionResource.getUnitUnderAssertion();
+        this.valueService = assertionResource.getValueService();
+        this.instanceCreator = assertionResource.getInstanceCreator();
     }
 
     @Override

@@ -23,9 +23,19 @@ import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 
+/**
+ * {@link ValueGenerator} supporting and creating instance values of objects using <em>default constructors</em>. If a
+ * default constructor (accepting no arguments) isn't present in the class then it's not supported.
+ *
+ * @see #withForcedAccess()
+ * @see DependencyObjectValueGenerator
+ */
 public class ObjectValueGenerator implements ValueGenerator<Object> {
     private final boolean forceConstructorAccess;
 
+    /**
+     * Creates a new object value generator, without trying to force access to default constructor with reflection.
+     */
     public ObjectValueGenerator() {
         this(false);
     }
@@ -34,6 +44,12 @@ public class ObjectValueGenerator implements ValueGenerator<Object> {
         this.forceConstructorAccess = forceConstructorAccess;
     }
 
+    /**
+     * Creates a new object value generator, with ability to try to force access to default constructor with
+     * reflection if needed.
+     *
+     * @return a new instance value generator that can try to force access with reflection
+     */
     public static ObjectValueGenerator withForcedAccess() {
         return new ObjectValueGenerator(true);
     }

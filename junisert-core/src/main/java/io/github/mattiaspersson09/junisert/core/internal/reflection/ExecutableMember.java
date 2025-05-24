@@ -26,12 +26,15 @@ import java.util.stream.Collectors;
  * Unit member that has parameters and accepts {@code 0..N} number of arguments.
  */
 public abstract class ExecutableMember extends Member implements Executable {
-    private final java.lang.reflect.Executable origin;
     private final List<Parameter> parameters;
 
+    /**
+     * Creates a new executable member of given {@code origin}.
+     *
+     * @param origin of this member
+     */
     protected ExecutableMember(java.lang.reflect.Executable origin) {
         super(origin);
-        this.origin = origin;
         this.parameters = Collections.unmodifiableList(Parameters.map(origin.getParameters()));
     }
 

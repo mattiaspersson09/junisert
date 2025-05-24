@@ -23,7 +23,19 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+/**
+ * {@link ValueGenerator} supporting and creating values for the wrapper variants of primitive types, including
+ * {@link Number}.
+ *
+ * @see PrimitiveValueGenerator
+ */
 public class WrapperPrimitiveValueGenerator implements ValueGenerator<Object> {
+    /**
+     * Creates a new wrapper primitive value generator.
+     */
+    public WrapperPrimitiveValueGenerator() {
+    }
+
     @Override
     public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
         return WrapperPrimitive.from(fromType)

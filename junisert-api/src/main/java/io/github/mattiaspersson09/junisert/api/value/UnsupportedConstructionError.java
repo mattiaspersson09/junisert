@@ -24,11 +24,22 @@ package io.github.mattiaspersson09.junisert.api.value;
  * </ol>
  */
 public class UnsupportedConstructionError extends Error {
+    /**
+     * Creates a new construction error with unknown cause, after trying to construct given {@code type}.
+     *
+     * @param type which couldn't be constructed
+     */
     public UnsupportedConstructionError(Class<?> type) {
-        super(String.format("Failed to construct concrete value of: %s", type));
+        super("Failed to construct concrete value of: " + type);
     }
 
+    /**
+     * Creates a new construction error with known cause, after trying to construct given {@code type}.
+     *
+     * @param type  which couldn't be constructed
+     * @param cause that made the construction fail
+     */
     public UnsupportedConstructionError(Class<?> type, Throwable cause) {
-        super(String.format("Failed to construct concrete value of: %s", type), cause);
+        super("Failed to construct concrete value of: " + type, cause);
     }
 }

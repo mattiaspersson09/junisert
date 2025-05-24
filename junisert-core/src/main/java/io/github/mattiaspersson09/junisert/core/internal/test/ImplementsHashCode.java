@@ -26,12 +26,21 @@ import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods
 
 import java.util.Objects;
 
+/**
+ * Tests that a {@link Unit} overrides {@link Object#hashCode()} and that it's well implemented.
+ */
 public class ImplementsHashCode implements UnitTest {
     private static final Logger LOGGER = Logger.getLogger("Implements HashCode");
 
     private final ValueService valueService;
     private final InstanceCreator instanceCreator;
 
+    /**
+     * Creates a new hashCode test with needed resources.
+     *
+     * @param valueService    providing value support with potentially caching abilities
+     * @param instanceCreator of units
+     */
     public ImplementsHashCode(ValueService valueService, InstanceCreator instanceCreator) {
         this.valueService = valueService;
         this.instanceCreator = instanceCreator;

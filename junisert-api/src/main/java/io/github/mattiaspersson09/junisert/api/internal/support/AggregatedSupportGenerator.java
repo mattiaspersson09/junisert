@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * <h4>INTERNAL DISCLAIMER:</h4>
+ * <strong>INTERNAL DISCLAIMER:</strong>
  * <p>
  * Internal API and not considered stable for direct usage by external users of this API,
  * can be modified, become invisible, moved, renamed or removed without proper notice.
@@ -36,6 +36,11 @@ import java.util.List;
 public class AggregatedSupportGenerator implements AggregatedValueGenerator {
     private final List<ValueGenerator<?>> generators;
 
+    /**
+     * Creates a new aggregated support generator with given {@link ValueGenerator}'s to be internally aggregated.
+     *
+     * @param generators aggregated generators
+     */
     public AggregatedSupportGenerator(Collection<ValueGenerator<?>> generators) {
         this.generators = new ArrayList<>(generators);
     }

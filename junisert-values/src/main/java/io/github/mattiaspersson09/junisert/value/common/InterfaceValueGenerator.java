@@ -24,7 +24,26 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Objects;
 
+/**
+ * {@link ValueGenerator} supporting and creating proxy values from interfaces. Proxies created can safely be compared
+ * using {@link Object#equals(Object)} and {@link Object#hashCode()}.
+ *
+ * <p><br>
+ * Invoking on <em>any other method</em> than the below listed methods is not inherently supported and might throw
+ * {@link UnsupportedOperationException}:
+ * <ul>
+ * <li>{@code boolean equals(Object)}</li>
+ * <li>{@code int hashCode()}</li>
+ * <li>{@code String toString()}</li>
+ * </ul>
+ */
 public class InterfaceValueGenerator implements ValueGenerator<Object> {
+    /**
+     * Creates a new interface value generator.
+     */
+    public InterfaceValueGenerator() {
+    }
+
     @Override
     public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
         if (!supports(fromType)) {

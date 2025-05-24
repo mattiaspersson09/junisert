@@ -15,8 +15,21 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
+import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 
+/**
+ * A unit test performs a specific test around a given {@link Unit} and seen internally as a lower abstraction and
+ * extension of assertions, separated to not clutter the assertion classes if a test is extensive.<br>
+ * <br>
+ * Tests should provide fine-tuned logging over what is being tested and it's outcome.
+ */
 public interface UnitTest {
+    /**
+     * Performs a new test around given {@code unit}, may throw {@link UnitAssertionError} to propagate that
+     * an assertion fails from this test.
+     *
+     * @param unit to test
+     */
     void test(Unit unit);
 }

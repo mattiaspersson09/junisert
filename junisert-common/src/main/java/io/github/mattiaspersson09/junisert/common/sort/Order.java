@@ -26,12 +26,33 @@ import java.util.Objects;
  */
 public final class Order {
     private static final int MAX_VALUE = 100;
+    /**
+     * Order to be evaluated <em>first</em> among other ordered objects.
+     */
     public static final Order FIRST = new Order(-MAX_VALUE);
+    /**
+     * Order to be evaluated <em>second</em> among other ordered objects.
+     */
     public static final Order SECOND = new Order(-MAX_VALUE + 1);
+    /**
+     * Order to be evaluated <em>third</em> among other ordered objects.
+     */
     public static final Order THIRD = new Order(-MAX_VALUE + 2);
+    /**
+     * Order without a defined order (neutral) among other ordered objects.
+     */
     public static final Order DEFAULT = new Order(0);
+    /**
+     * Order to be evaluated <em>third to last</em> among other ordered objects.
+     */
     public static final Order THIRD_LAST = new Order(MAX_VALUE - 2);
+    /**
+     * Order to be evaluated <em>second to last</em> among other ordered objects.
+     */
     public static final Order SECOND_LAST = new Order(MAX_VALUE - 1);
+    /**
+     * Order to be evaluated <em>last</em> among other ordered objects.
+     */
     public static final Order LAST = new Order(MAX_VALUE);
 
     private final int value;
@@ -73,7 +94,7 @@ public final class Order {
      * Reorder {@code steps} closer to first position. Steps are always considered as an absolute value,
      * meaning if supplied steps are negative it will be converted to positive.
      *
-     * @param steps to move
+     * @param steps non-negative to move up
      * @return new order
      */
     public Order moveUp(int steps) {
@@ -96,6 +117,7 @@ public final class Order {
     /**
      * Reorder {@code steps} closer to last position.
      *
+     * @param steps non-negative to move down
      * @return new order
      */
     public Order moveDown(int steps) {
@@ -106,6 +128,11 @@ public final class Order {
         return new Order(value + Math.abs(steps));
     }
 
+    /**
+     * This order's value.
+     *
+     * @return order value
+     */
     public int value() {
         return value;
     }

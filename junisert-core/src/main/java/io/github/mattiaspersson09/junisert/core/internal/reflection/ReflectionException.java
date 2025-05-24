@@ -19,14 +19,30 @@ package io.github.mattiaspersson09.junisert.core.internal.reflection;
  * Used when a reflective operation fails and should be unchecked, might wrap reflective cause.
  */
 public class ReflectionException extends RuntimeException {
+    /**
+     * Creates a new reflection exception without root cause.
+     *
+     * @param message explaining why reflection failed
+     */
     public ReflectionException(String message) {
         super(message);
     }
 
+    /**
+     * Creates a new reflection exception with root cause for why the reflection failed.
+     *
+     * @param message explaining why reflection failed
+     * @param cause   for why the reflection failed
+     */
     public ReflectionException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * Creates a new reflection exception with root cause for why the reflection failed.
+     *
+     * @param cause for why the reflection failed
+     */
     public ReflectionException(Throwable cause) {
         super(cause);
     }

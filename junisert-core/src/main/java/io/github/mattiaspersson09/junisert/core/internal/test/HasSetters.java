@@ -28,16 +28,25 @@ import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Tests that a {@link Unit} has a working setter for every non-synthetic instance field.
+ */
 public class HasSetters extends AbstractUnitTest {
     private static final Logger LOGGER = Logger.getLogger("Has Setters");
 
+    /**
+     * Creates a new setter test with needed resources.
+     *
+     * @param valueService    providing value support with potentially caching abilities
+     * @param instanceCreator of units
+     */
     public HasSetters(ValueService valueService, InstanceCreator instanceCreator) {
         super(valueService, instanceCreator);
     }
 
     @Override
     public void test(Unit unit) {
-        LOGGER.info("Active convention: {0}", activeConvention.name());
+        LOGGER.info("Active test strategy: {0}", testStrategy.name());
         LOGGER.info("Testing unit: {0}", unit.getName());
 
         for (Field field : unit.getFields()) {
@@ -47,7 +56,7 @@ public class HasSetters extends AbstractUnitTest {
 
             LOGGER.info("Checking field: {0}", field);
 
-            List<Method> setters = unit.findMethodsMatching(activeConvention.setterConvention(field));
+            List<Method> setters = unit.findMethodsMatching(testStrategy.isSetterForField(field));
 
             if (setters.isEmpty()) {
                 throw new UnitAssertionError(String.format("%s was expected to have setter for field: %s, "

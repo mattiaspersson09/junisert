@@ -15,6 +15,12 @@
  */
 package io.github.mattiaspersson09.junisert.api.assertion;
 
+/**
+ * Assertion for POJO's (Plain Old Java Object's) which doesn't necessarily follow a specific naming convention,
+ * but assumed and treated as a simple object carrying properties.
+ *
+ * @see #isWellImplemented()
+ */
 public interface PlainObjectAssertion {
     /**
      * Asserts that unit has a working getter for all <em>instance</em> fields. This assertion is flexible
@@ -23,8 +29,8 @@ public interface PlainObjectAssertion {
      * <p>
      * Typical Java Bean compliant styles:
      * <ul>
-     * <li>{@code public Type get<property name>()}</li>
-     * <li>{@code public boolean is<property name>}</li>
+     * <li>{@code public Type get<capitalized property name>()}</li>
+     * <li>{@code public boolean is<capitalized property name>}</li>
      * </ul>
      * Builder/record style:
      * <ul>
@@ -43,8 +49,8 @@ public interface PlainObjectAssertion {
      * <p>
      * Java Bean compliant style:
      * <ul>
-     * <li>{@code public void set<property name>(Type arg)}</li>
-     * <li>{@code public Unit set<property name>(Type arg)}</li>
+     * <li>{@code public void set<capitalized property name>(Type arg)}</li>
+     * <li>{@code public Unit set<capitalized property name>(Type arg)}</li>
      * </ul>
      * Builder/record style:
      * <ul>

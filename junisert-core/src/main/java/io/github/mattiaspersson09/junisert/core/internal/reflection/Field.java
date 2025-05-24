@@ -113,7 +113,6 @@ public class Field extends Member implements Invokable {
      *       final Object packageImmutable;
      *     }
      * </pre>
-     * </p>
      *
      * @return true if this field is constant
      * @see #isClassConstant()
@@ -135,7 +134,6 @@ public class Field extends Member implements Invokable {
      *   static final Object PACKAGE_CLASS_CONSTANT = new Object();
      * }
      * </pre>
-     * </p>
      *
      * @return true if this field is an immutable constant owned by a class
      * @see #isImmutable()
@@ -164,7 +162,6 @@ public class Field extends Member implements Invokable {
      *   }
      * }
      * </pre>
-     * </p>
      *
      * @return true if this field is immutable
      * @see #isClassConstant()

@@ -28,16 +28,17 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * <h4>INTERNAL DISCLAIMER:</h4>
+ * <strong>INTERNAL DISCLAIMER:</strong>
  * <p>
  * Internal API and not considered stable for direct usage by external users of this API,
  * can be modified, become invisible, moved, renamed or removed without proper notice.
  * This class is visible because of support for Java version 8 and lack of modularity
  * and when support is dropping for version 8 this will lose visibility.
- * </p>
- * <p><br>
+ * </p><br>
+ * <p>
  * Internal {@code ValueGenerator} for polymorphic support for a value type, supporting {@code 1..N} number of
- * implementations that can be generated.
+ * implementations that can be generated. This generator is mutable and supporting that more implementations can be
+ * added after creation.
  *
  * @param <T> polymorphic type this generator is supporting and generate values for.
  */
@@ -46,35 +47,61 @@ public final class SupportGenerator<T> implements ValueGenerator<T>, Sortable {
     private final List<Implementation<? extends T>> implementations;
     private Order order;
 
-    public SupportGenerator(Class<T> type) {
+    SupportGenerator(Class<T> type) {
         this(type, Collections.emptyList());
     }
 
+    /**
+     * Creates a new mutable support generator with given {@code implementation} as initial supported value
+     * for {@code type}.
+     *
+     * @param type           to support
+     * @param implementation as support value and lazy construction of {@code type}
+     */
     public SupportGenerator(Class<T> type, Implementation<? extends T> implementation) {
         this(type, Collections.singleton(implementation));
     }
 
+    /**
+     * Creates a new mutable support generator with given {@code implementations} as initial supported values
+     * for {@code type}.
+     *
+     * @param type            to support
+     * @param implementations as support value and lazy constructions of {@code type}
+     */
     public SupportGenerator(Class<T> type, Collection<Implementation<? extends T>> implementations) {
         this.order = Order.DEFAULT;
         this.type = Objects.requireNonNull(type);
         this.implementations = new ArrayList<>(Objects.requireNonNull(implementations));
     }
 
+    /**
+     * Adds given {@code implementation} as a lazy support of this generator's supported type.
+     *
+     * @param implementation as support value and lazy construction of this generator's supported type
+     * @return this support generator
+     */
     public SupportGenerator<T> addSupport(Implementation<? extends T> implementation) {
         implementations.add(implementation);
         return this;
     }
 
-    public int size() {
-        return implementations.size();
-    }
-
+    /**
+     * Re-order this generator with given {@code order}.
+     *
+     * @param order non-null new order, else current order will be kept
+     * @return this support generator
+     */
     public SupportGenerator<T> order(Order order) {
         if (order != null) {
             this.order = order;
         }
 
         return this;
+    }
+
+    int size() {
+        return implementations.size();
     }
 
     @Override

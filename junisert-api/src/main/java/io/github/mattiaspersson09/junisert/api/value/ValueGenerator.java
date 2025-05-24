@@ -23,7 +23,7 @@ package io.github.mattiaspersson09.junisert.api.value;
  */
 public interface ValueGenerator<T> {
     /**
-     * Generates a value representation of <b>{@code fromType}</b> if it's supported.
+     * Generates a value representation of {@code fromType} if it's supported.
      * Will throw {@link UnsupportedTypeError} if type is not supported by this generator.
      *
      * @param fromType to generate value for

@@ -23,7 +23,17 @@ import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import java.lang.reflect.Field;
 import java.util.stream.Stream;
 
+/**
+ * {@link ValueGenerator} supporting and creating values for {@code enum}s, creating value from a declared constant
+ * in the requested enum.
+ */
 public class EnumValueGenerator implements ValueGenerator<Object> {
+    /**
+     * Creates a new enum value generator.
+     */
+    public EnumValueGenerator() {
+    }
+
     @Override
     public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
         if (!supports(fromType)) {

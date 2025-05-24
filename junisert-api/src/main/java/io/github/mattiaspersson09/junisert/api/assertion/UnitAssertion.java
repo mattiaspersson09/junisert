@@ -15,11 +15,17 @@
  */
 package io.github.mattiaspersson09.junisert.api.assertion;
 
+/**
+ * Assertion facade and convenience for different kind of units.
+ * To assume the unit under assertion is a specific type of unit, use methods starting with
+ * <em>"as"</em> for specific assertions. Use methods starting with <em>"is"</em> for convenient direct assertion.
+ */
 public interface UnitAssertion {
     /**
-     * Assumes this unit is a plain object for assertion, which doesn't necessarily follow a convention.
+     * Assumes this unit is a plain object for assertion, which doesn't necessarily follow a naming convention but
+     * carries properties.
      *
-     * @return a plain object assertion
+     * @return a new {@link PlainObjectAssertion}
      */
     PlainObjectAssertion asPojo();
 
@@ -32,7 +38,7 @@ public interface UnitAssertion {
      * <li>All instance properties <em>must</em> have a working getter.</li>
      * <li>All instance properties <em>must</em> have a working setter.</li>
      * </ul>
-     *
+     * <p>
      * Other than enforcing convention, this assertion might still check for but not enforce:
      * <ul>
      * <li>Unit <em>should</em> implement {@link java.io.Serializable}, directly or indirectly</li>
@@ -40,8 +46,7 @@ public interface UnitAssertion {
      * <li>Unit <em>should</em> override {@code toString}</li>
      * </ul>
      * Above checks might log a warning but not be enforced. If the user wants to enforce non required checks they
-     * should
-     * treat the unit as a <em>POJO</em> (Plain Old Java Object) and use {@link #asPojo()}.
+     * should treat the unit as a <em>POJO</em> (Plain Old Java Object) and use {@link #asPojo()}.
      *
      * @return this assertion, chained to be able to assert more
      * @throws UnitAssertionError if some requirement is not met

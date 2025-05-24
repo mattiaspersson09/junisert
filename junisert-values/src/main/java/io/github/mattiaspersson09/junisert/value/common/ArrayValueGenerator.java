@@ -21,7 +21,16 @@ import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
 import java.lang.reflect.Array;
 
+/**
+ * {@link ValueGenerator} supporting and creating values for arrays.
+ */
 public class ArrayValueGenerator implements ValueGenerator<Object> {
+    /**
+     * Creates a new array value generator.
+     */
+    public ArrayValueGenerator() {
+    }
+
     @Override
     public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
         if (!supports(fromType)) {

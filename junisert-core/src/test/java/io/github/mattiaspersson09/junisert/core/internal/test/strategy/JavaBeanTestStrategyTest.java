@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core.internal.convention;
+package io.github.mattiaspersson09.junisert.core.internal.test.strategy;
 
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Method;
@@ -30,16 +30,16 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class JavaBeanConventionTest {
+public class JavaBeanTestStrategyTest {
     @Mock
     Method method;
     @Mock
     Field field;
-    private JavaBeanConvention convention;
+    private JavaBeanTestStrategy convention;
 
     @BeforeEach
     void setUp() {
-        convention = new JavaBeanConvention();
+        convention = new JavaBeanTestStrategy();
     }
 
     @Test
@@ -50,7 +50,7 @@ public class JavaBeanConventionTest {
         when(method.hasParameterCount(1)).thenReturn(true);
         when(method.hasParameterTo(Object.class)).thenReturn(true);
 
-        assertThat(convention.setterConvention(field)).accepts(method);
+        assertThat(convention.isSetterForField(field)).accepts(method);
     }
 
     @Test
@@ -58,7 +58,7 @@ public class JavaBeanConventionTest {
         when(field.getName()).thenReturn("field");
         when(method.getName()).thenReturn("field");
 
-        assertThat(convention.setterConvention(field)).rejects(method);
+        assertThat(convention.isSetterForField(field)).rejects(method);
     }
 
     @Test
@@ -67,7 +67,7 @@ public class JavaBeanConventionTest {
         when(method.getName()).thenReturn("setField");
         when(method.hasParameterCount(1)).thenReturn(false);
 
-        assertThat(convention.setterConvention(field)).rejects(method);
+        assertThat(convention.isSetterForField(field)).rejects(method);
     }
 
     @Test
@@ -77,7 +77,7 @@ public class JavaBeanConventionTest {
         doReturn(Object.class).when(field).getType();
         when(method.isProducing(Object.class)).thenReturn(true);
 
-        assertThat(convention.getterConvention(field)).accepts(method);
+        assertThat(convention.isGetterForField(field)).accepts(method);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class JavaBeanConventionTest {
         doReturn(boolean.class).when(field).getType();
         when(method.isProducing(boolean.class)).thenReturn(true);
 
-        assertThat(convention.getterConvention(field)).accepts(method);
+        assertThat(convention.isGetterForField(field)).accepts(method);
     }
 
     @Test
@@ -97,7 +97,7 @@ public class JavaBeanConventionTest {
         doReturn(Boolean.class).when(field).getType();
         when(method.isProducing(Boolean.class)).thenReturn(true);
 
-        assertThat(convention.getterConvention(field)).accepts(method);
+        assertThat(convention.isGetterForField(field)).accepts(method);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class JavaBeanConventionTest {
         doReturn(boolean.class).when(field).getType();
         when(method.isProducing(boolean.class)).thenReturn(true);
 
-        assertThat(convention.getterConvention(field)).accepts(method);
+        assertThat(convention.isGetterForField(field)).accepts(method);
     }
 
     @Test
@@ -119,7 +119,7 @@ public class JavaBeanConventionTest {
         doReturn(Boolean.class).when(field).getType();
         when(method.isProducing(Boolean.class)).thenReturn(true);
 
-        assertThat(convention.getterConvention(field)).accepts(method);
+        assertThat(convention.isGetterForField(field)).accepts(method);
     }
 
     @Test
@@ -130,7 +130,7 @@ public class JavaBeanConventionTest {
         when(method.hasParameterCount(1)).thenReturn(true);
         when(method.hasParameterTo(boolean.class)).thenReturn(true);
 
-        assertThat(convention.setterConvention(field)).accepts(method);
+        assertThat(convention.isSetterForField(field)).accepts(method);
     }
 
     @Test
@@ -141,7 +141,7 @@ public class JavaBeanConventionTest {
         when(method.hasParameterCount(1)).thenReturn(true);
         when(method.hasParameterTo(Boolean.class)).thenReturn(true);
 
-        assertThat(convention.setterConvention(field)).accepts(method);
+        assertThat(convention.isSetterForField(field)).accepts(method);
     }
 
     @Test
@@ -153,7 +153,7 @@ public class JavaBeanConventionTest {
         when(method.hasParameterCount(1)).thenReturn(true);
         when(method.hasParameterTo(boolean.class)).thenReturn(true);
 
-        assertThat(convention.setterConvention(field)).accepts(method);
+        assertThat(convention.isSetterForField(field)).accepts(method);
     }
 
     @Test
@@ -165,7 +165,7 @@ public class JavaBeanConventionTest {
         when(method.hasParameterCount(1)).thenReturn(true);
         when(method.hasParameterTo(Boolean.class)).thenReturn(true);
 
-        assertThat(convention.setterConvention(field)).accepts(method);
+        assertThat(convention.isSetterForField(field)).accepts(method);
     }
 
     @Test
@@ -183,8 +183,8 @@ public class JavaBeanConventionTest {
         when(overloadingNonBooleanMethod.hasParameterCount(1)).thenReturn(true);
         when(overloadingNonBooleanMethod.hasParameterTo(boolean.class)).thenReturn(false);
 
-        assertThat(convention.setterConvention(field)).accepts(method);
-        assertThat(convention.setterConvention(field)).rejects(overloadingNonBooleanMethod);
+        assertThat(convention.isSetterForField(field)).accepts(method);
+        assertThat(convention.isSetterForField(field)).rejects(overloadingNonBooleanMethod);
     }
 
     @Test
@@ -202,7 +202,7 @@ public class JavaBeanConventionTest {
         when(overloadingNonBooleanMethod.hasParameterCount(1)).thenReturn(true);
         when(overloadingNonBooleanMethod.hasParameterTo(Boolean.class)).thenReturn(false);
 
-        assertThat(convention.setterConvention(field)).accepts(method);
-        assertThat(convention.setterConvention(field)).rejects(overloadingNonBooleanMethod);
+        assertThat(convention.isSetterForField(field)).accepts(method);
+        assertThat(convention.isSetterForField(field)).rejects(overloadingNonBooleanMethod);
     }
 }
