@@ -1,0 +1,17 @@
+plugins {
+    id("me.champeau.jmh")
+}
+
+jmh {
+    warmupIterations = 0
+    failOnError = true
+    iterations = 3
+    benchmarkMode = ["thrpt", "ss"]
+    timeUnit = "ms"
+    timeOnIteration = "1s"
+    fork = 1
+    batchSize = 1
+    threads = 1
+    humanOutputFile.set(project.layout.buildDirectory.file("/results/jmh/human.txt"))
+    verbosity = "NORMAL"
+}

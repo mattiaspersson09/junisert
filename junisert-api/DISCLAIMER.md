@@ -2,8 +2,7 @@
 
 Classes will be considered indefinitely unstable and should NOT be directly used by an external user
 of this API because they can be changed without proper notice.
-Disclaimer should be added to javadoc for every publicly visible class of 
-[internal package](src/main/java/io/github/mattiaspersson09/junisert/api/internal):
+Disclaimer is also added to javadoc for every publicly visible class of internal package:
 ```java
 /**
  * <strong>INTERNAL DISCLAIMER:</strong>

@@ -1,6 +1,6 @@
 plugins {
     id("junisert.java-library")
-    id("maven-publish")
+    id("junisert.maven-publish")
 }
 
 dependencies {
@@ -9,14 +9,6 @@ dependencies {
     testImplementation(project(":junisert-testunits"))
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-
-    repositories {
-        mavenLocal()
-    }
+jar {
+    from(this.project.file("DISCLAIMER.md"))
 }
