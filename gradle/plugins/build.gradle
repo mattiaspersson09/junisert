@@ -6,4 +6,8 @@ plugins {
 
 dependencies {
     implementation("com.diffplug.spotless:spotless-plugin-gradle:7.0.3")
+    // Temporarily changing transitive dependency of spotless to non-vulnerable
+    implementation("org.eclipse.jgit:org.eclipse.jgit").version {
+        strictly("6.10.1.202505221210-r")
+    }
 }
