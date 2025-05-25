@@ -8,11 +8,6 @@ configurations {
     functionalTestImplementation.extendsFrom(testImplementation)
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-
 testing {
     suites {
         integrationTest(JvmTestSuite) {

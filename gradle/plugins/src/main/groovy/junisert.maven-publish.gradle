@@ -1,0 +1,41 @@
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.SonatypeHost
+
+plugins {
+    id("com.vanniktech.maven.publish")
+}
+
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
+
+    signAllPublications()
+
+    pom {
+        name = "Junisert"
+        description = "Java unit assertion framework. Scalable, flexible and user-friendly with fluent assertion API for different kind of unit classes."
+        inceptionYear = "2025"
+        url = "https://github.com/mattiaspersson09/junisert/"
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        }
+        developers {
+            developer {
+                id = "mattiaspersson09"
+                name = "Mattias Persson"
+                url = "https://github.com/mattiaspersson09/"
+            }
+        }
+        scm {
+            url = "https://github.com/mattiaspersson09/junisert/"
+            connection = "scm:git:git://github.com/mattiaspersson09/junisert.git"
+            developerConnection = "scm:git:ssh://git@github.com/mattiaspersson09/junisert.git"
+        }
+    }
+}

@@ -16,19 +16,15 @@ version = rootProject.version
 
 def javaRelease = 8
 JavaVersion javaVersion = JavaVersion.VERSION_1_8
-def ignoreJavaDoc = project.name.contains("testunits")
 
 java {
     sourceCompatibility(javaVersion)
     targetCompatibility(javaVersion)
-
-    withSourcesJar()
-    if (!ignoreJavaDoc) {
-        withJavadocJar()
-    }
 }
 
 jar {
+    from(rootProject.file("LICENSE.txt"))
+
     manifest {
         attributes(
                 "Implementation-Title": project.name,

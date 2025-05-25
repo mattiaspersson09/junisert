@@ -2,6 +2,9 @@ plugins {
     id("groovy-gradle-plugin")
     id("java")
     id("jacoco")
+    id("com.diffplug.spotless") version("7.0.3")
+    id("com.vanniktech.maven.publish") version("0.32.0")
+    id("me.champeau.jmh") version("0.7.3")
 }
 
 dependencies {
@@ -10,4 +13,6 @@ dependencies {
     implementation("org.eclipse.jgit:org.eclipse.jgit").version {
         strictly("6.10.1.202505221210-r")
     }
+    implementation("com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin:0.32.0")
+    implementation("me.champeau.jmh:jmh-gradle-plugin:0.7.3")
 }

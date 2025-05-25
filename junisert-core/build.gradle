@@ -1,7 +1,7 @@
 plugins {
     id("junisert.java-library")
-    id("maven-publish")
-    id("me.champeau.jmh") version("0.7.3")
+    id("junisert.performance-test")
+    id("junisert.maven-publish")
 }
 
 configurations {
@@ -16,30 +16,4 @@ dependencies {
 
     functionalTestImplementation("org.projectlombok:lombok:1.18.38")
     functionalTestAnnotationProcessor("org.projectlombok:lombok:1.18.38")
-}
-
-jmh {
-    warmupIterations = 0
-    failOnError = true
-    iterations = 3
-    benchmarkMode = ["thrpt", "ss"]
-    timeUnit = "ms"
-    timeOnIteration = "1s"
-    fork = 1
-    batchSize = 1
-    threads = 1
-    humanOutputFile.set(project.layout.buildDirectory.file("/results/jmh/human.txt"))
-    verbosity = "NORMAL"
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-
-    repositories {
-        mavenLocal()
-    }
 }

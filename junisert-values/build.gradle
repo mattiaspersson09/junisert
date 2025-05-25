@@ -1,22 +1,9 @@
 plugins {
     id("junisert.java-library")
-    id("maven-publish")
 }
 
 dependencies {
     implementation(project(":junisert-api"))
 
     testImplementation(project(":junisert-testunits"))
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-
-    repositories {
-        mavenLocal()
-    }
 }
