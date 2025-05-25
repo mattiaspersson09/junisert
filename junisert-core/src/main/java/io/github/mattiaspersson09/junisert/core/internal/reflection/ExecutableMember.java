@@ -66,7 +66,7 @@ public abstract class ExecutableMember extends Member implements Executable {
     }
 
     @Override
-    public boolean hasParameterTo(Class<?> type) {
+    public boolean hasParameterOf(Class<?> type) {
         return parameters.stream()
                 .anyMatch(parameter -> type.isAssignableFrom(parameter.getType()));
     }

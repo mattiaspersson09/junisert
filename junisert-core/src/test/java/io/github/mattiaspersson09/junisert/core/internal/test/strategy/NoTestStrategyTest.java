@@ -48,7 +48,7 @@ public class NoTestStrategyTest {
         when(method.getName()).thenReturn("field");
         doReturn(Object.class).when(field).getType();
         when(method.hasParameterCount(1)).thenReturn(true);
-        when(method.hasParameterTo(Object.class)).thenReturn(true);
+        when(method.hasParameterOf(Object.class)).thenReturn(true);
 
         assertThat(convention.isSetterForField(field)).accepts(method);
     }

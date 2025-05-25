@@ -16,14 +16,13 @@
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
-import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
+import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Method;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
 
 import java.util.List;
 import java.util.Objects;
@@ -50,24 +49,21 @@ public class HasSetters extends AbstractUnitTest {
         LOGGER.info("Testing unit: {0}", unit.getName());
 
         for (Field field : unit.getFields()) {
-            if (!Fields.isInstanceField(field)) {
+            if (!field.isInstanceMember()) {
                 continue;
             }
 
             LOGGER.info("Checking field: {0}", field);
 
-            List<Method> setters = unit.findMethodsMatching(testStrategy.isSetterForField(field));
+            List<Method> setters = unit.findMethodsMatching(testStrategy.isSetterForField(field)
+                    .and(Method::isInstanceMember));
 
             if (setters.isEmpty()) {
-                throw new UnitAssertionError(String.format("%s was expected to have setter for field: %s, "
+                throw new UnitAssertionError(String.format("%s was expected to have setter for instance field: %s, "
                         + "but none was found", unit.getName(), field.getName()));
             }
 
             for (Method method : setters) {
-                if (method.isSynthetic()) {
-                    continue;
-                }
-
                 Value<?> fieldValue = valueService.getValue(field.getType());
                 Object[] methodArguments = method.getParameterTypes()
                         .stream()

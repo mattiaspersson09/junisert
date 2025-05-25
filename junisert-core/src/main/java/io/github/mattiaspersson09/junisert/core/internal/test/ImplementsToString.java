@@ -16,12 +16,11 @@
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
-import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
+import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods;
 
 import java.util.List;
@@ -63,7 +62,7 @@ public class ImplementsToString implements UnitTest {
             throw new UnitAssertionError("Was expected to contain '" + unit.getName() + "'");
         }
 
-        List<Field> instanceFields = unit.findFieldsMatching(Fields::isInstanceField);
+        List<Field> instanceFields = unit.findFieldsMatching(Field::isInstanceMember);
 
         for (Field field : instanceFields) {
             Object value = valueService.getValue(field.getType()).get();
@@ -87,7 +86,7 @@ public class ImplementsToString implements UnitTest {
     }
 
     private boolean containsField(Object instance, Field field) {
-        Object value = field.getValueOrElse(instance, null);
+        Object value = field.getValue(instance);
         String valueString = toString(value);
         String toString = toString(instance);
 

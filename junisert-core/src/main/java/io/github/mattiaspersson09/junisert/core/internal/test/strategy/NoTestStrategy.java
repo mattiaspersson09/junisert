@@ -47,6 +47,6 @@ final class NoTestStrategy implements TestStrategy {
     private Predicate<Method> isBuilderStyleSetter(Field field) {
         return method -> method.getName().equals(field.getName())
                 && method.hasParameterCount(1)
-                && method.hasParameterTo(field.getType());
+                && method.hasParameterOf(field.getType());
     }
 }

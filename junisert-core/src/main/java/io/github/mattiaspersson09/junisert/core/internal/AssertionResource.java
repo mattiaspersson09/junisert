@@ -15,7 +15,6 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal;
 
-import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 
 /**

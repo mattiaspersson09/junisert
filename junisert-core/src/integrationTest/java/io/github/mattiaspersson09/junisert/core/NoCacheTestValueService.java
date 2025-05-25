@@ -15,12 +15,12 @@
  */
 package io.github.mattiaspersson09.junisert.core;
 
-import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedSupportGenerator;
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedValueGenerator;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
+import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 import io.github.mattiaspersson09.junisert.value.common.ArrayValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.DependencyObjectValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.EnumValueGenerator;

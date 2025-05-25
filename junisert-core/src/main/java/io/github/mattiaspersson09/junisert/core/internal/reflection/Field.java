@@ -66,29 +66,12 @@ public class Field extends Member implements Invokable {
      * @param unitInstance as constructed parent object
      * @return current value
      * @throws ReflectionException if not possible to access this field
-     * @see #getValueOrElse(Object, Object)
      */
     public Object getValue(Object unitInstance) throws ReflectionException {
         try {
             return origin.get(unitInstance);
         } catch (Exception e) {
-            throw new ReflectionException("Unable to get value from " + this);
-        }
-    }
-
-    /**
-     * Gets value from this field from a constructed parent instance using reflection like {@link #getValue(Object)},
-     * but accepts a fallback value if access is not possible.
-     *
-     * @param unitInstance as constructed parent object
-     * @param fallback     value if access is not possible
-     * @return current value, otherwise the fallback
-     */
-    public Object getValueOrElse(Object unitInstance, Object fallback) {
-        try {
-            return origin.get(unitInstance);
-        } catch (Exception e) {
-            return fallback;
+            throw new ReflectionException("Unable to get value from field: " + this, e);
         }
     }
 

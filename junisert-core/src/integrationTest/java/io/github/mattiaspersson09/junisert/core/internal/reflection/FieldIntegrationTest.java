@@ -115,33 +115,6 @@ public class FieldIntegrationTest {
     }
 
     @Test
-    void getValueOrElse_whenAccessIsPossible_thenGetsFieldValue() throws NoSuchMethodException,
-                                                                  InvocationTargetException,
-                                                                  InstantiationException,
-                                                                  IllegalAccessException,
-                                                                  NoSuchFieldException {
-        Object instance = ValueFields.class.getConstructor().newInstance();
-        Field privateField = Field.of(ValueFields.class.getDeclaredField("immutableStringValueField"));
-
-        privateField.setValue(instance, "value");
-
-        assertThat(privateField.getValueOrElse(instance, "fallback")).isEqualTo("value");
-    }
-
-    @Test
-    void getValueOrElse_whenAccessIsNotPossible_thenGetsFallback() throws NoSuchMethodException,
-                                                                   InvocationTargetException,
-                                                                   InstantiationException,
-                                                                   IllegalAccessException, NoSuchFieldException {
-        Object instance = ValueFields.class.getConstructor().newInstance();
-        Field privateField = Field.of(ValueFields.class.getDeclaredField("immutableStringValueField"));
-
-        privateField.setValue(instance, "value");
-
-        assertThat(privateField.getValueOrElse(new Object(), "fallback")).isEqualTo("fallback");
-    }
-
-    @Test
     void accepts_returnsReflectedType() throws NoSuchFieldException {
         Field field = Field.of(ValueFields.class.getDeclaredField("immutableStringValueField"));
 

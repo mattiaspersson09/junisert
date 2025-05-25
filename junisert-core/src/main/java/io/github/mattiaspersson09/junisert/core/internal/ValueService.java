@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.api.internal.service;
+package io.github.mattiaspersson09.junisert.core.internal;
 
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
 /**
- * <strong>INTERNAL DISCLAIMER:</strong>
- * <p>
- * Internal API and not considered stable for direct usage by external users of this API,
- * can be modified, become invisible, moved, renamed or removed without proper notice.
- * This class is visible because of support for Java version 8 and lack of modularity
- * and when support is dropping for version 8 this will lose visibility.
- * </p><br>
- * <p>
- * Providing broad support for different type of values. {@code ValueService}s should cache used values so they
+ * Providing broad support for different type of values. {@code ValueService}s should cache used values so that they
  * can be re-used to boost performance.
  */
 public interface ValueService {

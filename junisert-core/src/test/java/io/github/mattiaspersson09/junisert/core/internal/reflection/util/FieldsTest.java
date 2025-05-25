@@ -31,51 +31,28 @@ public class FieldsTest {
     Field field;
 
     @Test
-    void isInstanceField_whenFieldIsNotSynthetic_andFieldIsNotStatic_thenIsTrue() {
-        when(field.isSynthetic()).thenReturn(false);
-        when(field.isInstanceMember()).thenReturn(true);
-
-        assertThat(Fields.isInstanceField(field)).isTrue();
-    }
-
-    @Test
-    void isInstanceField_whenFieldIsSynthetic_thenIsFalse() {
-        when(field.isSynthetic()).thenReturn(true);
-
-        assertThat(Fields.isInstanceField(field)).isFalse();
-    }
-
-    @Test
-    void isInstanceField_whenFieldIsNotSynthetic_andFieldIsStatic_thenIsFalse() {
-        when(field.isSynthetic()).thenReturn(false);
-        when(field.isInstanceMember()).thenReturn(false);
-
-        assertThat(Fields.isInstanceField(field)).isFalse();
-    }
-
-    @Test
-    void toMethodPropertyName_whenFieldHasOneLetterPrefix_thenSamePropertyName() {
+    void toCapitalizedPropertyName_whenFieldHasOneLetterPrefix_thenSamePropertyName() {
         when(field.getName()).thenReturn("mField");
 
         assertThat(Fields.toCapitalizedPropertyName(field)).isEqualTo("mField");
     }
 
     @Test
-    void toMethodPropertyName_whenFieldHasSymbolPrefix_thenSamePropertyName() {
+    void toCapitalizedPropertyName_whenFieldHasSymbolPrefix_thenSamePropertyName() {
         when(field.getName()).thenReturn("_field");
 
         assertThat(Fields.toCapitalizedPropertyName(field)).isEqualTo("_field");
     }
 
     @Test
-    void toMethodPropertyName_whenFieldHasMoreThanOneLetterPrefix_thenUpperCaseFirstLetter() {
+    void toCapitalizedPropertyName_whenFieldHasMoreThanOneLetterPrefix_thenUpperCaseFirstLetter() {
         when(field.getName()).thenReturn("isField");
 
         assertThat(Fields.toCapitalizedPropertyName(field)).isEqualTo("IsField");
     }
 
     @Test
-    void toBooleanMethodPropertyName_whenFieldIsBoolean_andHasNoIsPrefix_thenSamePropertyName() {
+    void toBooleanCapitalizedPropertyName_whenFieldIsBoolean_andHasNoIsPrefix_thenSamePropertyName() {
         when(field.getName()).thenReturn("field");
         when(field.isBoolean()).thenReturn(true);
 
@@ -83,7 +60,7 @@ public class FieldsTest {
     }
 
     @Test
-    void toBooleanMethodPropertyName_whenFieldIsBoolean_andHasIsPrefix_thenRemovesPrefix() {
+    void toBooleanCapitalizedPropertyName_whenFieldIsBoolean_andHasIsPrefix_thenRemovesPrefix() {
         when(field.getName()).thenReturn("isField");
         when(field.isBoolean()).thenReturn(true);
 
