@@ -1,8 +1,8 @@
 ## Internal API disclaimer
 
-Classes will be considered indefinitely unstable and should NOT be directly used by an external user
-of this API because they can be changed without proper notice.
-Disclaimer is also added to javadoc for every publicly visible class of internal package:
+Classes inside the *internal* package will be considered indefinitely unstable. They should NOT be directly
+used by an external user of this API since they can be changed without proper notice.
+Disclaimer is also added to javadoc for every publicly visible class of the internal package:
 ```java
 /**
  * <strong>INTERNAL DISCLAIMER:</strong>

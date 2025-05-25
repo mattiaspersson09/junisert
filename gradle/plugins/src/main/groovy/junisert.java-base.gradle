@@ -1,3 +1,6 @@
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 plugins {
     id("java")
 }
@@ -10,9 +13,6 @@ repositories {
     mavenCentral()
     mavenLocal()
 }
-
-group = rootProject.group
-version = rootProject.version
 
 def javaRelease = 8
 JavaVersion javaVersion = JavaVersion.VERSION_1_8
@@ -28,7 +28,8 @@ jar {
     manifest {
         attributes(
                 "Implementation-Title": project.name,
-                "Implementation-Version": project.version
+                "Implementation-Version": project.version,
+                "Implementation-Build-Date": DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())
         )
     }
 }

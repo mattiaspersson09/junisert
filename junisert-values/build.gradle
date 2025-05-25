@@ -1,5 +1,6 @@
 plugins {
     id("junisert.java-library")
+    id("junisert.maven-publish")
 }
 
 dependencies {
