@@ -42,19 +42,19 @@ public class Method extends ExecutableMember implements Invokable {
 
     /**
      * Checks if this method is returning exactly given {@code type}. To check polymorphic types then
-     * {@link #hasReturnTypeFrom(Class)} and {@link #hasReturnTypeTo(Class)} should be used instead.
+     * {@link #hasReturnTypeFrom(Class)} and {@link #hasReturnTypeOf(Class)} should be used instead.
      *
      * @param type this method might return
      * @return true if given type is returned by this method
      * @see #hasReturnTypeFrom(Class)
-     * @see #hasReturnTypeTo(Class)
+     * @see #hasReturnTypeOf(Class)
      */
     public boolean hasReturnType(Class<?> type) {
         return getType().equals(type);
     }
 
     /**
-     * Checks if this method is returning a super type of or exactly given {@code subType}. Meaning
+     * Checks if this method is returning a super type of or exactly given {@code type}. Meaning
      * that the returning type can be assigned/cast <em>from</em> given {@code type}.
      * <p>
      * Pseudo example:
@@ -65,14 +65,14 @@ public class Method extends ExecutableMember implements Invokable {
      * @param type of the returning type
      * @return true if result is assignable from given type
      * @see #isProducing(Class)
-     * @see #hasReturnTypeTo(Class)
+     * @see #hasReturnTypeOf(Class)
      */
     public boolean hasReturnTypeFrom(Class<?> type) {
         return getType().isAssignableFrom(type);
     }
 
     /**
-     * Checks if this method is returning a subtype of or exactly given {@code superType}. Meaning
+     * Checks if this method is returning a subtype of or exactly given {@code type}. Meaning
      * that the returning type can be assigned/cast <em>to</em> given {@code type}.
      * <p>
      * Pseudo example:
@@ -84,7 +84,7 @@ public class Method extends ExecutableMember implements Invokable {
      * @return true if result is assignable to given type
      * @see #hasReturnTypeFrom(Class)
      */
-    public boolean hasReturnTypeTo(Class<?> type) {
+    public boolean hasReturnTypeOf(Class<?> type) {
         return type.isAssignableFrom(getType());
     }
 

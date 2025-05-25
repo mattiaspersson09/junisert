@@ -16,12 +16,11 @@
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
-import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
+import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods;
 
 import java.util.Objects;
@@ -61,7 +60,7 @@ public class ImplementsHashCode implements UnitTest {
         LOGGER.info("Setting up fields for hash code comparison");
 
         for (Field field : unit.getFields()) {
-            if (!Fields.isInstanceField(field)) {
+            if (!field.isInstanceMember()) {
                 continue;
             }
 
@@ -95,7 +94,7 @@ public class ImplementsHashCode implements UnitTest {
         LOGGER.info("Resetting fields for an instance");
 
         for (Field field : unit.getFields()) {
-            if (field.isSynthetic() || field.modifier().isStatic()) {
+            if (!field.isInstanceMember()) {
                 continue;
             }
 

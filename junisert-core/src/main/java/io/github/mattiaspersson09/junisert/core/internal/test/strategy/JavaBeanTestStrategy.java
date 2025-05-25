@@ -42,7 +42,7 @@ final class JavaBeanTestStrategy implements TestStrategy {
             return (method.getName().equals("set" + propertyName)
                     || method.getName().equals("set" + Fields.toBooleanCapitalizedPropertyName(field)))
                     && method.hasParameterCount(1)
-                    && method.hasParameterTo(field.getType());
+                    && method.hasParameterOf(field.getType());
         };
     }
 

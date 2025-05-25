@@ -15,7 +15,6 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
-import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Invokable;
@@ -33,9 +32,9 @@ import java.util.function.Predicate;
  * Setup and result is not required and will be skipped if missing.
  *
  * @see Invokable
- * @see ValueService
+ * @see InstanceCreator
  */
-class Injection {
+final class Injection {
     private static final Logger LOGGER = Logger.getLogger("Injection");
 
     private final InstanceCreator instanceCreator;
@@ -56,10 +55,10 @@ class Injection {
     }
 
     /**
-     * Setup that should pass before injection, it can be setting up values for the unit instance that should later
+     * Setup to perform before injection, it can be setting up values for the unit instance that should later
      * be affected.
      *
-     * @param setup that should pass before injection
+     * @param setup that should be performed before injection
      */
     public void setup(Consumer<Object> setup) {
         this.setup = Objects.requireNonNull(setup);

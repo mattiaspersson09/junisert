@@ -35,16 +35,6 @@ public final class Fields {
     }
 
     /**
-     * Checks if given {@code field} is considered an instance field, being a non-synthetic instance member.
-     *
-     * @param field to check
-     * @return true if given field is a non-synthetic instance member
-     */
-    public static boolean isInstanceField(Field field) {
-        return !field.isSynthetic() && field.isInstanceMember();
-    }
-
-    /**
      * Gets property name for given {@code field} with first letter in upper case.
      * If the property name is prefixed with a single letter or symbol according to:
      * {@value #SINGLE_PREFIX_REGEX} - then property name is not capitalized, but returned as is.

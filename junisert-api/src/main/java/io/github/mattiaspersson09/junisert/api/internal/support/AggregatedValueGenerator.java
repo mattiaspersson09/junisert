@@ -40,7 +40,7 @@ public interface AggregatedValueGenerator extends ValueGenerator<Object> {
 
     /**
      * Merge this generator with another {@link ValueGenerator}. If this {@code AggregatedValueGenerator} already
-     * has aggregated generators, then the merged generator will be <em>last</em> in the resulting aggregation.
+     * have aggregated generators, then the merged generator will be <em>last</em> in the resulting aggregation.
      *
      * @param generator to merge with
      * @return a new aggregated generator with the merged generator aggregated last
@@ -49,7 +49,7 @@ public interface AggregatedValueGenerator extends ValueGenerator<Object> {
 
     /**
      * Merge this generator with another {@link ValueGenerator}. If this {@code AggregatedValueGenerator} already
-     * has aggregated generators, then the merged generator will be <em>first</em> in the resulting aggregation.
+     * have aggregated generators, then the merged generator will be <em>first</em> in the resulting aggregation.
      *
      * @param generator to merge with
      * @return a new aggregated generator with the merged generator aggregated first

@@ -33,7 +33,7 @@ import java.util.List;
  * and when support is dropping for version 8 this will lose visibility.
  * </p>
  */
-public class AggregatedSupportGenerator implements AggregatedValueGenerator {
+public final class AggregatedSupportGenerator implements AggregatedValueGenerator {
     private final List<ValueGenerator<?>> generators;
 
     /**

@@ -74,19 +74,6 @@ public final class Junisert {
         return new PlainObjectAssertionImpl(getDefaultTestResource(pojoClass));
     }
 
-    static AggregatedValueGenerator aggregatedDefaultValueSupport() {
-        return new AggregatedSupportGenerator(defaultValueSupport());
-    }
-
-    static synchronized ValueGenerator<?> javaInternalSupport() {
-        if (javaInternalSupport == null) {
-            LOGGER.config("Initializing predefined Java internal support");
-            javaInternalSupport = JavaInternals.getSupported();
-        }
-
-        return javaInternalSupport;
-    }
-
     static List<ValueGenerator<?>> defaultValueSupport() {
         return Arrays.asList(
                 new PrimitiveValueGenerator(),
@@ -98,6 +85,19 @@ public final class Junisert {
                 new ObjectValueGenerator(),
                 ObjectValueGenerator.withForcedAccess()
         );
+    }
+
+    static AggregatedValueGenerator aggregatedDefaultValueSupport() {
+        return new AggregatedSupportGenerator(defaultValueSupport());
+    }
+
+    static synchronized ValueGenerator<?> javaInternalSupport() {
+        if (javaInternalSupport == null) {
+            LOGGER.config("Initializing predefined Java internal support");
+            javaInternalSupport = JavaInternals.getSupported();
+        }
+
+        return javaInternalSupport;
     }
 
     static synchronized ValueCache valueCache() {

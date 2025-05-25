@@ -48,7 +48,7 @@ public class JavaBeanTestStrategyTest {
         when(method.getName()).thenReturn("setField");
         doReturn(Object.class).when(field).getType();
         when(method.hasParameterCount(1)).thenReturn(true);
-        when(method.hasParameterTo(Object.class)).thenReturn(true);
+        when(method.hasParameterOf(Object.class)).thenReturn(true);
 
         assertThat(convention.isSetterForField(field)).accepts(method);
     }
@@ -128,7 +128,7 @@ public class JavaBeanTestStrategyTest {
         when(method.getName()).thenReturn("setIsField");
         doReturn(boolean.class).when(field).getType();
         when(method.hasParameterCount(1)).thenReturn(true);
-        when(method.hasParameterTo(boolean.class)).thenReturn(true);
+        when(method.hasParameterOf(boolean.class)).thenReturn(true);
 
         assertThat(convention.isSetterForField(field)).accepts(method);
     }
@@ -139,7 +139,7 @@ public class JavaBeanTestStrategyTest {
         when(method.getName()).thenReturn("setIsField");
         doReturn(Boolean.class).when(field).getType();
         when(method.hasParameterCount(1)).thenReturn(true);
-        when(method.hasParameterTo(Boolean.class)).thenReturn(true);
+        when(method.hasParameterOf(Boolean.class)).thenReturn(true);
 
         assertThat(convention.isSetterForField(field)).accepts(method);
     }
@@ -151,7 +151,7 @@ public class JavaBeanTestStrategyTest {
         doReturn(boolean.class).when(field).getType();
         when(field.isBoolean()).thenReturn(true);
         when(method.hasParameterCount(1)).thenReturn(true);
-        when(method.hasParameterTo(boolean.class)).thenReturn(true);
+        when(method.hasParameterOf(boolean.class)).thenReturn(true);
 
         assertThat(convention.isSetterForField(field)).accepts(method);
     }
@@ -163,7 +163,7 @@ public class JavaBeanTestStrategyTest {
         doReturn(Boolean.class).when(field).getType();
         when(field.isBoolean()).thenReturn(true);
         when(method.hasParameterCount(1)).thenReturn(true);
-        when(method.hasParameterTo(Boolean.class)).thenReturn(true);
+        when(method.hasParameterOf(Boolean.class)).thenReturn(true);
 
         assertThat(convention.isSetterForField(field)).accepts(method);
     }
@@ -177,11 +177,11 @@ public class JavaBeanTestStrategyTest {
         doReturn(boolean.class).when(field).getType();
         when(field.isBoolean()).thenReturn(true);
         when(method.hasParameterCount(1)).thenReturn(true);
-        when(method.hasParameterTo(boolean.class)).thenReturn(true);
+        when(method.hasParameterOf(boolean.class)).thenReturn(true);
 
         when(overloadingNonBooleanMethod.getName()).thenReturn("setField");
         when(overloadingNonBooleanMethod.hasParameterCount(1)).thenReturn(true);
-        when(overloadingNonBooleanMethod.hasParameterTo(boolean.class)).thenReturn(false);
+        when(overloadingNonBooleanMethod.hasParameterOf(boolean.class)).thenReturn(false);
 
         assertThat(convention.isSetterForField(field)).accepts(method);
         assertThat(convention.isSetterForField(field)).rejects(overloadingNonBooleanMethod);
@@ -196,11 +196,11 @@ public class JavaBeanTestStrategyTest {
         doReturn(Boolean.class).when(field).getType();
         when(field.isBoolean()).thenReturn(true);
         when(method.hasParameterCount(1)).thenReturn(true);
-        when(method.hasParameterTo(Boolean.class)).thenReturn(true);
+        when(method.hasParameterOf(Boolean.class)).thenReturn(true);
 
         when(overloadingNonBooleanMethod.getName()).thenReturn("setField");
         when(overloadingNonBooleanMethod.hasParameterCount(1)).thenReturn(true);
-        when(overloadingNonBooleanMethod.hasParameterTo(Boolean.class)).thenReturn(false);
+        when(overloadingNonBooleanMethod.hasParameterOf(Boolean.class)).thenReturn(false);
 
         assertThat(convention.isSetterForField(field)).accepts(method);
         assertThat(convention.isSetterForField(field)).rejects(overloadingNonBooleanMethod);

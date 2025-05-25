@@ -15,7 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.core;
 
-import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
+import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 
 import java.util.List;
 

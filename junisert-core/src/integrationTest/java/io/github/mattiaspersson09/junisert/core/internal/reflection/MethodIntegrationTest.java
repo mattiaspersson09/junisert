@@ -127,9 +127,9 @@ public class MethodIntegrationTest {
     void givenProducer_whenProducingSuperType_thenCanProduceSubTypes() throws NoSuchMethodException {
         Method producingBase = Method.of(PolymorphicMethods.class.getDeclaredMethod("publicBaseNoParameters"));
 
-        assertThat(producingBase.hasReturnTypeTo(Super.class)).isTrue();
+        assertThat(producingBase.hasReturnTypeOf(Super.class)).isTrue();
         assertThat(producingBase.hasReturnTypeFrom(Super.class)).isFalse();
-        assertThat(producingBase.hasReturnTypeTo(Impl.class)).isFalse();
+        assertThat(producingBase.hasReturnTypeOf(Impl.class)).isFalse();
         assertThat(producingBase.hasReturnTypeFrom(Impl.class)).isTrue();
 
         assertThat(producingBase.isProducing(Super.class)).isFalse();

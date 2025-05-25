@@ -34,68 +34,77 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class MemberTest {
     @Mock
-    java.lang.reflect.Member mockMember;
+    java.lang.reflect.Member origin;
     private Member member;
 
     @BeforeEach
     void setUp() {
-        member = new UnitMember(mockMember);
+        member = new UnitMember(origin);
     }
 
     @Test
-    void isInstanceMember_whenModifierIsNotStatic_thenIsTrue() {
+    void isInstanceMember_whenModifierIsNotStatic_andNotSynthetic_thenIsTrue() {
+        when(origin.isSynthetic()).thenReturn(false);
+
         assertThat(member.isInstanceMember()).isTrue();
     }
 
     @Test
-    void isInstanceMember_whenModifierIsStatic_thenIsFalse() {
-        when(mockMember.getModifiers()).thenReturn(java.lang.reflect.Modifier.STATIC);
+    void isInstanceMember_whenModifierIsStatic_andNotSynthetic_thenIsFalse() {
+        when(origin.getModifiers()).thenReturn(java.lang.reflect.Modifier.STATIC);
 
-        assertThat(new UnitMember(mockMember).isInstanceMember()).isFalse();
+        assertThat(new UnitMember(origin).isInstanceMember()).isFalse();
+    }
+
+    @Test
+    void isInstanceMember_whenModifierIsNotStatic_butIsSynthetic_thenIsFalse() {
+        when(origin.isSynthetic()).thenReturn(true);
+
+        assertThat(member.isInstanceMember()).isFalse();
     }
 
     @Test
     void getName_whenMemberIsNotOverriding_thenHasDefaultOriginName() {
-        when(mockMember.getName()).thenReturn("name");
+        when(origin.getName()).thenReturn("name");
 
         assertThat(member.getName()).isEqualTo("name");
     }
 
     @Test
     void modifier() {
-        when(mockMember.getModifiers()).thenReturn(100);
+        when(origin.getModifiers()).thenReturn(100);
 
-        assertThat(new UnitMember(mockMember).modifier()).isEqualTo(new Modifier(100));
+        assertThat(new UnitMember(origin).modifier()).isEqualTo(new Modifier(100));
     }
 
     @Test
     void isSynthetic_whenMemberIsSynthetic_thenIsTrue() {
-        when(mockMember.isSynthetic()).thenReturn(true);
+        when(origin.isSynthetic()).thenReturn(true);
 
         assertThat(member.isSynthetic()).isEqualTo(true);
 
-        verify(mockMember, times(1)).isSynthetic();
+        verify(origin, times(1)).isSynthetic();
     }
 
     @Test
     void isSynthetic_whenMemberIsNotSynthetic_thenIsFalse() {
-        when(mockMember.isSynthetic()).thenReturn(false);
+        when(origin.isSynthetic()).thenReturn(false);
 
         assertThat(member.isSynthetic()).isEqualTo(false);
 
-        verify(mockMember, times(1)).isSynthetic();
+        verify(origin, times(1)).isSynthetic();
     }
 
     @Test
     void getParent() {
-        doReturn(Object.class).when(mockMember).getDeclaringClass();
+        doReturn(Object.class).when(origin).getDeclaringClass();
 
         assertThat(member.getParent()).isEqualTo(Object.class);
     }
 
     @Test
     void equalsTest() {
-        assertThat(member).isEqualTo(new UnitMember(mockMember));
+        assertThat(member).isEqualTo(new UnitMember(origin));
         assertThat(member).isEqualTo((Object) member);
         assertThat(member).isNotEqualTo(null);
         assertThat(member).isNotEqualTo(new Object());
@@ -108,7 +117,7 @@ public class MemberTest {
 
     @Test
     void hashCodeTest() {
-        assertThat(member.hashCode()).isEqualTo(new UnitMember(mockMember).hashCode());
+        assertThat(member.hashCode()).isEqualTo(new UnitMember(origin).hashCode());
         assertThat(member.hashCode()).isEqualTo(((Object) member).hashCode());
         assertThat(member.hashCode()).isNotEqualTo(Objects.hashCode(null));
         assertThat(member.hashCode()).isNotEqualTo(new Object().hashCode());
@@ -121,8 +130,8 @@ public class MemberTest {
 
     @Test
     void toString_whenNotOverridden_thenShowsUnitAndMemberName() {
-        when(mockMember.getName()).thenReturn("memberName");
-        doReturn(UnitMember.class).when(mockMember).getDeclaringClass();
+        when(origin.getName()).thenReturn("memberName");
+        doReturn(UnitMember.class).when(origin).getDeclaringClass();
 
         assertThat(member.toString()).isEqualTo("UnitMember.memberName");
     }

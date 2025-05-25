@@ -18,12 +18,11 @@ package io.github.mattiaspersson09.junisert.core.assertion;
 import io.github.mattiaspersson09.junisert.api.assertion.PlainObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
-import io.github.mattiaspersson09.junisert.api.internal.service.ValueService;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.core.internal.AssertionResource;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
+import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods;
 import io.github.mattiaspersson09.junisert.core.internal.test.HasGetters;
 import io.github.mattiaspersson09.junisert.core.internal.test.HasSetters;
@@ -63,7 +62,7 @@ public class UnitAssertionImpl implements UnitAssertion {
             throw new UnitAssertionError(unit.getName() + " were expected to have a default constructor");
         }
 
-        if (unit.hasFieldMatching(field -> Fields.isInstanceField(field) && !field.modifier().isPrivate())) {
+        if (unit.hasFieldMatching(field -> field.isInstanceMember() && !field.modifier().isPrivate())) {
             throw new UnitAssertionError(unit.getName() + " were expected to only have private properties");
         }
 

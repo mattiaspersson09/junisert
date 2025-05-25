@@ -45,12 +45,12 @@ public interface Executable {
 
     /**
      * Checks if this executable has any parameter matching exactly {@code type}. To check polymorphic types then
-     * {@link #hasParameterFrom(Class)} and {@link #hasParameterTo(Class)} should be used instead.
+     * {@link #hasParameterFrom(Class)} and {@link #hasParameterOf(Class)} should be used instead.
      *
      * @param type to find
      * @return true if a parameter of type is present
      * @see #hasParameterFrom(Class)
-     * @see #hasParameterTo(Class)
+     * @see #hasParameterOf(Class)
      */
     boolean hasParameterType(Class<?> type);
 
@@ -65,7 +65,7 @@ public interface Executable {
      *
      * @param type of any parameter
      * @return true if a parameter is assignable from given type
-     * @see #hasParameterTo(Class)
+     * @see #hasParameterOf(Class)
      */
     boolean hasParameterFrom(Class<?> type);
 
@@ -78,11 +78,11 @@ public interface Executable {
      * Type type = (Type) parameter;
      * </pre>
      *
-     * @param type for any parameter
+     * @param type of any parameter
      * @return true if a parameter is assignable to given type
      * @see #hasParameterFrom(Class)
      */
-    boolean hasParameterTo(Class<?> type);
+    boolean hasParameterOf(Class<?> type);
 
     /**
      * Parameter types this executable accepts as arguments in declaration order.

@@ -24,14 +24,6 @@ import io.github.mattiaspersson09.junisert.common.sort.Sortable;
 import java.util.Objects;
 
 /**
- * <strong>INTERNAL DISCLAIMER:</strong>
- * <p>
- * Internal API and not considered stable for direct usage by external users of this API,
- * can be modified, become invisible, moved, renamed or removed without proper notice.
- * This class is visible because of support for Java version 8 and lack of modularity
- * and when support is dropping for version 8 this will lose visibility.
- * </p><br>
- * <p>
  * A value generator that will always throw an exception on generating value.
  * A blocked type will raise {@link BlockedTypeError} if found.
  * Otherwise {@link UnsupportedTypeError} will be thrown if this generator is used for
@@ -61,7 +53,7 @@ import java.util.Objects;
  * @param <T> type to block
  * @see BlockedTypeError
  */
-public final class BlockedValueGenerator<T> implements ValueGenerator<T>, Sortable {
+final class BlockedValueGenerator<T> implements ValueGenerator<T>, Sortable {
     private final Class<T> blocked;
 
     /**
@@ -69,7 +61,7 @@ public final class BlockedValueGenerator<T> implements ValueGenerator<T>, Sortab
      *
      * @param blockedType to throw for when found in code base
      */
-    public BlockedValueGenerator(Class<T> blockedType) {
+    BlockedValueGenerator(Class<T> blockedType) {
         this.blocked = Objects.requireNonNull(blockedType, "Can't be null if it should be blocked");
     }
 
