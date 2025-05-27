@@ -42,6 +42,20 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
+  build-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3' # Not needed with a .ruby-version file
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+          cache-version: 0 # Increment this number if you need to re-download cached gems
+      - name: Build with Jekyll
+        run: bundle exec jekyll build
+
   dependency-submission:
     runs-on: ubuntu-latest
     strategy:
