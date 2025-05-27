@@ -9,22 +9,41 @@ A scalable and flexible framework used as complement to standard assertions for 
 
 **Currently supported Java LTS:** 8+
 
+*Do you have an idea for features or support that sounds in-line with this project?
+[Create an issue](https://github.com/mattiaspersson09/junisert/issues/new) and share your thoughts!*
+
 ---
 
-**Currently supported unit assertions:**
-- [x] POJO's ("Plain Old Java Object"), plain objects carrying properties
-- [x] Java Bean compliance of a unit
+## Getting started
 
-**Planned future support:**
-- [ ] Ability to register own values to inject into constructors, fields and methods during assertion
-- [ ] Ability to register blocks for types you or your team has decided to avoid, for convention or security reasons
-- [ ] Asserting immutability
-- [ ] Asserting Mapper classes
-- [ ] Asserting Builder classes
+[![core](https://img.shields.io/maven-central/v/io.github.mattiaspersson09/junisert-core/0..svg?color=25a162&label=Junisert)](https://central.sonatype.com/search?namespace=io.github.mattiaspersson09)
 
-*Do you have an idea for features or support that sounds in-line with this project? 
-[Create an issue](https://github.com/mattiaspersson09/junisert/issues/new), and it will be 
-reviewed and considered for future versions.*
+Only specifying **junisert-core** is needed when testing, it's an implementation of **junisert-api** and aggregating
+the API and **junisert-values** as value support. Core class **Junisert** will be the main
+entrance for assertions, doing initialization and delegating resources.
+
+
+
+### Maven
+
+```xml
+<dependency>
+    <groupId>io.github.mattiaspersson09</groupId>
+    <artifactId>junisert-core</artifactId>
+    <version>0.1.0</version>
+    <scope>test</scope>
+</dependency>
+```
+
+### Gradle
+
+```groovy
+testImplementation("io.github.mattiaspersson09:junisert-core:0.1.0")
+```
+
+### Documentation
+
+For documentation and more information, visit Junisert GitHub pages: https://mattiaspersson09.github.io/junisert
 
 ## Project information
 
