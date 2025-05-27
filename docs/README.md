@@ -1,3 +1,3 @@
-# Junisert
+# Junisert pages
 
-https://github.com/mattiaspersson09/junisert
+https://mattiaspersson09.github.io/junisert
