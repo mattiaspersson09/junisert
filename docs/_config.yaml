@@ -1,8 +1,8 @@
-title: Junisert documentation
-description: A scalable and flexible framework used as complement to standard assertions for different kind of units.
+title: Junisert
+description: Junisert documentation
 theme: just-the-docs
 
 url: https://mattiaspersson09.github.io/junisert
 
 aux_links:
-  Template Repository: https://github.com/mattiaspersson09/junisert
+  View on GitHub: https://github.com/mattiaspersson09/junisert
