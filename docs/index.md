@@ -71,9 +71,9 @@ Module [junisert-common](https://github.com/mattiaspersson09/junisert/tree/main/
 and is only used to share common solutions in the project (which does not belong in the API). This is 
 usually utilities and logging capabilities that all modules might need.
 
-### Getting started using Junisert
+## Getting started using Junisert
 
-#### Maven
+### Maven
 
 ```xml
 <dependency>
@@ -84,7 +84,7 @@ usually utilities and logging capabilities that all modules might need.
 </dependency>
 ```
 
-#### Gradle
+### Gradle
 
 ```groovy
 testImplementation("io.github.mattiaspersson09:junisert-core:0.1.0")
