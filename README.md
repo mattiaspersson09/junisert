@@ -18,11 +18,6 @@ A scalable and flexible framework used as complement to standard assertions for 
 
 [![core](https://img.shields.io/maven-central/v/io.github.mattiaspersson09/junisert-core/0..svg?color=25a162&label=Junisert)](https://central.sonatype.com/search?namespace=io.github.mattiaspersson09)
 
-Only specifying **junisert-core** is needed when testing, it's an implementation of **junisert-api** and aggregating
-the API and **junisert-values** as value support. Core class **Junisert** will be the main
-entrance for assertions, doing initialization and delegating resources.
-
-
 
 ### Maven
 
@@ -41,9 +36,7 @@ entrance for assertions, doing initialization and delegating resources.
 testImplementation("io.github.mattiaspersson09:junisert-core:0.1.0")
 ```
 
-### Documentation
-
-For documentation and more information, visit Junisert GitHub pages: https://mattiaspersson09.github.io/junisert
+For documentation and user guide, visit Junisert GitHub pages: https://mattiaspersson09.github.io/junisert
 
 ## Project information
 

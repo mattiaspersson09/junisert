@@ -1,8 +1,10 @@
-title: Junisert
+title: Junisert docs
 description: Junisert documentation
 theme: just-the-docs
-
 url: https://mattiaspersson09.github.io/junisert
+
+back_to_top: true
+back_to_top_text: "Back to top"
 
 aux_links:
   View on GitHub: https://github.com/mattiaspersson09/junisert
