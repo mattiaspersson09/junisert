@@ -3,6 +3,7 @@ description: Junisert documentation
 theme: just-the-docs
 url: https://mattiaspersson09.github.io/junisert
 
+nav_sort: case_insensitive
 back_to_top: true
 back_to_top_text: "Back to top"
 
