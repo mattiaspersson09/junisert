@@ -1,5 +1,5 @@
 ---
-title: CHANGELOG
+title: Changelog
 layout: default
 nav_order: 2
 ---
@@ -9,7 +9,7 @@ nav_order: 2
 This is an automatic changelog based on notable changes to this project, check [release notes](https://github.com/mattiaspersson09/junisert/releases) for additional information.
 
 ## 0.1.0 *(2025-05-25)*
-**Release notes:** https://github.com/mattiaspersson09/junisert/releases/tag/v0.1.0
+**Release notes:** [release v0.1.0](https://github.com/mattiaspersson09/junisert/releases/tag/v0.1.0)
 
 
 ### Features
