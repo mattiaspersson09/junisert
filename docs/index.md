@@ -4,6 +4,10 @@ layout: home
 ---
 
 # Junisert overview
+{: .no_toc }
+
+## Table of Contents
+{: .no_toc .text-delta }
 
 1. Supported Java LTS
 2. Modules

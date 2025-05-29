@@ -1,3 +1,8 @@
+---
+title: CHANGELOG
+layout: default
+---
+
 # Changelog
 
 This is an automatic changelog based on notable changes to this project, check [release notes](https://github.com/mattiaspersson09/junisert/releases) for additional information.
