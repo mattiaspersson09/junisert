@@ -1,15 +1,9 @@
-import com.vanniktech.maven.publish.JavaLibrary
-import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     id("com.vanniktech.maven.publish")
 }
 
 mavenPublishing {
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-
-    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
+    publishToMavenCentral()
 
     signAllPublications()
 
