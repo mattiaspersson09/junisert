@@ -8,7 +8,7 @@ nav_order: 3
 {: .no_toc }
 
 ## Table of Contents
-{: .no_toc .text-delta }
+   {: .no_toc .text-delta }
 
 1. Unit assertion
 2. Plain object assertion
