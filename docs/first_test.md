@@ -4,22 +4,20 @@ layout: default
 nav_order: 2
 ---
 
-## Table of Contents
-{: .no_toc .text-delta }
-
-1. Testing
-   {:toc}
-
 # Testing
+{: .no_toc }
 
 All tests will start from using the base class `Junisert`, to make use of caching and assertion alternatives.
-If you are familiar with the **AssertJ** testing library you will be familiar with the fluent testing technique, 
+If you are familiar with the **AssertJ** testing library you will be familiar with the fluent testing technique,
 chaining methods to set up several tests quickly after each other.
 
-- See Javadoc on using `Junisert` and setting up assertions: 
-[Javadoc.io > Junisert](https://javadoc.io/doc/io.github.mattiaspersson09/junisert-core/latest/io/github/mattiaspersson09/junisert/core/Junisert.html)
-- Unit assertion Javadoc: [Javadoc.io > Junisert API > UnitAssertion](https://javadoc.io/doc/io.github.mattiaspersson09/junisert-api/latest/io/github/mattiaspersson09/junisert/api/assertion/UnitAssertion.html)
-- POJO assertion Javadoc: [Javadoc.io > Junisert API > PlainObjectAssertion](https://javadoc.io/doc/io.github.mattiaspersson09/junisert-api/latest/io/github/mattiaspersson09/junisert/api/assertion/PlainObjectAssertion.html)
+## Table of Contents
+  {: .no_toc .text-delta }
+
+1. Plain mutable object
+2. Plain immutable object
+  {:toc}
+
 
 ## Plain mutable object
 
