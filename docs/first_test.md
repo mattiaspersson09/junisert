@@ -12,11 +12,11 @@ If you are familiar with the **AssertJ** testing library you will be familiar wi
 chaining methods to set up several tests quickly after each other.
 
 ## Table of Contents
-  {: .no_toc .text-delta }
+{: .no_toc .text-delta }
 
 1. Plain mutable object
 2. Plain immutable object
-  {:toc}
+{:toc}
 
 
 ## Plain mutable object
