@@ -28,11 +28,8 @@ import java.util.Objects;
 /**
  * Tests that a {@link Unit} overrides {@link Object#hashCode()} and that it's well implemented.
  */
-public class ImplementsHashCode implements UnitTest {
+public class ImplementsHashCode extends AbstractUnitTest {
     private static final Logger LOGGER = Logger.getLogger("Implements HashCode");
-
-    private final ValueService valueService;
-    private final InstanceCreator instanceCreator;
 
     /**
      * Creates a new hashCode test with needed resources.
@@ -41,8 +38,7 @@ public class ImplementsHashCode implements UnitTest {
      * @param instanceCreator of units
      */
     public ImplementsHashCode(ValueService valueService, InstanceCreator instanceCreator) {
-        this.valueService = valueService;
-        this.instanceCreator = instanceCreator;
+        super(valueService, instanceCreator);
     }
 
     @Override

@@ -29,11 +29,8 @@ import java.util.Optional;
 /**
  * Tests that a {@link Unit} overrides {@link Object#toString()} and that it's well implemented.
  */
-public class ImplementsToString implements UnitTest {
+public class ImplementsToString extends AbstractUnitTest {
     private static final Logger LOGGER = Logger.getLogger("Implements ToString");
-
-    private final ValueService valueService;
-    private final InstanceCreator instanceCreator;
 
     /**
      * Creates a new toString test with needed resources.
@@ -42,8 +39,7 @@ public class ImplementsToString implements UnitTest {
      * @param instanceCreator of units
      */
     public ImplementsToString(ValueService valueService, InstanceCreator instanceCreator) {
-        this.valueService = valueService;
-        this.instanceCreator = instanceCreator;
+        super(valueService, instanceCreator);
     }
 
     @Override
