@@ -10,12 +10,21 @@ nav_order: 1
 ## Table of Contents
 {: .no_toc .text-delta }
 
-1. Supported Java LTS
-2. Modules
-3. Getting started using Junisert
+1. Project
+2. Supported Java LTS
+3. Modules
+4. Getting started using Junisert
 {:toc}
 
 This documentation offers both technical information and a user guide on how to start using Junisert.
+
+## Project information
+
+This project were created from a need to ensure that structural boilerplate code, with or without behavior behave as expected.
+With continuous support where users should have the ability to register their own support,
+without needing to wait for new supported Java types.
+Assertions should provide fast tests and a certainty that everything works as expected and give 100% code coverage for 
+boilerplate classes.
 
 ## Supported Java LTS
 
