@@ -42,9 +42,7 @@ public class Field extends Member implements Invokable {
     }
 
     /**
-     * Setting value for this field from a constructed parent instance using reflection. This method
-     * will never throw if access to this field is illegal, it's up to the caller to handle
-     * further operations based on the result.
+     * Setting value for this field from a constructed parent instance using reflection.
      *
      * @param unitInstance as constructed parent object
      * @param value        to set for this field
