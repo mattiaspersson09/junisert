@@ -22,8 +22,8 @@ import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods;
+import io.github.mattiaspersson09.junisert.core.internal.test.util.HashCode;
 
-import java.util.Objects;
 
 /**
  * Tests that a {@link Unit} overrides {@link Object#hashCode()} and that it's well implemented.
@@ -46,7 +46,8 @@ public class ImplementsHashCode extends AbstractUnitTest {
         LOGGER.info("Testing unit: {0}", unit.getName());
 
         if (!unit.hasMethodMatching(Methods::isHashCodeMethod)) {
-            LOGGER.fail(details(unit, "was nowhere to be found"), "to have a hashCode method", "it was not found");
+            LOGGER.fail(unit.getName() + ".hashCode() " + "was nowhere to be found",
+                    "to have a hashCode method", "it was not found");
             throw new UnitAssertionError(unit.getName() + " was expected to implement the hashCode method");
         }
 
@@ -66,62 +67,23 @@ public class ImplementsHashCode extends AbstractUnitTest {
             field.setValue(instance2, value);
         }
 
-        if (!isPassingEmptyHashCodeCheck(instance)) {
-            LOGGER.fail(details(unit, "fails empty hash code check"),
-                    "to not equal empty hash codes",
-                    "it did");
-            throw new UnitAssertionError("Was expected to not return empty hash code");
-        }
+        HashCode.ofInstance(instance)
+                .isConsistent()
+                .isNotEmpty()
+                .isEqualTo(instance2)
+                .isNotEqualTo(() -> resetFieldsInInstance(unit, instance2));
+    }
 
-        if (!isPassingConsistencyCheck(instance)) {
-            LOGGER.fail(details(unit, "fails consistency check"),
-                    "to consistently return the same hash code",
-                    "it did not");
-            throw new UnitAssertionError("Was expected to have consistent hash code");
-        }
-
-        if (!isPassingUniqueHashCodeCheck(instance, instance2)) {
-            LOGGER.fail(details(unit, "fails uniqueness check"),
-                    "to have the same unique hash code for equal instances",
-                    "it did not");
-            throw new UnitAssertionError("Was expected to have equal unique hash code");
-        }
-
-        LOGGER.info("Resetting fields for an instance");
-
+    private Object resetFieldsInInstance(Unit unit, Object instance) {
         for (Field field : unit.getFields()) {
             if (!field.isInstanceMember()) {
                 continue;
             }
 
             Object value = valueService.getValue(field.getType()).asEmpty();
-            field.setValue(instance2, value);
+            field.setValue(instance, value);
         }
 
-        if (isPassingUniqueHashCodeCheck(instance, instance2)) {
-            LOGGER.fail(details(unit, "fails uniqueness check"),
-                    "to have unique hash code for instances with different values",
-                    "it did not");
-            throw new UnitAssertionError("Was expected to have unique hash code");
-        }
-    }
-
-    private boolean isPassingConsistencyCheck(Object instance) {
-        LOGGER.test("Consistency check -> instance.hashCode() == instance.hashCode()");
-        return instance.hashCode() == instance.hashCode();
-    }
-
-    private boolean isPassingEmptyHashCodeCheck(Object instance) {
-        LOGGER.test("Empty hash code check -> instance.hashCode() != Objects.hashCode(null)");
-        return instance.hashCode() != Objects.hashCode(null);
-    }
-
-    private boolean isPassingUniqueHashCodeCheck(Object instance, Object instance2) {
-        LOGGER.test("Unique hash code check -> instance.hashCode() == otherInstance.hashCode()");
-        return instance.hashCode() == instance2.hashCode();
-    }
-
-    private String details(Unit unit, String detail) {
-        return unit.getName() + ".hashCode() " + detail;
+        return instance;
     }
 }
