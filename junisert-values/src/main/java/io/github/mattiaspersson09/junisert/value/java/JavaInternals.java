@@ -37,6 +37,7 @@ public final class JavaInternals {
                 .merge(JavaTimeSupport.getTimeSupport())
                 .merge(JavaIOSupport.getIOSupport())
                 .merge(JavaTextSupport.getTextSupport())
+                .merge(JavaNetSupport.getNetSupport())
                 .merge(JavaSecuritySupport.getSecuritySupport());
     }
 }

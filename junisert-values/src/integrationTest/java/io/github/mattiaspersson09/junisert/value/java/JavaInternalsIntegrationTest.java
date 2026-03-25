@@ -47,6 +47,29 @@ import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.net.DatagramPacket;
+import java.net.HttpCookie;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.JarURLConnection;
+import java.net.NetPermission;
+import java.net.PasswordAuthentication;
+import java.net.ProtocolFamily;
+import java.net.Proxy;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketOption;
+import java.net.SocketPermission;
+import java.net.StandardProtocolFamily;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLConnection;
+import java.net.URLPermission;
 import java.security.AlgorithmParameterGenerator;
 import java.security.AlgorithmParameters;
 import java.security.AllPermission;
@@ -511,6 +534,39 @@ public class JavaInternalsIntegrationTest {
             ZoneOffset.class,
     })
     void javaTime(Class<?> type) {
+        supportsJavaInternal(type);
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {
+            // Super types
+            CookiePolicy.class,
+            ProtocolFamily.class,
+            SocketOption.class,
+            // Implementations
+            CookieHandler.class,
+            CookieManager.class,
+            DatagramPacket.class,
+            HttpCookie.class,
+            HttpURLConnection.class,
+            InetSocketAddress.class,
+            JarURLConnection.class,
+            NetPermission.class,
+            PasswordAuthentication.class,
+            Proxy.class,
+            ServerSocket.class,
+            Socket.class,
+            SocketAddress.class,
+            SocketPermission.class,
+            URI.class,
+            URL.class,
+            URLClassLoader.class,
+            URLConnection.class,
+            URLPermission.class,
+            Proxy.Type.class,
+            StandardProtocolFamily.class
+    })
+    void javaNet(Class<?> type) {
         supportsJavaInternal(type);
     }
 
