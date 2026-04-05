@@ -25,7 +25,7 @@ import java.util.Optional;
  */
 public final class ToString {
     private static final Logger LOGGER = Logger.getLogger("ToString");
-    private static final char[] FIELD_VALUE_OPERATORS = new char[]{'=', ':'};
+    public static final char[] FIELD_VALUE_OPERATORS = new char[]{'=', ':'};
 
     private final Object instance;
 

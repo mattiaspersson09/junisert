@@ -32,7 +32,6 @@ import java.util.List;
  */
 public class ImplementsToString extends AbstractUnitTest {
     private static final Logger LOGGER = Logger.getLogger("Implements ToString");
-    private static final char[] FIELD_VALUE_OPERATORS = new char[]{'=', ':'};
 
     /**
      * Creates a new toString test with needed resources.
@@ -79,7 +78,8 @@ public class ImplementsToString extends AbstractUnitTest {
                         "to contain field '" + field.getName() + "' with value '" + valueString + "'",
                         "it did not");
                 throw new UnitAssertionError("toString were expected to contain (together): " + field.getName()
-                        + ", any operator of " + Arrays.toString(FIELD_VALUE_OPERATORS) + " and " + valueString);
+                        + ", any operator of " + Arrays.toString(ToString.FIELD_VALUE_OPERATORS) + " and "
+                        + valueString);
             }
         }
     }
