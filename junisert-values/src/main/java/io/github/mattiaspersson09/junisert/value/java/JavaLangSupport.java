@@ -42,6 +42,7 @@ final class JavaLangSupport {
                 .withImplementation(AssertionError.class, AssertionError::new)
                 .supportSingle(Thread.class, () -> new Thread(RUNNABLE.get()))
                 .supportSingle(ThreadLocal.class, ThreadLocal::new)
+                .supportSingle(Class.class, () -> Class.class)
                 .build();
     }
 }

@@ -74,19 +74,19 @@ final class JavaIOSupport {
                 .build();
     }
 
-    private static ByteArrayInputStream inputStream() {
+    static ByteArrayInputStream inputStream() {
         return new ByteArrayInputStream("source".getBytes());
     }
 
-    private static ByteArrayOutputStream outputStream() {
+    static ByteArrayOutputStream outputStream() {
         return new ByteArrayOutputStream();
     }
 
-    private static StringReader reader() {
+    static StringReader reader() {
         return new StringReader("source");
     }
 
-    private static StringWriter writer() {
+    static StringWriter writer() {
         return new StringWriter();
     }
 }
