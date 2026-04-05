@@ -58,6 +58,60 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CountedCompleter;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.Exchanger;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.LinkedTransferQueue;
+import java.util.concurrent.Phaser;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.RunnableScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicLongArray;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.concurrent.atomic.DoubleAccumulator;
+import java.util.concurrent.atomic.DoubleAdder;
+import java.util.concurrent.atomic.LongAccumulator;
+import java.util.concurrent.atomic.LongAdder;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -108,7 +162,7 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 final class JavaUtilSupport {
-    private static final Logger LOGGER = Logger.getLogger("Junisert -> Anonymous lambda");
+    private static final Logger LOGGER = Logger.getLogger("Junisert -> Anonymous support");
     private static final String CONSUMING = "consuming...";
     private static final short NUMERIC = 1;
     private static final boolean BOOLEAN = true;
@@ -224,6 +278,72 @@ final class JavaUtilSupport {
                 .build();
     }
 
+    static AggregatedValueGenerator getConcurrentSupport() {
+        return SupportBuilder.createSupport()
+                .support(BlockingQueue.class)
+                .withImplementation(ArrayBlockingQueue.class, () -> new ArrayBlockingQueue<>(NUMERIC))
+                .withImplementation(DelayQueue.class, DelayQueue::new)
+                .withImplementation(LinkedTransferQueue.class, LinkedTransferQueue::new)
+                .withImplementation(LinkedBlockingDeque.class, () -> new LinkedBlockingDeque<>(NUMERIC))
+                .withImplementation(LinkedBlockingQueue.class, () -> new LinkedBlockingQueue<>(NUMERIC))
+                .withImplementation(PriorityBlockingQueue.class, () -> new PriorityBlockingQueue<>(NUMERIC))
+                .withImplementation(SynchronousQueue.class, SynchronousQueue::new)
+                .supportSingle(Callable.class, () -> () -> null)
+                .support(Future.class)
+                .withImplementation(RunnableScheduledFuture.class, NoOpRunnableScheduledFuture::new)
+                .withImplementation(CountedCompleter.class, NoOpCountedCompleter::new)
+                .withImplementation(FutureTask.class, () -> new FutureTask<>(() -> null))
+                .support(Delayed.class)
+                .withImplementation(RunnableScheduledFuture.class, NoOpRunnableScheduledFuture::new)
+                .supportSingle(CompletionStage.class, CompletableFuture.class, () -> CompletableFuture.completedFuture(
+                        null))
+                .supportSingle(ConcurrentLinkedDeque.class, ConcurrentLinkedDeque::new)
+                .supportSingle(ConcurrentLinkedQueue.class, ConcurrentLinkedQueue::new)
+                .support(ConcurrentMap.class)
+                .withImplementation(ConcurrentHashMap.class, ConcurrentHashMap::new)
+                .withImplementation(ConcurrentSkipListMap.class, ConcurrentSkipListMap::new)
+                .support(Executor.class)
+                .withImplementation(ForkJoinPool.class, () -> new ForkJoinPool(NUMERIC))
+                .withImplementation(ScheduledThreadPoolExecutor.class, () -> new ScheduledThreadPoolExecutor(NUMERIC))
+                .supportSingle(ConcurrentSkipListSet.class, ConcurrentSkipListSet::new)
+                .supportSingle(CompletionService.class, ExecutorCompletionService.class,
+                        () -> new ExecutorCompletionService<>(new ForkJoinPool(NUMERIC)))
+                .supportSingle(CopyOnWriteArrayList.class, CopyOnWriteArrayList::new)
+                .supportSingle(CopyOnWriteArraySet.class, CopyOnWriteArraySet::new)
+                .supportSingle(CountDownLatch.class, () -> new CountDownLatch(NUMERIC))
+                .supportSingle(CyclicBarrier.class, () -> new CyclicBarrier(NUMERIC))
+                .supportSingle(Exchanger.class, Exchanger::new)
+                .supportSingle(Phaser.class, Phaser::new)
+                .supportSingle(Semaphore.class, () -> new Semaphore(NUMERIC))
+                .supportSingle(ThreadLocalRandom.class, ThreadLocalRandom::current)
+                .supportSingle(TimeUnit.class, () -> TimeUnit.SECONDS)
+                .build();
+    }
+
+    static AggregatedValueGenerator getConcurrentAtomicSupport() {
+        return SupportBuilder.createSupport()
+                .supportSingle(AtomicBoolean.class, () -> new AtomicBoolean(true))
+                .supportSingle(AtomicInteger.class, () -> new AtomicInteger(1))
+                .supportSingle(AtomicIntegerArray.class, () -> new AtomicIntegerArray(1))
+                .supportSingle(AtomicLong.class, () -> new AtomicLong(1))
+                .supportSingle(AtomicLongArray.class, () -> new AtomicLongArray(1))
+                .supportSingle(AtomicReference.class, AtomicReference::new)
+                .supportSingle(AtomicReferenceArray.class, () -> new AtomicReferenceArray<>(1))
+                .supportSingle(DoubleAccumulator.class, () -> new DoubleAccumulator(Double::sum, 1))
+                .supportSingle(DoubleAdder.class, DoubleAdder::new)
+                .supportSingle(LongAccumulator.class, () -> new LongAccumulator(Long::sum, 1))
+                .supportSingle(LongAdder.class, LongAdder::new)
+                .build();
+    }
+
+    static AggregatedValueGenerator getConcurrentLocksSupport() {
+        return SupportBuilder.createSupport()
+                .supportSingle(Lock.class, ReentrantLock.class, ReentrantLock::new)
+                .supportSingle(ReadWriteLock.class, ReentrantReadWriteLock.class, ReentrantReadWriteLock::new)
+                .supportSingle(StampedLock.class, StampedLock::new)
+                .build();
+    }
+
     static class NoOpEnumeration<E> implements Enumeration<E> {
         @Override
         public boolean hasMoreElements() {
@@ -233,6 +353,68 @@ final class JavaUtilSupport {
         @Override
         public E nextElement() {
             return null;
+        }
+    }
+
+    static class NoOpRunnableScheduledFuture<V> implements RunnableScheduledFuture<V> {
+        @Override
+        public boolean isPeriodic() {
+            return false;
+        }
+
+        @SuppressWarnings("NullableProblems")
+        @Override
+        public long getDelay(TimeUnit unit) {
+            return 0;
+        }
+
+        @SuppressWarnings("NullableProblems")
+        @Override
+        public int compareTo(Delayed o) {
+            return 0;
+        }
+
+        @Override
+        public void run() {
+            LOGGER.test("Running...");
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            return false;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return false;
+        }
+
+        @Override
+        public boolean isDone() {
+            return true;
+        }
+
+        @Override
+        public V get() throws InterruptedException, ExecutionException {
+            return null;
+        }
+
+        @SuppressWarnings("NullableProblems")
+        @Override
+        public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+            return null;
+        }
+    }
+
+    static class NoOpCountedCompleter<T> extends CountedCompleter<T> {
+        @Override
+        public void compute() {
+            LOGGER.test("Computing...");
+        }
+
+        @Override
+        public void onCompletion(CountedCompleter<?> caller) {
+            LOGGER.test("Completing...");
         }
     }
 }

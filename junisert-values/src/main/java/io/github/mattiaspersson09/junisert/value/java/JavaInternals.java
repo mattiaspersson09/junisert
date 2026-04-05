@@ -38,6 +38,9 @@ public final class JavaInternals {
                 .merge(JavaIOSupport.getIOSupport())
                 .merge(JavaTextSupport.getTextSupport())
                 .merge(JavaNetSupport.getNetSupport())
+                .merge(JavaUtilSupport.getConcurrentSupport())
+                .merge(JavaUtilSupport.getConcurrentAtomicSupport())
+                .merge(JavaUtilSupport.getConcurrentLocksSupport())
                 .merge(JavaSecuritySupport.getSecuritySupport());
     }
 }

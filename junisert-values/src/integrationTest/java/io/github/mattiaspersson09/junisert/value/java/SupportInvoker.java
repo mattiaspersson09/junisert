@@ -15,6 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.value.java;
 
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 
@@ -28,28 +29,27 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-class LambdaTester {
-    private static final Logger LOGGER = Logger.getLogger(LambdaTester.class);
+/**
+ * Invokes support classes to ensure that they are functional and gets test coverage.
+ */
+class SupportInvoker {
+    private static final Logger LOGGER = Logger.getLogger(SupportInvoker.class);
 
     private final Map<Class<?>, Object> usedArguments;
-    private final Collection<ValueGenerator<?>> functionalArgumentGenerators;
+    private final Collection<ValueGenerator<?>> supportArgumentGenerators;
 
-    LambdaTester(Collection<ValueGenerator<?>> functionalArgumentGenerators) {
-        this.functionalArgumentGenerators = functionalArgumentGenerators;
+    SupportInvoker(Collection<ValueGenerator<?>> supportArgumentGenerators) {
+        this.supportArgumentGenerators = supportArgumentGenerators;
         this.usedArguments = new HashMap<>();
     }
 
-    public void invoke(Class<?> functional, Supplier<Object> lambdaObject) {
-        if (!functional.isAnnotationPresent(FunctionalInterface.class)) {
-            LOGGER.info("Not a functional interface, ignoring: {0}", functional);
-            return;
-        }
+    void invoke(Class<?> support, Supplier<?> instance) {
+        LOGGER.test("invoking: {0}", support.getSimpleName());
+        Object object = instance.get();
 
-        LOGGER.test("invoking: {0}", functional.getSimpleName());
-        Object lambda = lambdaObject.get();
-
-        for (Method method : functional.getMethods()) {
+        for (Method method : support.getMethods()) {
             if (Modifier.isStatic(method.getModifiers())) {
+                LOGGER.info("Ignoring method: {0}", method.getName());
                 continue;
             }
 
@@ -60,7 +60,32 @@ class LambdaTester {
                     .toArray();
 
             try {
-                method.invoke(lambda, args);
+                method.invoke(object, args);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new AssertionError(e);
+            }
+        }
+    }
+
+    void invokeVisible(Class<?> support, Supplier<?> instance) {
+        LOGGER.test("invoking: {0}", support.getSimpleName());
+        Object object = instance.get();
+
+        for (Method method : support.getDeclaredMethods()) {
+            if (Modifier.isStatic(method.getModifiers())
+                    || !Modifier.isPublic(method.getModifiers())) {
+                LOGGER.info("Ignoring method: {0}", method.getName());
+                continue;
+            }
+
+            LOGGER.test("-> {0}", method.getName());
+
+            Object[] args = Arrays.stream(method.getParameters())
+                    .map(this::getArgumentValue)
+                    .toArray();
+
+            try {
+                method.invoke(object, args);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new AssertionError(e);
             }
@@ -72,11 +97,11 @@ class LambdaTester {
             return usedArguments.get(argument);
         }
 
-        Object argumentValue = functionalArgumentGenerators.stream()
+        Object argumentValue = supportArgumentGenerators.stream()
                 .filter(gen -> gen.supports(argument))
                 .map(gen -> gen.generate(argument))
                 .findAny()
-                .orElseThrow(RuntimeException::new)
+                .orElseThrow(() -> new UnsupportedTypeError(argument))
                 .get();
 
         usedArguments.put(argument, argumentValue);

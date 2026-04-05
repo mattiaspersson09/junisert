@@ -19,6 +19,7 @@ import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedValueG
 import io.github.mattiaspersson09.junisert.api.internal.support.SupportBuilder;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AlgorithmParameterGenerator;
@@ -35,18 +36,21 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.SecurityPermission;
 import java.security.Signature;
 import java.security.UnresolvedPermission;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.util.Date;
 import java.util.Enumeration;
 
 final class JavaSecuritySupport {
     private static final String ALGORITHM = "DiffieHellman";
     private static final String NOOP = "no-op";
+    private static final String CERT_TYPE = "X.509";
 
     private JavaSecuritySupport() {
     }
@@ -71,10 +75,10 @@ final class JavaSecuritySupport {
                 .withImplementation(AllPermission.class, AllPermission::new)
                 .withImplementation(SecurityPermission.class, () -> new SecurityPermission("security"))
                 .withImplementation(UnresolvedPermission.class,
-                        () -> new UnresolvedPermission(NOOP, NOOP, NOOP, new java.security.cert.Certificate[]{}))
+                        () -> new UnresolvedPermission(NOOP, NOOP, NOOP, new Certificate[]{}))
                 .support(Key.class)
-                .withImplementation(NoOpPublicKey.class, NoOpPublicKey::new)
-                .withImplementation(NoOpPrivateKey.class, NoOpPrivateKey::new)
+                .withImplementation(PublicKey.class, NoOpPublicKey::new)
+                .withImplementation(PrivateKey.class, NoOpPrivateKey::new)
                 .supportSingle(KeyFactory.class, () -> {
                     try {
                         return KeyFactory.getInstance(ALGORITHM);
@@ -108,12 +112,20 @@ final class JavaSecuritySupport {
                         throw new UnsupportedTypeError(Signature.class);
                     }
                 })
+                .supportSingle(Certificate.class, NoOpCertificate::new)
+                .supportSingle(Provider.class, NoOpProvider::new)
                 .build();
     }
 
     private static class NoOpKeyStore extends KeyStore {
         public NoOpKeyStore() {
             super(new NoOpKeyStoreSpi(), null, "security");
+
+            try {
+                load(JavaIOSupport.inputStream(), new char[0]);
+            } catch (IOException | NoSuchAlgorithmException | CertificateException e) {
+                throw new UnsupportedTypeError(KeyStore.class);
+            }
         }
     }
 
@@ -130,7 +142,7 @@ final class JavaSecuritySupport {
 
         @Override
         public Certificate engineGetCertificate(String alias) {
-            return null;
+            return new NoOpCertificate();
         }
 
         @Override
@@ -197,6 +209,25 @@ final class JavaSecuritySupport {
         public void engineLoad(InputStream stream, char[] password) {
             // no-op
         }
+
+        @Override
+        public void engineStore(KeyStore.LoadStoreParameter param) {
+            // no-op
+        }
+
+        @Override
+        public void engineLoad(KeyStore.LoadStoreParameter param) {
+            // no-op
+        }
+
+        public NoOpKeyStoreSpi() {
+            super();
+        }
+
+        @Override
+        public void engineSetEntry(String alias, KeyStore.Entry entry, KeyStore.ProtectionParameter protParam) {
+            // no-op
+        }
     }
 
     private static class NoOpPublicKey implements PublicKey {
@@ -207,7 +238,7 @@ final class JavaSecuritySupport {
 
         @Override
         public String getFormat() {
-            return "X.509";
+            return CERT_TYPE;
         }
 
         @Override
@@ -224,12 +255,64 @@ final class JavaSecuritySupport {
 
         @Override
         public String getFormat() {
-            return "X.509";
+            return CERT_TYPE;
         }
 
         @Override
         public byte[] getEncoded() {
             return new byte[0];
+        }
+
+        @Override
+        public void destroy() {
+            // no-op
+        }
+
+        @Override
+        public boolean isDestroyed() {
+            return true;
+        }
+    }
+
+    private static class NoOpCertificate extends Certificate {
+        private NoOpCertificate() {
+            super(CERT_TYPE);
+        }
+
+        @Override
+        public byte[] getEncoded() {
+            return new byte[0];
+        }
+
+        @Override
+        public void verify(PublicKey key) {
+            // no-op
+        }
+
+        @Override
+        public void verify(PublicKey key, String sigProvider) {
+            // no-op
+        }
+
+        @Override
+        public String toString() {
+            return NOOP + " " + CERT_TYPE;
+        }
+
+        @Override
+        public PublicKey getPublicKey() {
+            return new NoOpPublicKey();
+        }
+
+        @Override
+        public void verify(PublicKey key, Provider sigProvider) {
+            // no-op
+        }
+    }
+
+    private static class NoOpProvider extends Provider {
+        private NoOpProvider() {
+            super(NOOP + " provider", 0.0, NOOP);
         }
     }
 }
