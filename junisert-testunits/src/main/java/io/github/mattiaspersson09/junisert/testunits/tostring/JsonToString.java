@@ -5,7 +5,7 @@ import io.github.mattiaspersson09.junisert.testunits.polymorphism.Super;
 import java.util.Arrays;
 import java.util.List;
 
-public class StrictStandardToString {
+public class JsonToString {
     private Integer integerField;
     private int intField;
     private boolean booleanField;
@@ -15,13 +15,13 @@ public class StrictStandardToString {
 
     @Override
     public String toString() {
-        return "StrictStandardToString{" +
-                "integerField=" + integerField +
-                ", intField=" + intField +
-                ", booleanField=" + booleanField +
-                ", stringArrayField=" + Arrays.toString(stringArrayField) +
-                ", listField=" + listField +
-                ", stringField='" + stringField + '\'' +
-                '}';
+        return "JsonToString {\n" +
+                "  integerField: " + integerField +
+                ",\n  intField: " + intField +
+                ",\n  booleanField: " + booleanField +
+                ",\n  stringArrayField: " + Arrays.toString(stringArrayField) +
+                ",\n  listField: " + listField +
+                ",\n  stringField: \"" + stringField + "\"" +
+                "\n}";
     }
 }

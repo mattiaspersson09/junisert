@@ -22,9 +22,10 @@ import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods;
+import io.github.mattiaspersson09.junisert.core.internal.test.util.ToString;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Tests that a {@link Unit} overrides {@link Object#toString()} and that it's well implemented.
@@ -52,8 +53,11 @@ public class ImplementsToString extends AbstractUnitTest {
         }
 
         Object instance = instanceCreator.createInstance(unit);
+        ToString unitToString = new ToString(instance);
 
-        if (!containsUnitName(instance, unit)) {
+        LOGGER.test("Unit name check -> instance.toString() contains: {0}", unit.getName());
+
+        if (!unitToString.contains(unit.getName())) {
             LOGGER.fail(details(unit, "fails unit name check"), "to contain unit name", "it did not");
             throw new UnitAssertionError("Was expected to contain '" + unit.getName() + "'");
         }
@@ -65,46 +69,19 @@ public class ImplementsToString extends AbstractUnitTest {
 
             field.setValue(instance, value);
 
-            if (!containsField(instance, field)) {
-                String valueString = toString(value);
+            LOGGER.test("Field check -> instance.toString() contains with value: {0}", field.getName());
+
+            if (!unitToString.contains(field, value)) {
+                String valueString = ToString.valueOf(value);
 
                 LOGGER.fail(details(unit, "fails field check"),
-                        "to contain '" + field.getName() + "=" + valueString + "'",
+                        "to contain field '" + field.getName() + "' with value '" + valueString + "'",
                         "it did not");
-                throw new UnitAssertionError("Was expected to contain '" + field.getName() + "=" + valueString + "'");
+                throw new UnitAssertionError("toString were expected to contain (together): " + field.getName()
+                        + ", any operator of " + Arrays.toString(ToString.FIELD_VALUE_OPERATORS) + " and "
+                        + valueString);
             }
         }
-    }
-
-    private boolean containsUnitName(Object instance, Unit unit) {
-        LOGGER.test("Unit name check -> instance.toString().contains(\"{0}\")", unit.getName());
-        return toString(instance).contains(unit.getName());
-    }
-
-    private boolean containsField(Object instance, Field field) {
-        Object value = field.getValue(instance);
-        String valueString = toString(value);
-        String toString = toString(instance);
-
-        LOGGER.test("Field check -> instance.toString().contains(\"{0}={1}\")", field.getName(), valueString);
-
-        return toString.contains(field.getName() + "=" + valueString)
-                || toString.contains(field.getName() + "='" + valueString + "'");
-    }
-
-    private String toString(Object object) {
-        return Optional.ofNullable(object)
-                .map(obj -> {
-                    // Would otherwise show hash variant of the array instead of actual values
-                    // At this point, all arrays should be empty
-                    // Arrays.toString((Object[]) obj) is not possible for primitive arrays because of class cast issue
-                    if (obj.getClass().isArray()) {
-                        return "[]";
-                    }
-
-                    return obj.toString();
-                })
-                .orElse("");
     }
 
     private String details(Unit unit, String detail) {

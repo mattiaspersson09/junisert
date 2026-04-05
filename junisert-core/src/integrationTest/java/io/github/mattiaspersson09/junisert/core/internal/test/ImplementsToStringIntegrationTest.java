@@ -23,6 +23,7 @@ import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.testunits.tostring.CustomToString;
 import io.github.mattiaspersson09.junisert.testunits.tostring.EmptyToString;
+import io.github.mattiaspersson09.junisert.testunits.tostring.JsonToString;
 import io.github.mattiaspersson09.junisert.testunits.tostring.MissingToString;
 import io.github.mattiaspersson09.junisert.testunits.tostring.NoInstanceFieldsToString;
 import io.github.mattiaspersson09.junisert.testunits.tostring.NotAllFieldsToString;
@@ -68,6 +69,11 @@ public class ImplementsToStringIntegrationTest {
     @Test
     void givenUnit_whenToStringIsWellImplemented_thenPassesTest() {
         implementsToString.test(Unit.of(StrictStandardToString.class));
+    }
+
+    @Test
+    void givenUnit_whenToStringIsJsonFormat_thenPassesTest() {
+        implementsToString.test(Unit.of(JsonToString.class));
     }
 
     @Test
