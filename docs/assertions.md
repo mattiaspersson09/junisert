@@ -167,7 +167,7 @@ Or more like JSON:
 @Override
 public String toString() {
     return "PlainObject{" +
-          "  booleanField: " + booleanField +
+          "\n  booleanField: " + booleanField +
           ",\n  stringField: \"" + stringField + '\"' +
           ",\n  arrayField: " + Arrays.toString(arrayField) +
           "\n}";
