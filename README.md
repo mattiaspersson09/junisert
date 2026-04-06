@@ -25,7 +25,7 @@ A scalable and flexible framework used as complement to standard assertions for 
 <dependency>
     <groupId>io.github.mattiaspersson09</groupId>
     <artifactId>junisert-core</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.1</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -33,7 +33,7 @@ A scalable and flexible framework used as complement to standard assertions for 
 ### Gradle
 
 ```groovy
-testImplementation("io.github.mattiaspersson09:junisert-core:0.1.0")
+testImplementation("io.github.mattiaspersson09:junisert-core:0.2.1")
 ```
 
 For documentation and user guide, visit Junisert GitHub pages: https://mattiaspersson09.github.io/junisert

@@ -89,7 +89,7 @@ usually utilities and logging capabilities that all modules might need.
 <dependency>
     <groupId>io.github.mattiaspersson09</groupId>
     <artifactId>junisert-core</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.1</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -97,5 +97,5 @@ usually utilities and logging capabilities that all modules might need.
 ### Gradle
 
 ```groovy
-testImplementation("io.github.mattiaspersson09:junisert-core:0.1.0")
+testImplementation("io.github.mattiaspersson09:junisert-core:0.2.1")
 ```
