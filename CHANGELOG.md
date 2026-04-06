@@ -2,6 +2,18 @@
 
 This is an automatic changelog based on notable changes to this project, check [release notes](https://github.com/mattiaspersson09/junisert/releases) for additional information.
 
+## 0.2.1 *(2026-04-06)*
+**Release notes:** [release v0.2.1](https://github.com/mattiaspersson09/junisert/releases/tag/v0.2.1)
+
+
+### Fixed
+
+- *(ToString)* Records toString with arrays differs from standard Arrays.toString ([c171e9](https://github.com/mattiaspersson09/junisert/commit/c171e9d733eb190460d14b15c0791b17b9be5d7c)) 
+
+### Documentation
+
+- CHANGELOG and assertions in github pages ([9a902e](https://github.com/mattiaspersson09/junisert/commit/9a902e4309cdeabb994ed4e2eb0abab1910d070c)) 
+
 ## 0.2.0 *(2026-04-06)*
 **Release notes:** [release v0.2.0](https://github.com/mattiaspersson09/junisert/releases/tag/v0.2.0)
 
