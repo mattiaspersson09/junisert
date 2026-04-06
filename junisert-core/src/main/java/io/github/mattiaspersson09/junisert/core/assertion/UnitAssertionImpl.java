@@ -95,4 +95,17 @@ public class UnitAssertionImpl implements UnitAssertion {
 
         return this;
     }
+
+    @Override
+    public UnitAssertion isImmutable() throws UnitAssertionError {
+        Unit unit = assertionResource.getUnitUnderAssertion();
+
+        if (!unit.isImmutable()) {
+            throw new UnitAssertionError(unit.getName() + " were expected to be immutable, but it wasn't");
+        }
+
+        asPojo().hasGetters();
+
+        return this;
+    }
 }

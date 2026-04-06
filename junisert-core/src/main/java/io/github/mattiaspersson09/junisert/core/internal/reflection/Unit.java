@@ -245,6 +245,16 @@ public final class Unit implements Reflected {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Checks if this unit is considered immutable, meaning all instance fields are read-only and should not be
+     * manipulated with reflection.
+     *
+     * @return true if this unit is considered immutable
+     */
+    public boolean isImmutable() {
+        return !hasFieldMatching(field -> field.isInstanceMember() && !field.isImmutable());
+    }
+
     @Override
     public String getName() {
         return origin.getSimpleName();

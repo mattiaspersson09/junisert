@@ -43,6 +43,8 @@ public interface PlainObjectAssertion {
     PlainObjectAssertion hasGetters() throws UnitAssertionError;
 
     /**
+     * <em>If the unit is immutable then this assertion will be skipped.</em><br>
+     * <br>
      * Asserts that unit has a working setter for all <em>instance</em> fields. This assertion is flexible
      * and accepts both <em>Java Bean</em> compliant and <em>builder/record</em> styles and does not enforce
      * public visibility.
@@ -90,12 +92,12 @@ public interface PlainObjectAssertion {
 
     /**
      * This is a convenience asserting operation that performs all assertions in recommended sequential order.
-     * This operation is <strong>not suitable for immutable</strong> POJO's.<br>
+     * If the POJO is immutable then {@code hasSetter} assertion will be ignored since properties are read-only.<br>
      * <p>
      * Assertion order:
      * <ol>
      * <li>{@link #hasGetters()}</li>
-     * <li>{@link #hasSetters()}</li>
+     * <li>{@link #hasSetters()} - if POJO is mutable</li>
      * <li>{@link #implementsEqualsAndHashCode()}</li>
      * <li>{@link #implementsToString()}</li>
      * </ol>

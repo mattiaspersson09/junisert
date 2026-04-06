@@ -17,6 +17,7 @@ package io.github.mattiaspersson09.junisert.core.assertion;
 
 import io.github.mattiaspersson09.junisert.api.assertion.PlainObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
+import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import io.github.mattiaspersson09.junisert.core.internal.AssertionResource;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.ValueService;
@@ -31,6 +32,8 @@ import io.github.mattiaspersson09.junisert.core.internal.test.ImplementsToString
  * Direct implementation of {@link PlainObjectAssertion} API.
  */
 public class PlainObjectAssertionImpl implements PlainObjectAssertion {
+    private static final Logger LOGGER = Logger.getLogger(PlainObjectAssertion.class);
+
     private final Unit unitUnderAssertion;
     private final ValueService valueService;
     private final InstanceCreator instanceCreator;
@@ -55,6 +58,11 @@ public class PlainObjectAssertionImpl implements PlainObjectAssertion {
 
     @Override
     public PlainObjectAssertion hasSetters() throws UnitAssertionError {
+        if (unitUnderAssertion.isImmutable()) {
+            LOGGER.info("Assertion hasSetters ignored: unit is immutable and can't have setters.");
+            return this;
+        }
+
         new HasSetters(valueService, instanceCreator).test(unitUnderAssertion);
 
         return this;

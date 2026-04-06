@@ -63,4 +63,14 @@ public class HasSettersTest {
         verifyNoInteractions(instanceCreator);
         verifyNoInteractions(valueService);
     }
+
+    @Test
+    void givenUnit_whenIsImmutable_thenIgnoresTest() {
+        when(unit.isImmutable()).thenReturn(true);
+
+        hasSetters.test(unit);
+
+        verifyNoInteractions(instanceCreator);
+        verifyNoInteractions(valueService);
+    }
 }

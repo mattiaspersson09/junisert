@@ -25,10 +25,18 @@ import java.util.Optional;
  */
 public final class ToString {
     private static final Logger LOGGER = Logger.getLogger("ToString");
+    /**
+     * Possible operators for field and value presentation in toString.
+     */
     public static final char[] FIELD_VALUE_OPERATORS = new char[]{'=', ':'};
 
     private final Object instance;
 
+    /**
+     * Creates a new {@code ToString} from given instance.
+     *
+     * @param instance to check toString for
+     */
     public ToString(Object instance) {
         this.instance = instance;
     }
@@ -130,16 +138,37 @@ public final class ToString {
         private boolean leftPadding;
         private boolean rightPadding;
 
+        /**
+         * Creates a new field and value pair to find together in {@code toString}.
+         *
+         * @param field to find
+         * @param value together with field to find
+         * @see #FieldValuePair(Field, Object, char)
+         */
         public FieldValuePair(Field field, Object value) {
             this(field, value, '=');
         }
 
+        /**
+         * Creates a new field and value pair to find together in {@code toString}.
+         *
+         * @param field    to find
+         * @param value    together with field to find
+         * @param operator operator to find in between field and value pair to match
+         */
         public FieldValuePair(Field field, Object value, char operator) {
             this(field.getName(), ToString.valueOf(value), operator);
         }
 
-        public FieldValuePair(String field, String value, char operator) {
-            this.field = field;
+        /**
+         * Creates a new field name and value pair to find together in {@code toString}.
+         *
+         * @param fieldName to find
+         * @param value     together with field to find
+         * @param operator  operator to find in between field and value pair to match
+         */
+        public FieldValuePair(String fieldName, String value, char operator) {
+            this.field = fieldName;
             this.value = value;
             this.operator = operator;
             leftPadding = rightPadding = false;

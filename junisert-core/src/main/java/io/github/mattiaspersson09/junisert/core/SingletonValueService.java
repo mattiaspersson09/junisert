@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Objects;
 
 final class SingletonValueService implements ValueService {
-    private static final Logger LOGGER = Logger.getLogger(SingletonValueService.class);
+    private static final Logger LOGGER = Logger.getLogger(ValueService.class);
     private static volatile SingletonValueService INSTANCE;
 
     private final Object mutex = new Object();
