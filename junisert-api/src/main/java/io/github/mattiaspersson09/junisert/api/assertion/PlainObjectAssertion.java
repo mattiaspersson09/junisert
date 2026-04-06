@@ -47,7 +47,7 @@ public interface PlainObjectAssertion {
      * <br>
      * Asserts that unit has a working setter for all <em>instance</em> fields. This assertion is flexible
      * and accepts both <em>Java Bean</em> compliant and <em>builder/record</em> styles and does not enforce
-     * public visibility.<br>
+     * public visibility.
      * <p>
      * Java Bean compliant style:
      * <ul>
