@@ -39,6 +39,10 @@ Other than enforcing convention, this assertion might still check for but not en
 
 Above checks might log a warning but not be enforced. If the user wants to enforce non required checks they should treat the unit as a POJO (Plain Old Java Object) and use asPojo().
 
+### isImmutable
+
+Asserts that unit is immutable, meaning that all instance fields are read-only and there's working getters for all properties.
+
 ## Plain object assertion
 
 Javadoc: [Javadoc.io > Junisert API > PlainObjectAssertion](https://javadoc.io/doc/io.github.mattiaspersson09/junisert-api/latest/io/github/mattiaspersson09/junisert/api/assertion/PlainObjectAssertion.html)

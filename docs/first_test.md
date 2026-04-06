@@ -114,9 +114,6 @@ class MutableObjectTest {
 }
 ```
 
-`isWellImplemented()` is not suitable for testing immutable objects at this time, you should instead use the above 
-technique but disregarding `hasSetters()`.
-
 ## Plain immutable object
 
 Given immutable class:
@@ -178,15 +175,20 @@ public class ImmutableObject {
 }
 ```
 
-Test that it's well implemented:
+Or record:
+```java
+public record ImmutableRecord(String sender, String reciever, List<String> labels, byte[] attachment) {
+}
+
+```
+
+Test that it's well implemented the same way, assertion for setters however will be skipped since the properties are 
+read-only:
 ```java
 class ImmutableObjectTest {
    @Test
    void isWellImplemented() {
-      Junisert.assertThatPojo(ImmutableObject.class)
-              .hasGetters()
-              .implementsEqualsAndHashCode()
-              .implementsToString();
+      Junisert.assertThatPojo(ImmutableObject.class).isWellImplemented();
    }
 }
 ```

@@ -8,6 +8,26 @@ nav_order: 4
 
 This is an automatic changelog based on notable changes to this project, check [release notes](https://github.com/mattiaspersson09/junisert/releases) for additional information.
 
+## 0.2.0 *(2026-04-06)*
+**Release notes:** [release v0.2.0](https://github.com/mattiaspersson09/junisert/releases/tag/v0.2.0)
+
+
+### Features
+
+- Support asserting immutable units and Java records [#101](https://github.com/mattiaspersson09/junisert/pull/101) ([8bbd36](https://github.com/mattiaspersson09/junisert/commit/8bbd368dd564c0af1803d0d864ad66979db0a4a7))
+- *(ImplementsToString)* More flexible, now accepts semicolon like JSON [#100](https://github.com/mattiaspersson09/junisert/pull/100) ([c4c66f](https://github.com/mattiaspersson09/junisert/commit/c4c66f7c669298c66c043d74e016dbc41896e037))
+- *(values)* Support for internal java.util.concurrent package [#98](https://github.com/mattiaspersson09/junisert/pull/98) ([23c55f](https://github.com/mattiaspersson09/junisert/commit/23c55f8c6e7149e9badaf619857e59b962438e55))
+- *(values)* Support for Java internal java.net package [#97](https://github.com/mattiaspersson09/junisert/pull/97) ([13b798](https://github.com/mattiaspersson09/junisert/commit/13b798e992c7e3c713e50b376f040f1c4c3ac867))
+
+### Refactor
+
+- Break out utility for hash code [#96](https://github.com/mattiaspersson09/junisert/pull/96) ([3b0819](https://github.com/mattiaspersson09/junisert/commit/3b08198aee4438a260a20ea6dd55fa72f2efac77))
+- Internal tests should extend AbstractUnitTest ([6e36f1](https://github.com/mattiaspersson09/junisert/commit/6e36f1140d45ea4e8b3139ebe5ed58b93f3a8aff))
+
+### Other
+
+- Spotless and publish plugin ([9a4821](https://github.com/mattiaspersson09/junisert/commit/9a482189d4c8a716cb828ebbcb4c7c07ac77b31a))
+
 ## 0.1.0 *(2025-05-25)*
 **Release notes:** [release v0.1.0](https://github.com/mattiaspersson09/junisert/releases/tag/v0.1.0)
 
