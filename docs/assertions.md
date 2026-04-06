@@ -136,7 +136,8 @@ void equalsAndHashCode() {
 
 Asserts that unit implements **toString**, so that it returns a suitable textual representation of the object. 
 This assertion will enforce that toString contains the name of the unit and all instance fields with their current value is shown.
-For field check this asserts that "&lt;property name&gt;=&lt;property value&gt;" is present for every instance field.
+For field check this asserts that "&lt;property name&gt;=&lt;property value&gt;" or 
+"&lt;property name&gt;:&lt;property value&gt;" is present for every instance field. With or without max 1 space padding arround the operator.
 
 Standard typical `toString`:
 ```java
@@ -147,6 +148,29 @@ public String toString() {
           ", stringField='" + stringField + '\'' +
           ", arrayField=" + Arrays.toString(arrayField) +
           '}';
+}
+```
+
+Other accepted variant with semicolon:
+```java
+@Override
+public String toString() {
+    return "PlainObject{" +
+          "booleanField:" + booleanField +
+          ", stringField:'" + stringField + '\'' +
+          ", arrayField:" + Arrays.toString(arrayField) +
+          '}';
+}
+```
+Or more like JSON:
+```java
+@Override
+public String toString() {
+    return "PlainObject{" +
+          "  booleanField: " + booleanField +
+          ",\n  stringField: \"" + stringField + '\"' +
+          ",\n  arrayField: " + Arrays.toString(arrayField) +
+          "\n}";
 }
 ```
 
@@ -161,7 +185,7 @@ void toStringMethod() {
 ### isWellImplemented
 
 This is a convenience asserting operation that performs all assertions in recommended sequential order.
-This operation is not suitable for immutable POJO's and performs following assertions:
+This operation performs following assertions, skipping hasSetters for immutable units:
 1. [hasGetters()](#hasgetters)
 2. [hasSetters()](#hassetters)
 3. [implementsEqualsAndHashCode()](#implementsequalsandhashcode)

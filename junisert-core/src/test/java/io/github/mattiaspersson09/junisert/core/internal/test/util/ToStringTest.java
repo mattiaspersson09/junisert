@@ -182,5 +182,6 @@ public class ToStringTest {
         ToString.FieldValuePair fieldValue = new ToString.FieldValuePair(field, "value", '=');
 
         assertThat(defaultOperator.toString()).isEqualTo(fieldValue.toString());
+        assertThat(defaultOperator.toRecordString()).isEqualTo(fieldValue.toRecordString());
     }
 }

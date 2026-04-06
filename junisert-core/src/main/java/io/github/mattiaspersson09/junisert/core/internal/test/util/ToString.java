@@ -63,7 +63,7 @@ public final class ToString {
      */
     public boolean contains(Field field, Object value) {
         for (char operator : FIELD_VALUE_OPERATORS) {
-            FieldValuePair fieldValue = new FieldValuePair(field.getName(), valueOf(value), operator);
+            FieldValuePair fieldValue = new FieldValuePair(field, value, operator);
 
             if (contains(fieldValue)) {
                 return true;
@@ -84,10 +84,14 @@ public final class ToString {
         String toString = valueOf(instance);
 
         return toString.contains(fieldValue.toString())
+                || toString.contains(fieldValue.toRecordString())
                 || toString.contains(fieldValue.surroundValue('\"').toString())
                 || toString.contains(fieldValue.surroundValue('\'').toString())
+                || toString.contains(fieldValue.surroundValue('\"').toRecordString())
+                || toString.contains(fieldValue.surroundValue('\'').toRecordString())
                 // Check with padding
                 || containsWithPadding(fieldValue.reset())
+                || containsWithPaddingRecordArray(fieldValue)
                 || containsWithPadding(fieldValue.surroundValue('\"'))
                 || containsWithPadding(fieldValue.surroundValue('\''));
     }
@@ -98,6 +102,14 @@ public final class ToString {
         return toString.contains(fieldValue.padding().toString())
                 || toString.contains(fieldValue.padLeft().toString())
                 || toString.contains(fieldValue.padRight().toString());
+    }
+
+    private boolean containsWithPaddingRecordArray(FieldValuePair fieldValue) {
+        String toString = valueOf(instance);
+
+        return toString.contains(fieldValue.padding().toRecordString())
+                || toString.contains(fieldValue.padLeft().toRecordString())
+                || toString.contains(fieldValue.padRight().toRecordString());
     }
 
     /**
@@ -132,7 +144,7 @@ public final class ToString {
      */
     public static class FieldValuePair {
         private final String field;
-        private final String value;
+        private final Object value;
         private final char operator;
         private Character valueSurrounder;
         private boolean leftPadding;
@@ -157,21 +169,9 @@ public final class ToString {
          * @param operator operator to find in between field and value pair to match
          */
         public FieldValuePair(Field field, Object value, char operator) {
-            this(field.getName(), ToString.valueOf(value), operator);
-        }
-
-        /**
-         * Creates a new field name and value pair to find together in {@code toString}.
-         *
-         * @param fieldName to find
-         * @param value     together with field to find
-         * @param operator  operator to find in between field and value pair to match
-         */
-        public FieldValuePair(String fieldName, String value, char operator) {
-            this.field = fieldName;
+            this.field = field.getName();
             this.value = value;
             this.operator = operator;
-            leftPadding = rightPadding = false;
         }
 
         private FieldValuePair padding() {
@@ -207,12 +207,30 @@ public final class ToString {
         }
 
         private String valueString() {
-            return valueSurrounder == null ? value : valueSurrounder + value + valueSurrounder;
+            return valueSurrounder == null
+                    ? ToString.valueOf(value)
+                    : valueSurrounder + ToString.valueOf(value) + valueSurrounder;
         }
 
         @Override
         public String toString() {
             return field + operator() + valueString();
+        }
+
+        /**
+         * If value is potentially an array and instance is a Java record.
+         *
+         * @return string fix for record instances
+         */
+        String toRecordString() {
+            if (valueSurrounder == null) {
+                return field + operator() + (value.getClass().isArray() ? value.toString() : ToString.valueOf(value));
+            }
+
+            return field + operator()
+                    + valueSurrounder
+                    + (value.getClass().isArray() ? value.toString() : ToString.valueOf(value))
+                    + valueSurrounder;
         }
     }
 }
