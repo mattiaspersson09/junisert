@@ -61,10 +61,11 @@ public class ImplementsHashCode extends AbstractUnitTest {
                 continue;
             }
 
-            Object value = valueService.getValue(field.getType()).get();
-
-            field.setValue(instance, value);
-            field.setValue(instance2, value);
+            if (!unit.isImmutable()) {
+                Object value = valueService.getValue(field.getType()).get();
+                field.setValue(instance, value);
+                field.setValue(instance2, value);
+            }
         }
 
         HashCode.ofInstance(instance)
@@ -75,6 +76,10 @@ public class ImplementsHashCode extends AbstractUnitTest {
     }
 
     private Object resetFieldsInInstance(Unit unit, Object instance) {
+        if (unit.isImmutable()) {
+            return instanceCreator.createEmptyInstance(unit);
+        }
+
         for (Field field : unit.getFields()) {
             if (!field.isInstanceMember()) {
                 continue;

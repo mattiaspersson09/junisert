@@ -53,4 +53,13 @@ public interface UnitAssertion {
      * @see #asPojo()
      */
     UnitAssertion isJavaBeanCompliant() throws UnitAssertionError;
+
+    /**
+     * Asserts that unit is immutable, meaning that all instance fields are read-only and there's
+     * working getters for all properties.
+     *
+     * @return this assertion, chained to be able to assert more
+     * @throws UnitAssertionError if requirement is not met
+     */
+    UnitAssertion isImmutable() throws UnitAssertionError;
 }

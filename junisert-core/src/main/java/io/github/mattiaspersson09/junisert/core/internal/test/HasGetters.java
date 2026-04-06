@@ -68,7 +68,11 @@ public final class HasGetters extends AbstractUnitTest {
                 Object value = argument.get();
 
                 Injection injection = new Injection(method, instanceCreator);
-                injection.setup(instance -> field.setValue(instance, value));
+
+                if (!unit.isImmutable()) {
+                    injection.setup(instance -> field.setValue(instance, value));
+                }
+
                 injection.shouldResultIn(instance -> Objects.equals(value, method.invoke(instance)));
 
                 if (!injection.inject()) {

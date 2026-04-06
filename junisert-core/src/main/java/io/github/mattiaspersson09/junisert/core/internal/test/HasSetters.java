@@ -45,6 +45,11 @@ public class HasSetters extends AbstractUnitTest {
 
     @Override
     public void test(Unit unit) {
+        if (unit.isImmutable()) {
+            LOGGER.info("Test ignored: unit is immutable and can't have setters.");
+            return;
+        }
+
         LOGGER.info("Active test strategy: {0}", testStrategy.name());
         LOGGER.info("Testing unit: {0}", unit.getName());
 

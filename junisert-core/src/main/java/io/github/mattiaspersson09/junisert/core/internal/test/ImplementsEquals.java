@@ -62,10 +62,12 @@ public class ImplementsEquals extends AbstractUnitTest {
                 continue;
             }
 
-            Object value = valueService.getValue(field.getType()).get();
-            field.setValue(instance, value);
-            field.setValue(instance2, value);
-            field.setValue(instance3, value);
+            if (!unit.isImmutable()) {
+                Object value = valueService.getValue(field.getType()).get();
+                field.setValue(instance, value);
+                field.setValue(instance2, value);
+                field.setValue(instance3, value);
+            }
         }
 
         Equals.ofInstance(instance)
@@ -79,6 +81,10 @@ public class ImplementsEquals extends AbstractUnitTest {
     }
 
     private Object resetFieldsInInstance(Unit unit, Object instance) {
+        if (unit.isImmutable()) {
+            return instanceCreator.createEmptyInstance(unit);
+        }
+
         for (Field field : unit.getFields()) {
             if (!field.isInstanceMember()) {
                 continue;

@@ -17,7 +17,6 @@ package io.github.mattiaspersson09.junisert.core;
 
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.core.units.lombok.LombokDataUnit;
-import io.github.mattiaspersson09.junisert.core.units.lombok.LombokImmutable;
 import io.github.mattiaspersson09.junisert.core.units.lombok.LombokUnit;
 import io.github.mattiaspersson09.junisert.testunits.constructor.ArgConstructor;
 import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanCompliantButNotRecommended;
@@ -25,6 +24,7 @@ import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanCompliantMode
 import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanVisibleFields;
 import io.github.mattiaspersson09.junisert.testunits.unit.pojo.DeepDependencyModel;
 import io.github.mattiaspersson09.junisert.testunits.unit.pojo.ImmutableModel;
+import io.github.mattiaspersson09.junisert.testunits.unit.pojo.ImmutableModelBrokenGetter;
 import io.github.mattiaspersson09.junisert.testunits.unit.pojo.UnknownDependencyImmutable;
 
 import org.junit.jupiter.api.Test;
@@ -48,15 +48,12 @@ public class JunisertFunctionalTest {
     @ParameterizedTest
     @ValueSource(classes = {
             ImmutableModel.class,
-            LombokImmutable.class,
             UnknownDependencyImmutable.class
     })
     void givenImmutable_whenAssertingPojo_thenShouldPassAssertion(Class<?> immutable) {
         Junisert.assertThatUnit(immutable)
                 .asPojo()
-                .hasGetters()
-                .implementsEqualsAndHashCode()
-                .implementsToString();
+                .isWellImplemented();
     }
 
     @ParameterizedTest
@@ -80,5 +77,22 @@ public class JunisertFunctionalTest {
         assertThatThrownBy(() -> Junisert.assertThatUnit(BeanVisibleFields.class).isJavaBeanCompliant())
                 .isInstanceOf(UnitAssertionError.class)
                 .hasMessageContaining("expected to only have private properties");
+    }
+
+    @Test
+    void givenImmutable_whenTrulyImmutable_thenShouldPassAssertion() {
+        Junisert.assertThatUnit(ImmutableModel.class).isImmutable();
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {
+            BeanCompliantModel.class,
+            LombokDataUnit.class,
+            LombokUnit.class,
+            DeepDependencyModel.class,
+            ImmutableModelBrokenGetter.class
+    })
+    void givenImmutable_whenIsNotImmutable_thenFailsAssertion(Class<?> type) {
+        assertThatThrownBy(() -> Junisert.assertThatUnit(type).isImmutable()).isInstanceOf(UnitAssertionError.class);
     }
 }

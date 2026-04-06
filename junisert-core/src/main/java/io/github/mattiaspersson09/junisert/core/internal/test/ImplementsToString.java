@@ -67,7 +67,9 @@ public class ImplementsToString extends AbstractUnitTest {
         for (Field field : instanceFields) {
             Object value = valueService.getValue(field.getType()).get();
 
-            field.setValue(instance, value);
+            if (!unit.isImmutable()) {
+                field.setValue(instance, value);
+            }
 
             LOGGER.test("Field check -> instance.toString() contains with value: {0}", field.getName());
 
