@@ -82,9 +82,8 @@ public interface PlainObjectAssertion {
      * Asserts that unit implements {@code toString} and it returns a suitable textual representation of the object.
      * This assertion will enforce that {@code toString} contains the name of the unit and all <em>instance fields</em>
      * with their current value is shown.<br>
-     * For field check this asserts that "&lt;property name&gt;=&lt;property value&gt;" or
-     * "&lt;property name&gt;:&lt;property value&gt;" is present for every instance field.
-     * With or without max 1 space padding arround the operator.
+     * For field check this asserts that {@code <property name>}, operator &#61; or &#58; and {@code <property value>}
+     * is present together for every instance field.
      *
      * @return this assertion chained to assert more
      * @throws UnitAssertionError if unit fails assertion

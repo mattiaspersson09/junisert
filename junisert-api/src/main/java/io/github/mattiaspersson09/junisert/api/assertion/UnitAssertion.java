@@ -22,8 +22,9 @@ package io.github.mattiaspersson09.junisert.api.assertion;
  */
 public interface UnitAssertion {
     /**
-     * Assumes this unit is a plain object for assertion, which doesn't necessarily follow a naming convention but
-     * carries properties.
+     * Assumes this unit is a plain object for assertion, which doesn't necessarily follow a naming convention
+     * but carries properties.
+     * This method doesn't perform any tests and just switches assertion to {@link PlainObjectAssertion}.
      *
      * @return a new {@link PlainObjectAssertion}
      */
@@ -56,7 +57,7 @@ public interface UnitAssertion {
 
     /**
      * Asserts that unit is immutable, meaning that all instance fields are read-only and there's
-     * working getters for all properties.
+     * a working getter for all properties.
      *
      * @return this assertion, chained to be able to assert more
      * @throws UnitAssertionError if requirement is not met

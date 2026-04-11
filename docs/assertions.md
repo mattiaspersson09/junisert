@@ -5,43 +5,109 @@ nav_order: 3
 ---
 
 # Assertions
+Documentation for version: **0.3.0**
+
 {: .no_toc }
 
 ## Table of Contents
+
 {: .no_toc .text-delta }
 
 1. Unit assertion
 2. Plain object assertion
-{:toc}
+   {:toc}
 
 ## Unit assertion
 
 Javadoc: [Javadoc.io > Junisert API > UnitAssertion](https://javadoc.io/doc/io.github.mattiaspersson09/junisert-api/latest/io/github/mattiaspersson09/junisert/api/assertion/UnitAssertion.html)
 
 Is used to assert on any type of unit to verify stucture and expected behavior.
+To assume the unit under assertion is a specific type of unit, use methods starting with **as** for specific assertions.
+Use methods starting with **is** for convenient direct assertion.
 
 ### asPojo
 
-Assumes this unit is a plain object for assertion, which doesn't necessarily follow a naming convention but carries properties.
+Assumes this unit is a plain object for assertion, which doesn't necessarily follow a naming convention but carries
+properties.
+This method doesn't perform any tests and just switches assertion to [PlainObjectAssertion](#plain-object-assertion).
+
+```java
+public record Model(String value) {
+}
+```
+**Example usage:**
+```java
+@Test
+void givenModel_whenIsImmutable_thenIsWellImplemented() {
+    Junisert.assertThatUnit(Model.class)
+            .isImmutable()
+            .asPojo() // Switching to PlainObjectAssertion
+            .isWellImplemented();
+}
+```
 
 ### isJavaBeanCompliant
 
-Is a convenience assertion to assert that a unit complies with the Java Bean Specification. This should make sure that a unit follows convention, which requires that:
-- Unit must have a default constructor (accepting no arguments).
-- All instance properties must be private.
-- All instance properties must have a working getter.
-- All instance properties must have a working setter.
+Is a convenience assertion to assert that a unit complies with the Java Bean Specification.
 
-Other than enforcing convention, this assertion might still check for but not enforce:
-- Unit should implement Serializable, directly or indirectly
-- Unit should override equals and hashCode
-- Unit should override toString
+```java
+@Test
+void givenUnit_whenIsJavaBeanCompliant_thenPassesAssertion() {
+    Junisert.assertThatUnit(JavaBeanModel.class).isJavaBeanCompliant();
+}
+```
+**Negative test example:**
+```java
+@Test
+void givenUnit_whenIsNotJavaBeanCompliant_thenFailsAssertion() {
+    // Example using AssertJ
+   assertThatThrownBy(() -> Junisert.assertThatUnit(NoDefaultConstructorModel.class).isJavaBeanCompliant())
+           .isInstanceOf(UnitAssertionError.class)
+           .hasMessageContaining("NoDefaultConstructorModel")
+           .hasMessageContaining("expected to have a default constructor");
 
-Above checks might log a warning but not be enforced. If the user wants to enforce non required checks they should treat the unit as a POJO (Plain Old Java Object) and use asPojo().
+   assertThatThrownBy(() -> Junisert.assertThatUnit(VisiblePropertiesModel.class).isJavaBeanCompliant())
+           .isInstanceOf(UnitAssertionError.class)
+           .hasMessageContaining("VisiblePropertiesModel")
+           .hasMessageContaining("expected to only have private properties");
+
+   assertThatThrownBy(() -> Junisert.assertThatUnit(IsMissingGetterModel.class).isJavaBeanCompliant())
+           .isInstanceOf(UnitAssertionError.class)
+           .hasMessageContaining("IsMissingGetterModel")
+           .hasMessageContaining("expected to have getter for instance field");
+}
+```
 
 ### isImmutable
 
-Asserts that unit is immutable, meaning that all instance fields are read-only and there's working getters for all properties.
+Asserts that unit is immutable, meaning that all instance fields are read-only and there's a working getter for all
+properties.
+
+```java
+public record Model(String value) {
+}
+```
+**Example usage:**
+```java
+@Test
+void givenModel_whenIsImmutable_thenFailsAssertion() {
+    Junisert.assertThatUnit(Model.class).isImmutable();
+}
+```
+**Negative test with a mutable model:**
+```java
+import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+@Test
+void givenModel_whenIsMutable_thenFailsAssertion() {
+    // Example using AssertJ
+    assertThatThrownBy(() -> Junisert.assertThatUnit(MutableModel.class).isImmutable())
+           .isInstanceOf(UnitAssertionError.class)
+           .hasMessageContaining("MutableModel")
+           .hasMessageContaining("expected to be immutable");
+}
+```
 
 ## Plain object assertion
 
@@ -51,10 +117,11 @@ Is used to assert on a plain object just carrying properties, like POJO, DTO, Va
 
 ### hasGetters
 
-Asserts that the unit has a working getter for all _instance_ fields. This assertion is flexible and accepts both 
+Asserts that the unit has a working getter for all _instance_ fields. This assertion is flexible and accepts both
 Java Bean compliant and builder/record styles and does not enforce public visibility.
 
 Example valid getters, assuming the field type is a `boolean`:
+
 ```java
 // Java Bean style
 public boolean getField() {
@@ -63,17 +130,19 @@ public boolean getField() {
 
 // Java Bean style
 public boolean isField() {
-   return field;
+    return field;
 }
 
 // Record style
 public boolean field() {
-   return field;
+    return field;
 }
 ```
 
-Test:
+**Test:**
+
 ```java
+
 @Test
 void getters() {
     Junisert.assertThatPojo(PlainObject.class).hasGetters();
@@ -82,10 +151,11 @@ void getters() {
 
 ### hasSetters
 
-Asserts that unit has a working setter for all instance fields. This assertion is flexible and accepts both 
+Asserts that unit has a working setter for all instance fields. This assertion is flexible and accepts both
 Java Bean compliant and builder/record styles and does not enforce public visibility.
 
 Example valid setters, assuming the field type is a `boolean` and class is named `PlainObject`:
+
 ```java
 // Java Bean style
 public void setField(boolean field) {
@@ -94,24 +164,26 @@ public void setField(boolean field) {
 
 // Mix of Java Bean and builder style
 public PlainObject setField(boolean field) {
-   this.field = field;
-   return this;
+    this.field = field;
+    return this;
 }
 
 // Record style
 public void field(boolean field) {
-   this.field = field;
+    this.field = field;
 }
 
 // Builder style
 public PlainObject field(boolean field) {
-   this.field = field;
-   return this;
+    this.field = field;
+    return this;
 }
 ```
 
-Test:
+**Test:**
+
 ```java
+
 @Test
 void setters() {
     Junisert.assertThatPojo(PlainObject.class).hasSetters();
@@ -120,12 +192,15 @@ void setters() {
 
 ### implementsEqualsAndHashCode
 
-Asserts that unit implements both **equals** and **hashCode** and they work as intended. 
-These are asserted together since it's generally necessary to maintain object contract, that units overriding one should also override the other.
+Asserts that unit implements both **equals** and **hashCode** and they work as intended.
+These are asserted together since it's generally necessary to maintain object contract, that units overriding one should
+also override the other.
 If equals pass assertion, so should hashCode also since they harmonize.
 
 **Test:**
+
 ```java
+
 @Test
 void equalsAndHashCode() {
     Junisert.assertThatPojo(PlainObject.class).implementsEqualsAndHashCode();
@@ -134,48 +209,57 @@ void equalsAndHashCode() {
 
 ### implementsToString
 
-Asserts that unit implements **toString**, so that it returns a suitable textual representation of the object. 
-This assertion will enforce that toString contains the name of the unit and all instance fields with their current value is shown.
-For field check this asserts that "&lt;property name&gt;=&lt;property value&gt;" or 
-"&lt;property name&gt;:&lt;property value&gt;" is present for every instance field. With or without max 1 space padding arround the operator.
+Asserts that unit implements `toString`, so that it returns a suitable textual representation of the object.
+This assertion will enforce that `toString` contains the name of the unit and all instance fields with their current
+value is shown. For field check this asserts that
+`<property name>`, operator `=` or `:` and `<property value>` is present together for every instance field.
 
 Standard typical `toString`:
+
 ```java
+
 @Override
 public String toString() {
     return "PlainObject{" +
-          "booleanField=" + booleanField +
-          ", stringField='" + stringField + '\'' +
-          ", arrayField=" + Arrays.toString(arrayField) +
-          '}';
+            "booleanField=" + booleanField +
+            ", stringField='" + stringField + '\'' +
+            ", arrayField=" + Arrays.toString(arrayField) +
+            '}';
 }
 ```
 
 Other accepted variant with semicolon:
+
 ```java
+
 @Override
 public String toString() {
     return "PlainObject{" +
-          "booleanField:" + booleanField +
-          ", stringField:'" + stringField + '\'' +
-          ", arrayField:" + Arrays.toString(arrayField) +
-          '}';
-}
-```
-Or more like JSON:
-```java
-@Override
-public String toString() {
-    return "PlainObject{" +
-          "\n  booleanField: " + booleanField +
-          ",\n  stringField: \"" + stringField + '\"' +
-          ",\n  arrayField: " + Arrays.toString(arrayField) +
-          "\n}";
+            "booleanField:" + booleanField +
+            ", stringField:'" + stringField + '\'' +
+            ", arrayField:" + Arrays.toString(arrayField) +
+            '}';
 }
 ```
 
-Test:
+Or like JSON:
+
 ```java
+
+@Override
+public String toString() {
+    return "PlainObject{" +
+            "\n  \"booleanField\": " + booleanField +
+            ",\n  \"stringField\": \"" + stringField + '\"' +
+            ",\n  \"arrayField\": " + Arrays.toString(arrayField) +
+            "\n}";
+}
+```
+
+**Test:**
+
+```java
+
 @Test
 void toStringMethod() {
     Junisert.assertThatPojo(PlainObject.class).implementsToString();
@@ -186,6 +270,7 @@ void toStringMethod() {
 
 This is a convenience asserting operation that performs all assertions in recommended sequential order.
 This operation performs following assertions, skipping hasSetters for immutable units:
+
 1. [hasGetters()](#hasgetters)
 2. [hasSetters()](#hassetters)
 3. [implementsEqualsAndHashCode()](#implementsequalsandhashcode)
