@@ -2,6 +2,14 @@
 
 This is an automatic changelog based on notable changes to this project, check [release notes](https://github.com/mattiaspersson09/junisert/releases) for additional information.
 
+## 0.3.0 *(2026-04-11)*
+**Release notes:** [release v0.3.0](https://github.com/mattiaspersson09/junisert/releases/tag/v0.3.0)
+
+
+### Features
+
+- Support JSON-like toString and multi-dimensional array values [#103](https://github.com/mattiaspersson09/junisert/pull/103) ([7baa8b](https://github.com/mattiaspersson09/junisert/commit/7baa8b2880a905e1f3966f84e2d507d07676b6ec)) 
+
 ## 0.2.1 *(2026-04-06)*
 **Release notes:** [release v0.2.1](https://github.com/mattiaspersson09/junisert/releases/tag/v0.2.1)
 
