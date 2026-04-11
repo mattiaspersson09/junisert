@@ -7,14 +7,14 @@ nav_order: 3
 # Assertions
 {: .no_toc }
 
+Documentation for version: **0.3.0**
+
 ## Table of Contents
 {: .no_toc .text-delta }
 
 1. Unit assertion
 2. Plain object assertion
 {:toc}
-
-Documentation for version: **0.3.0**
 
 ## Unit assertion
 
