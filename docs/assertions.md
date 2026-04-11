@@ -57,6 +57,9 @@ void givenUnit_whenIsJavaBeanCompliant_thenPassesAssertion() {
 ```
 **Negative test example:**
 ```java
+import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 @Test
 void givenUnit_whenIsNotJavaBeanCompliant_thenFailsAssertion() {
     // Example using AssertJ
