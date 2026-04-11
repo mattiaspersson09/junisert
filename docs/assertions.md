@@ -144,7 +144,6 @@ public boolean field() {
 **Test:**
 
 ```java
-
 @Test
 void getters() {
     Junisert.assertThatPojo(PlainObject.class).hasGetters();
@@ -183,7 +182,6 @@ public PlainObject field(boolean field) {
 ```
 
 **Test:**
-
 ```java
 
 @Test
@@ -200,9 +198,7 @@ also override the other.
 If equals pass assertion, so should hashCode also since they harmonize.
 
 **Test:**
-
 ```java
-
 @Test
 void equalsAndHashCode() {
     Junisert.assertThatPojo(PlainObject.class).implementsEqualsAndHashCode();
@@ -217,9 +213,7 @@ value is shown. For field check this asserts that
 `<property name>`, operator `=` or `:` and `<property value>` is present together for every instance field.
 
 Standard typical `toString`:
-
 ```java
-
 @Override
 public String toString() {
     return "PlainObject{" +
@@ -230,10 +224,8 @@ public String toString() {
 }
 ```
 
-Other accepted variant with semicolon:
-
+Other accepted variant with colon:
 ```java
-
 @Override
 public String toString() {
     return "PlainObject{" +
@@ -247,7 +239,6 @@ public String toString() {
 Or like JSON:
 
 ```java
-
 @Override
 public String toString() {
     return "PlainObject{" +
@@ -259,7 +250,6 @@ public String toString() {
 ```
 
 **Test:**
-
 ```java
 
 @Test
