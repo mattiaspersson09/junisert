@@ -75,11 +75,8 @@ public class ToStringTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "=",
-            " =",
-            "= ",
             " = ",
             ":",
-            " :",
             ": ",
             " : ",
     })
@@ -91,8 +88,8 @@ public class ToStringTest {
     }
 
     @Test
-    void contains_givenFieldAndValue_whenValueIsNull_thenItsHandledAsEmptyValue_andIsTrue() {
-        when(instance.toString()).thenReturn("Object{field=}");
+    void contains_givenFieldAndValue_whenValueIsNull_thenItsHandledAsNullStringValue_andIsTrue() {
+        when(instance.toString()).thenReturn("Object{field=null}");
         when(field.getName()).thenReturn("field");
 
         assertThat(toString.contains(field, null)).isTrue();
@@ -134,11 +131,8 @@ public class ToStringTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "=",
-            " =",
-            "= ",
             " = ",
             ":",
-            " :",
             ": ",
             " : ",
     })
@@ -152,11 +146,8 @@ public class ToStringTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "=",
-            " =",
-            "= ",
             " = ",
             ":",
-            " :",
             ": ",
             " : ",
     })
@@ -183,5 +174,73 @@ public class ToStringTest {
 
         assertThat(defaultOperator.toString()).isEqualTo(fieldValue.toString());
         assertThat(defaultOperator.toRecordString()).isEqualTo(fieldValue.toRecordString());
+    }
+
+    @Test
+    void contains_givenValue_whenInstanceIsNull_thenFalse() {
+        ToString instanceToString = new ToString(null);
+
+        assertThat(instanceToString.contains("value")).isFalse();
+    }
+
+    @Test
+    void contains_givenValue_whenToStringIsNull_thenFalse() {
+        when(instance.toString()).thenReturn(null);
+
+        assertThat(toString.contains("value")).isFalse();
+    }
+
+    @Test
+    void contains_givenFieldValuePair_whenInstanceIsNull_thenFalse() {
+        when(field.getName()).thenReturn("field");
+
+        ToString instanceToString = new ToString(null);
+        ToString.FieldValuePair fieldValue = new ToString.FieldValuePair(field, "value");
+
+        assertThat(instanceToString.contains(fieldValue)).isFalse();
+    }
+
+    @Test
+    void contains_givenFieldValuePair_whenToStringIsNull_thenFalse() {
+        when(field.getName()).thenReturn("field");
+        when(instance.toString()).thenReturn(null);
+
+        ToString.FieldValuePair fieldValue = new ToString.FieldValuePair(field, "value");
+
+        assertThat(toString.contains(fieldValue)).isFalse();
+    }
+
+    @Test
+    void valueOf_whenTypeIsArray_thenShowsValues() {
+        assertThat(ToString.valueOf(new byte[0])).isEqualTo("[]");
+        assertThat(ToString.valueOf(new byte[]{1, 2, 3})).isEqualTo("[1, 2, 3]");
+        assertThat(ToString.valueOf(new byte[][]{{1}, {2}, {3}})).isEqualTo("[[1], [2], [3]]");
+        assertThat(ToString.valueOf(new Byte[0])).isEqualTo("[]");
+        assertThat(ToString.valueOf(new Byte[]{1, 2, 3})).isEqualTo("[1, 2, 3]");
+        assertThat(ToString.valueOf(new Byte[][]{{1}, {2}, {3}})).isEqualTo("[[1], [2], [3]]");
+        assertThat(ToString.valueOf(new Object[][]{{1}, {'a'}, {null}})).isEqualTo("[[1], [a], [null]]");
+        assertThat(ToString.valueOf(new Object[]{null})).isEqualTo("[null]");
+    }
+
+    @Test
+    void valueOfArray_whenArrayIsNull_thenReturnsNullString() {
+        assertThat(ToString.valueOfArray(null)).isEqualTo("null");
+    }
+
+    @Test
+    void valueOfArray_givenNonArray_thenReturnsEmptyArrayString() {
+        assertThat(ToString.valueOfArray(new Object())).isEqualTo("[]");
+    }
+
+    @Test
+    void valueOf_whenTypeIsPrimitiveArray_thenShowsValues() {
+        assertThat(ToString.valueOf(new byte[]{1})).isEqualTo("[1]");
+        assertThat(ToString.valueOf(new short[]{1})).isEqualTo("[1]");
+        assertThat(ToString.valueOf(new int[]{1})).isEqualTo("[1]");
+        assertThat(ToString.valueOf(new long[]{1})).isEqualTo("[1]");
+        assertThat(ToString.valueOf(new float[]{1})).isEqualTo("[1.0]");
+        assertThat(ToString.valueOf(new double[]{1})).isEqualTo("[1.0]");
+        assertThat(ToString.valueOf(new char[]{'1', 'a'})).isEqualTo("[1, a]");
+        assertThat(ToString.valueOf(new boolean[]{true})).isEqualTo("[true]");
     }
 }

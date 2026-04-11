@@ -24,7 +24,6 @@ import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods;
 import io.github.mattiaspersson09.junisert.core.internal.test.util.ToString;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -79,9 +78,8 @@ public class ImplementsToString extends AbstractUnitTest {
                 LOGGER.fail(details(unit, "fails field check"),
                         "to contain field '" + field.getName() + "' with value '" + valueString + "'",
                         "it did not");
-                throw new UnitAssertionError("toString were expected to contain (together): " + field.getName()
-                        + ", any operator of " + Arrays.toString(ToString.FIELD_VALUE_OPERATORS) + " and "
-                        + valueString);
+                throw new UnitAssertionError("toString were expected to contain (together): field " + field.getName()
+                        + ", any operator of (=, :) and value " + valueString);
             }
         }
     }
