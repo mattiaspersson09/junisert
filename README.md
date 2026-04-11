@@ -11,13 +11,31 @@ A scalable and flexible framework used as complement to standard assertions for 
 
 **Currently supported Java LTS:** 8+
 
+For documentation and user guide, visit Junisert GitHub pages: https://mattiaspersson09.github.io/junisert
+
 *Do you have an idea for features or support that sounds in-line with this project?
 [Create an issue](https://github.com/mattiaspersson09/junisert/issues/new) and share your thoughts!*
 
 ---
 
 ## Getting started
-For documentation and user guide, visit Junisert GitHub pages: https://mattiaspersson09.github.io/junisert
+
+### Maven
+
+```xml
+<dependency>
+    <groupId>io.github.mattiaspersson09</groupId>
+    <artifactId>junisert-core</artifactId>
+    <version>0.3.0</version>
+    <scope>test</scope>
+</dependency>
+```
+
+### Gradle
+
+```groovy
+testImplementation("io.github.mattiaspersson09:junisert-core:0.3.0")
+```
 
 ### Your first test
 
@@ -58,7 +76,7 @@ public class Model {
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
-        ImmutableObject that = (ImmutableObject) object;
+        Model that = (Model) object;
         return Objects.equals(sender, that.sender) && Objects.equals(reciever, that.reciever)
                 && Objects.equals(labels, that.labels) && Arrays.equals(attachment, that.attachment);
     }
@@ -84,27 +102,10 @@ public class Model {
 ```java
 public class ModelTest {
     @Test
-    void isWellImplemented() {
+    void givenPojo_whenModelIsWellStructured_thenIsWellImplemented() {
         Junisert.assertThatPojo(Model.class).isWellImplemented();
     }
 }
-```
-
-### Maven
-
-```xml
-<dependency>
-    <groupId>io.github.mattiaspersson09</groupId>
-    <artifactId>junisert-core</artifactId>
-    <version>0.3.0</version>
-    <scope>test</scope>
-</dependency>
-```
-
-### Gradle
-
-```groovy
-testImplementation("io.github.mattiaspersson09:junisert-core:0.3.0")
 ```
 
 ## Project information
