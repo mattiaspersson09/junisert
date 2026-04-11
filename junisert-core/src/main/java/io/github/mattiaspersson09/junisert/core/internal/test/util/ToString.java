@@ -156,7 +156,6 @@ public final class ToString {
      * // null
      * ToString.valueOfArray(null);
      * </pre>
-     * </p>
      *
      * @param array to convert to string value
      * @return array values presented in a string
@@ -238,6 +237,8 @@ public final class ToString {
         }
 
         /**
+         * Creates a new field and value pair to find together in {@code toString}.
+         *
          * @param field  to find
          * @param value  together with field to find
          * @param format to find for field and value pair match
