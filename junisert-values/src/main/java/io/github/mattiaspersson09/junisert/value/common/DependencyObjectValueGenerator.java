@@ -151,7 +151,7 @@ public class DependencyObjectValueGenerator implements ValueGenerator<Object> {
 
         for (Parameter parameter : parameters) {
             boolean isDependencyPotentiallyConstructable = Dependency.shouldBeConstructable(
-                    findConstructorWithFewestParameters(parameter.getType()).orElse(null),
+                    findBestConstructor(parameter.getType()).orElse(null),
                     forceConstructorAccess
             );
 
@@ -179,11 +179,13 @@ public class DependencyObjectValueGenerator implements ValueGenerator<Object> {
 
         Dependency dependency = new Dependency(
                 dependentUnit,
-                findConstructorWithFewestParameters(parameter).orElse(null),
+                findBestConstructor(parameter)
+                        .orElseThrow(() -> new UnsupportedTypeError(parameter)),
                 dependencyGenerator,
                 forceConstructorAccess,
                 maxDependencyDepth,
-                nestedDependency -> findConstructorWithFewestParameters(nestedDependency).orElse(null)
+                nestedDependency -> findBestConstructor(nestedDependency)
+                        .orElseThrow(() -> new UnsupportedTypeError(nestedDependency))
         );
 
         // Dependency is not abstract or an interface and can access constructor to create instance
@@ -203,9 +205,30 @@ public class DependencyObjectValueGenerator implements ValueGenerator<Object> {
                 .min(Comparator.comparingInt(Constructor::getParameterCount));
     }
 
-    private Optional<Constructor<?>> findConstructorWithFewestParameters(Class<?> type) {
+    private Optional<Constructor<?>> findBestConstructor(Class<?> type) {
+        Optional<Constructor<?>> nonRecursive = findNonRecursiveConstructor(type);
+
+        if (nonRecursive.isPresent()) {
+            return nonRecursive;
+        }
+
         return Stream.of(type.getDeclaredConstructors())
                 .min(Comparator.comparingInt(Constructor::getParameterCount));
+    }
+
+    private Optional<Constructor<?>> findNonRecursiveConstructor(Class<?> type) {
+        return Stream.of(type.getDeclaredConstructors())
+                .filter(c -> !isRecursiveConstructor(c))
+                .findAny();
+    }
+
+    private boolean isRecursiveConstructor(Constructor<?> constructor) {
+        return constructor != null && Stream.of(constructor.getParameters())
+                .anyMatch(parameter -> isRecursiveParameter(parameter, constructor));
+    }
+
+    private boolean isRecursiveParameter(Parameter parameter, Constructor<?> owningConstructor) {
+        return Objects.equals(owningConstructor.getDeclaringClass(), parameter.getType());
     }
 
     int getMaxDependencyDepth() {
@@ -267,7 +290,7 @@ public class DependencyObjectValueGenerator implements ValueGenerator<Object> {
          */
         public DependencyObjectValueGenerator build() throws IllegalArgumentException {
             if (dependencyDepth > MAX_DEPENDENCY_DEPTH) {
-                throw new IllegalArgumentException("Dependency depth isn't allowed be larger than "
+                throw new IllegalArgumentException("Dependency depth isn't allowed to be larger than "
                         + MAX_DEPENDENCY_DEPTH);
             }
 

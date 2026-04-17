@@ -22,6 +22,7 @@ import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.testunits.constructor.DefaultPrivateConstructor;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.Base;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.Impl;
+import io.github.mattiaspersson09.junisert.testunits.polymorphism.OtherImpl;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -59,14 +60,14 @@ public class DependencyTest {
     void createInstance_whenForcingConstructorAccess_thenTriesToSetAccessible() throws InvocationTargetException,
                                                                                 InstantiationException,
                                                                                 IllegalAccessException {
-        Dependency dependency = createDependencyWithForcedAccessAndDependencyDepth(true, 0);
-
         when(constructor.getParameters()).thenReturn(new Parameter[]{parameter});
         doReturn(new Object()).when(constructor).newInstance(any());
         doNothing().when(constructor).setAccessible(anyBoolean());
-        doReturn(Object.class).when(parameter).getType();
+        doReturn(String.class).when(parameter).getType();
         when(valueSupport.supports(any())).thenReturn(true);
         doReturn((Value<?>) Object::new).when(valueSupport).generate(any());
+
+        Dependency dependency = createDependencyWithForcedAccessAndDependencyDepth(true, 0);
 
         dependency.createInstance();
 
@@ -74,18 +75,13 @@ public class DependencyTest {
     }
 
     @Test
-    void createInstance_whenNotForcingConstructorAccess_thenDoesNotTryToSetAccessible() throws InvocationTargetException,
-                                                                                        InstantiationException,
-                                                                                        IllegalAccessException {
-        Dependency dependency = createDependencyWithForcedAccessAndDependencyDepth(false, 0);
-
+    void createInstance_whenNotForcingConstructorAccess_thenDoesNotTryToSetAccessible() {
         when(constructor.getParameters()).thenReturn(new Parameter[]{parameter});
-        doReturn(new Object()).when(constructor).newInstance(any());
-        doReturn(Object.class).when(parameter).getType();
+        doReturn(String.class).when(parameter).getType();
         when(valueSupport.supports(any())).thenReturn(true);
         doReturn((Value<?>) Object::new).when(valueSupport).generate(any());
 
-        dependency.createInstance();
+        createDependencyWithForcedAccessAndDependencyDepth(false, 0).createInstance();
 
         verify(constructor, never()).setAccessible(anyBoolean());
     }
@@ -94,14 +90,14 @@ public class DependencyTest {
     void createInstance_whenUnableToCreateInstance_thenThrowsUnsupportedConstructionError() throws InvocationTargetException,
                                                                                             InstantiationException,
                                                                                             IllegalAccessException {
-        Dependency dependency = createDependencyWithDependencyDepth(0);
-
         when(constructor.getParameters()).thenReturn(new Parameter[]{parameter});
         when(constructor.newInstance(any())).thenThrow(RuntimeException.class);
-        doReturn(Impl.class).when(constructor).getDeclaringClass();
+        doReturn(OtherImpl.class).when(constructor).getDeclaringClass();
         doReturn(Object.class).when(parameter).getType();
         when(valueSupport.supports(any())).thenReturn(true);
         doReturn((Value<?>) Object::new).when(valueSupport).generate(any());
+
+        Dependency dependency = createDependencyWithDependencyDepth(0);
 
         assertThatThrownBy(dependency::createInstance).isInstanceOf(UnsupportedConstructionError.class);
     }
@@ -110,12 +106,10 @@ public class DependencyTest {
     void createInstance_whenDependencyConstructorIsDefault_thenDoesNotTryToHandleDependencyValues() throws InvocationTargetException,
                                                                                                     InstantiationException,
                                                                                                     IllegalAccessException {
-        Dependency dependency = createDependencyWithDependencyDepth(0);
-
         when(constructor.getParameters()).thenReturn(new Parameter[]{});
         doReturn(new Object()).when(constructor).newInstance();
 
-        dependency.createInstance();
+        createDependencyWithDependencyDepth(0).createInstance();
 
         verify(valueSupport, never()).supports(any());
         verify(valueSupport, never()).generate(any());
@@ -125,15 +119,15 @@ public class DependencyTest {
     void createInstance_whenZeroDependencyDepth_andValueSupportSupportsDependencyValue_thenGeneratesSupportedValue() throws InvocationTargetException,
                                                                                                                      InstantiationException,
                                                                                                                      IllegalAccessException {
-        Dependency dependency = createDependencyWithDependencyDepth(0);
-
         when(valueSupport.supports(any())).thenReturn(true);
         doReturn((Value<?>) Object::new).when(valueSupport).generate(any());
 
         when(constructor.getParameters()).thenReturn(new Parameter[]{parameter});
+        doReturn(int.class).when(parameter).getType();
         doReturn(new Object()).when(constructor).newInstance(any());
+        doReturn(Object.class).when(constructor).getDeclaringClass();
 
-        dependency.createInstance();
+        createDependencyWithDependencyDepth(0).createInstance();
 
         verify(valueSupport, times(1)).supports(any());
         verify(valueSupport, times(1)).generate(any());
@@ -141,27 +135,26 @@ public class DependencyTest {
 
     @Test
     void createInstance_whenZeroDependencyDepth_andValueSupportDoesNotSupport_thenThrowsUnsupportedTypeError() {
-        Dependency dependency = createDependencyWithDependencyDepth(0);
-
         when(constructor.getParameters()).thenReturn(new Parameter[]{parameter});
-        doReturn(Impl.class).when(constructor).getDeclaringClass();
+        doReturn(OtherImpl.class).when(constructor).getDeclaringClass();
         doReturn(Object.class).when(parameter).getType();
         when(valueSupport.supports(any())).thenReturn(false);
+
+        Dependency dependency = createDependencyWithDependencyDepth(0);
 
         assertThatThrownBy(dependency::createInstance).isInstanceOf(UnsupportedTypeError.class);
     }
 
     @Test
     void createInstance_whenSeveralDependencyDepths_butValueSupportSupportsDependencyValue_thenHandlesSupportDirectly() {
-        int depth = 5;
-        Dependency dependency = createDependencyWithDependencyDepth(depth);
-
         when(valueSupport.supports(any())).thenReturn(true);
         doReturn((Value<?>) Object::new).when(valueSupport).generate(any());
 
         when(constructor.getParameters()).thenReturn(new Parameter[]{parameter});
+        doReturn(int.class).when(parameter).getType();
+        doReturn(Object.class).when(constructor).getDeclaringClass();
 
-        dependency.createInstance();
+        createDependencyWithDependencyDepth(5).createInstance();
 
         verify(valueSupport, times(1)).supports(any());
         verify(valueSupport, times(1)).generate(any());
@@ -173,21 +166,20 @@ public class DependencyTest {
     void createInstance_whenSeveralDependencyDepths_butNoExtractingDependencyConstructorFunction_thenDoesNotTryToCreateNewDependency() throws InvocationTargetException,
                                                                                                                                        InstantiationException,
                                                                                                                                        IllegalAccessException {
-        int depth = 5;
+        doReturn(Object.class).when(parameter).getType();
+        when(constructor.getParameters()).thenReturn(new Parameter[]{parameter});
+        doReturn(Impl.class).when(constructor).getDeclaringClass();
+        when(valueSupport.supports(any())).thenReturn(false);
+
         Function<Class<?>, Constructor<?>> extractDependencyConstructor = null;
         Dependency dependency = new Dependency(
                 Impl.class,
                 constructor,
                 valueSupport,
                 false,
-                depth,
+                5,
                 extractDependencyConstructor
         );
-
-        doReturn(Object.class).when(parameter).getType();
-        when(constructor.getParameters()).thenReturn(new Parameter[]{parameter});
-        doReturn(Impl.class).when(constructor).getDeclaringClass();
-        when(valueSupport.supports(any())).thenReturn(false);
 
         assertThatThrownBy(dependency::createInstance).isInstanceOf(UnsupportedTypeError.class);
 
