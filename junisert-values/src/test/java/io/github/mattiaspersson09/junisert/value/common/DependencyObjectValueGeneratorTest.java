@@ -31,7 +31,6 @@ import io.github.mattiaspersson09.junisert.testunits.constructor.SeveralParamete
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.Base;
 import io.github.mattiaspersson09.junisert.testunits.unit.pojo.ImmutableModel;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeEach;
