@@ -58,7 +58,7 @@ public class HasSetters extends AbstractUnitTest {
                 continue;
             }
 
-            if (field.isInstanceImmutable()) {
+            if (field.isImmutable()) {
                 LOGGER.info("Skipping immutable field: {0}", field);
                 continue;
             }

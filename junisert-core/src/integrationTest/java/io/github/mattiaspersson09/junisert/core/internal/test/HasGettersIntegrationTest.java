@@ -33,6 +33,7 @@ import io.github.mattiaspersson09.junisert.testunits.getter.PolymorphicGetter;
 import io.github.mattiaspersson09.junisert.testunits.getter.RecordStyle;
 import io.github.mattiaspersson09.junisert.testunits.getter.TwoButOnlyOneWorking;
 import io.github.mattiaspersson09.junisert.testunits.getter.TwoLettersOrLessBeanStyle;
+import io.github.mattiaspersson09.junisert.testunits.unit.pojo.ModelWithMutableAndImmutableFields;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,5 +94,10 @@ public class HasGettersIntegrationTest {
     void givenUnit_whenAnyFieldIsMissingGetter_thenFailsTest() {
         assertThatThrownBy(() -> hasGetters.test(Unit.of(MissingGetter.class)))
                 .isInstanceOf(UnitAssertionError.class);
+    }
+
+    @Test
+    void givenUnit_whenImmutableFields_thenComparesFieldValue_andGetterResult_andPassesTest() {
+        hasGetters.test(Unit.of(ModelWithMutableAndImmutableFields.class));
     }
 }

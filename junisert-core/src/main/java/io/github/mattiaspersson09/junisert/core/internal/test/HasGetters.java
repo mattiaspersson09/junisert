@@ -69,11 +69,11 @@ public final class HasGetters extends AbstractUnitTest {
 
                 Injection injection = new Injection(method, instanceCreator);
 
-                if (!unit.isImmutable()) {
+                if (!field.isImmutable()) {
                     injection.setup(instance -> field.setValue(instance, value));
                 }
 
-                injection.shouldResultIn(instance -> Objects.equals(value, method.invoke(instance)));
+                injection.shouldResultIn(instance -> Objects.equals(field.getValue(instance), method.invoke(instance)));
 
                 if (!injection.inject()) {
                     LOGGER.fail("Expected method to get value from field but it did not",
