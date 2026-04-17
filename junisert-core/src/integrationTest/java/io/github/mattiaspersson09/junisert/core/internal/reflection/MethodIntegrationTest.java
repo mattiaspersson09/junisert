@@ -287,6 +287,6 @@ public class MethodIntegrationTest {
                 .getDeclaredMethod("publicVoidOverloadingParameters", Object.class));
 
         assertThat(method.toString()).isEqualTo(
-                "InstanceMethods.publicVoidOverloadingParameters([class java.lang.Object])");
+                "publicVoidOverloadingParameters([class java.lang.Object])");
     }
 }

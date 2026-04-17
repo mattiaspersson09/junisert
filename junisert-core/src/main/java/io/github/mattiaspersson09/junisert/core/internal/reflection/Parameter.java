@@ -95,6 +95,6 @@ public final class Parameter implements Reflected {
 
     @Override
     public String toString() {
-        return getType() + " " + getName();
+        return getType().getSimpleName() + " " + getName();
     }
 }

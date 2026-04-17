@@ -244,6 +244,6 @@ public class Field extends Member implements Invokable {
 
     @Override
     public String toString() {
-        return String.format("%s.%s(%s)", getParent().getSimpleName(), getName(), getType());
+        return getType().getSimpleName() + " " + getName();
     }
 }

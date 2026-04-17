@@ -58,6 +58,11 @@ public class HasSetters extends AbstractUnitTest {
                 continue;
             }
 
+            if (field.isInstanceImmutable()) {
+                LOGGER.info("Skipping immutable field: {0}", field);
+                continue;
+            }
+
             LOGGER.info("Checking field: {0}", field);
 
             List<Method> setters = unit.findMethodsMatching(testStrategy.isSetterForField(field)

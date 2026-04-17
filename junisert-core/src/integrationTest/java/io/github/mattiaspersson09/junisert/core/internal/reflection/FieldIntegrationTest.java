@@ -321,6 +321,6 @@ public class FieldIntegrationTest {
     void toStringTest() throws NoSuchFieldException {
         Field field = Field.of(ValueFields.class.getDeclaredField("immutableStringValueField"));
 
-        assertThat(field.toString()).isEqualTo("ValueFields.immutableStringValueField(class java.lang.String)");
+        assertThat(field.toString()).isEqualTo("String immutableStringValueField");
     }
 }

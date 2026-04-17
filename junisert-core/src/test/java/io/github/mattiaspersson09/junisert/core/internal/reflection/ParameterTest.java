@@ -92,6 +92,6 @@ public class ParameterTest {
         doReturn(Object.class).when(origin).getType();
         when(origin.getName()).thenReturn("parameterName");
 
-        assertThat(parameter.toString()).isEqualTo("class java.lang.Object parameterName");
+        assertThat(parameter.toString()).isEqualTo("Object parameterName");
     }
 }

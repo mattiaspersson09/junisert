@@ -267,9 +267,4 @@ public class Method extends ExecutableMember implements Invokable {
     public int hashCode() {
         return Objects.hash(super.hashCode(), origin);
     }
-
-    @Override
-    public String toString() {
-        return String.format("%s.%s(%s)", getParent().getSimpleName(), getName(), getParameterTypes());
-    }
 }

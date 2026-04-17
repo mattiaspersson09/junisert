@@ -33,6 +33,7 @@ import io.github.mattiaspersson09.junisert.testunits.setter.PolymorphicSetter;
 import io.github.mattiaspersson09.junisert.testunits.setter.RecordStyle;
 import io.github.mattiaspersson09.junisert.testunits.setter.TwoButOnlyOneWorking;
 import io.github.mattiaspersson09.junisert.testunits.setter.TwoLettersOrLessBeanStyle;
+import io.github.mattiaspersson09.junisert.testunits.unit.pojo.ModelWithMutableAndImmutableFields;
 import io.github.mattiaspersson09.junisert.value.common.InterfaceValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.PrimitiveValueGenerator;
@@ -105,5 +106,10 @@ public class HasSettersIntegrationTest {
     void givenUnit_whenAllFieldsHaveSetters_butSomeSetterIsNotWorking_thenFailsTest() {
         assertThatThrownBy(() -> hasSetters.test(Unit.of(NotSettingField.class)))
                 .isInstanceOf(UnitAssertionError.class);
+    }
+
+    @Test
+    void givenUnit_whenMixedMutableAndImmutableFields_thenSkipsImmutableFields_andPassesTest() {
+        hasSetters.test(Unit.of(ModelWithMutableAndImmutableFields.class));
     }
 }
