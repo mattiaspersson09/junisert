@@ -23,6 +23,7 @@ import io.github.mattiaspersson09.junisert.common.logging.Logger;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -40,6 +41,7 @@ final class Dependency {
     private static final Logger LOGGER = Logger.getLogger(Dependency.class);
 
     private final Class<?> dependentUnit;
+    private final Class<?> unit;
     private final Constructor<?> constructor;
     private final ValueGenerator<?> valueSupport;
     private final boolean forceConstructorAccess;
@@ -65,6 +67,7 @@ final class Dependency {
                int dependencyDepthsLeft,
                Function<Class<?>, Constructor<?>> extractDependencyConstructor) {
         this.dependentUnit = dependentUnit;
+        this.unit = dependencyConstructor.getDeclaringClass();
         this.constructor = dependencyConstructor;
         this.forceConstructorAccess = forceConstructorAccess;
         this.valueSupport = valueSupport;
@@ -85,26 +88,25 @@ final class Dependency {
      *                                      and found parameters (if any)
      */
     Object createInstance() throws UnsupportedTypeError, UnsupportedConstructionError {
-        // TODO: ability to switch to non-recursive constructor, if this is recursive
-        // Scenario: dependency has dependency to an instance of itself in a constructor, to supply values
-        // Potential units like this: immutable models with one all-argument constructor and one as above scenario
-        Constructor<?> invokingConstructor = constructor;
+        // This dependency must be null because we found a recursive parameter but can't go deeper
+        if (dependencyDepthsLeft == 0 && Stream.of(constructor.getParameters()).anyMatch(this::isRecursiveParameter)) {
+            return null;
+        }
 
         try {
             if (forceConstructorAccess) {
-                invokingConstructor.setAccessible(true);
+                constructor.setAccessible(true);
             }
 
-            Object[] arguments = Stream.of(invokingConstructor.getParameters())
+            Object[] arguments = Stream.of(constructor.getParameters())
                     .map(this::toValue)
                     .toArray();
 
-            return invokingConstructor.newInstance(arguments);
+            return constructor.newInstance(arguments);
         } catch (Exception e) {
-            LOGGER.warn("Unable to construct dependency <{0}> for dependent unit: {1}",
-                    invokingConstructor.getDeclaringClass(), dependentUnit);
-            LOGGER.warn("Register support for <{0}> to avoid this issue", invokingConstructor.getDeclaringClass());
-            throw new UnsupportedConstructionError(constructor.getDeclaringClass(), e);
+            LOGGER.warn("Unable to construct dependency <{0}> for dependent unit: {1}", unit, dependentUnit);
+            LOGGER.warn("Register support for <{0}> to avoid this issue", unit);
+            throw new UnsupportedConstructionError(unit, e);
         }
     }
 
@@ -123,20 +125,15 @@ final class Dependency {
         return shouldBeConstructable(constructor, forceConstructorAccess);
     }
 
-//    private Optional<Constructor<?>> findNonRecursiveConstructor() {
-//        return Stream.of(constructor.getDeclaringClass().getDeclaredConstructors())
-//                .filter(c -> !isRecursiveConstructor(c))
-//                .findAny();
-//    }
-
     private Object toValue(Parameter parameter) {
         // Support generator should be prioritized to be able to use caching abilities and re-usage
         // and to prevent unnecessary work that might affect performance
         if (valueSupport.supports(parameter.getType())) {
             return valueSupport.generate(parameter.getType()).get();
-        } else if (isRecursiveParameter(parameter) || isCyclicParameter(parameter)) {
-            // TODO: try to switch to non-recursive constructor if possible, constructor might validate input
-            LOGGER.info("Found recursive or cyclic (leading to recursion) parameter: {0}", parameter.getType());
+        } else if (isRecursiveParameter(parameter)) {
+            LOGGER.info("Found recursive parameter: {0}", parameter.getType());
+        } else if (isCyclicParameter(parameter)) {
+            LOGGER.info("Found cyclic (leading to recursion) parameter: {0}", parameter.getType());
 
             if (dependencyDepthsLeft == 0) {
                 LOGGER.info(
@@ -154,14 +151,13 @@ final class Dependency {
             }
         }
 
-        LOGGER.warn("Unable to find support for dependency <{0}> in dependent unit: {1}",
-                parameter.getType(), constructor.getDeclaringClass());
+        LOGGER.warn("Unable to find support for dependency <{0}> in dependent unit: {1}", parameter.getType(), unit);
         throw new UnsupportedTypeError(parameter.getType());
     }
 
     private Dependency createDependency(Parameter parameter) {
         return new Dependency(
-                constructor.getDeclaringClass(),
+                unit,
                 extractDependencyConstructor.apply(parameter.getType()),
                 valueSupport,
                 forceConstructorAccess,
@@ -170,7 +166,11 @@ final class Dependency {
     }
 
     private boolean isRecursiveParameter(Parameter parameter) {
-        return parameter.getType().equals(constructor.getDeclaringClass());
+        return Objects.equals(unit, parameter.getType());
+    }
+
+    private boolean isRecursiveParameter(Parameter parameter, Constructor<?> owningConstructor) {
+        return Objects.equals(owningConstructor.getDeclaringClass(), parameter.getType());
     }
 
     // A cyclic parameter is described as a parameter that; if trying to construct leads to indirect recursion
@@ -185,7 +185,7 @@ final class Dependency {
 
     private boolean isRecursiveConstructor(Constructor<?> constructor) {
         return constructor != null && Stream.of(constructor.getParameters())
-                .anyMatch(this::isRecursiveParameter);
+                .anyMatch(parameter -> isRecursiveParameter(parameter, constructor));
     }
 
     /**

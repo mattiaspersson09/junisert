@@ -16,6 +16,7 @@
 package io.github.mattiaspersson09.junisert.value.common;
 
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedSupportGenerator;
+import io.github.mattiaspersson09.junisert.testunits.unit.pojo.SelfConstructorImmutableModel;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,15 +43,10 @@ public class DependencyObjectRecursionTest {
                 .get();
 
         assertThat(value).isNotNull();
-        assertThat(value.nullableSelf).isNotNull();
+        assertThat(value.nullableSelf).isNull();
         assertThat(value.nullableObject).isNotNull();
         assertThat(value.nonNullableInt).isEqualTo(1);
         assertThat(value.nonNullableBoolean).isTrue();
-
-        assertThat(value.nullableSelf.nullableSelf).isNull();
-        assertThat(value.nullableSelf.nullableObject).isNotNull();
-        assertThat(value.nullableSelf.nonNullableInt).isEqualTo(1);
-        assertThat(value.nullableSelf.nonNullableBoolean).isTrue();
     }
 
     @Test
@@ -70,14 +66,9 @@ public class DependencyObjectRecursionTest {
                 .get();
 
         assertThat(value).isNotNull();
-        assertThat(value.recursive).isNotNull();
+        assertThat(value.recursive).isNull();
         assertThat(value.nonNullableInt).isEqualTo(1);
         assertThat(value.nonNullableBoolean).isTrue();
-
-        assertThat(value.recursive.nullableSelf).isNull();
-        assertThat(value.recursive.nullableObject).isNotNull();
-        assertThat(value.recursive.nonNullableInt).isEqualTo(1);
-        assertThat(value.recursive.nonNullableBoolean).isTrue();
     }
 
     @Test
@@ -105,7 +96,7 @@ public class DependencyObjectRecursionTest {
                 .get();
 
         assertThat(cyclicRecursiveZeroDepth).isNotNull();
-        assertThat(cyclicRecursiveZeroDepth.self).isNotNull();
+        assertThat(cyclicRecursiveZeroDepth.self).isNull();
         assertThat(cyclicRecursiveZeroDepth.cycle).isNotNull();
         assertThat(cyclicRecursiveZeroDepth.cycle.recursive).isNull();
 
@@ -113,9 +104,7 @@ public class DependencyObjectRecursionTest {
         assertThat(cyclicRecursiveOneDepth.self).isNotNull();
         assertThat(cyclicRecursiveOneDepth.cycle).isNotNull();
         // First nested dependency (depth 1)
-        assertThat(cyclicRecursiveOneDepth.cycle.recursive).isNotNull();
-        assertThat(cyclicRecursiveOneDepth.cycle.recursive.self).isNull();
-        assertThat(cyclicRecursiveOneDepth.cycle.recursive.cycle).isNull();
+        assertThat(cyclicRecursiveOneDepth.cycle.recursive).isNull();
     }
 
     @Test
@@ -144,18 +133,35 @@ public class DependencyObjectRecursionTest {
                 .get();
 
         assertThat(cycle).isNotNull();
-        assertThat(cycle.recursive).isNotNull();
-        assertThat(cycle.recursive.cycle).isNull();
-        assertThat(cycle.recursive.self).isNull();
+        assertThat(cycle.recursive).isNull();
 
         assertThat(cycleOneDepth).isNotNull();
         assertThat(cycleOneDepth.recursive).isNotNull();
         // First nested dependency (depth 1)
         assertThat(cycleOneDepth.recursive.cycle).isNotNull();
-        assertThat(cycleOneDepth.recursive.self).isNotNull();
+        assertThat(cycleOneDepth.recursive.self).isNull();
         assertThat(cycleOneDepth.recursive.cycle.recursive).isNull();
-        assertThat(cycleOneDepth.recursive.self.cycle).isNull();
-        assertThat(cycleOneDepth.recursive.self.self).isNull();
+    }
+
+    @Test
+    void generate_givenUnitWithCopyConstructor_whenHavingOtherConstructor_thenConstructsFromNonRecursiveConstructor() {
+        AggregatedSupportGenerator argumentGenerator = new AggregatedSupportGenerator(Arrays.asList(
+                new PrimitiveValueGenerator(),
+                new ObjectValueGenerator()
+        ));
+        DependencyObjectValueGenerator generator = DependencyObjectValueGenerator
+                .buildDependencySupport(argumentGenerator)
+                .withForcedAccess()
+                .withMaxDependencyDepth(0)
+                .build();
+
+        SelfConstructorImmutableModel instance = (SelfConstructorImmutableModel) generator
+                .generate(SelfConstructorImmutableModel.class)
+                .get();
+
+        assertThat(instance.getLongField()).isEqualTo(1L);
+        assertThat(instance.getStringField()).isEqualTo("");
+        assertThat(instance.isBooleanField()).isTrue();
     }
 
     @SuppressWarnings({"FieldCanBeLocal", "unused"})

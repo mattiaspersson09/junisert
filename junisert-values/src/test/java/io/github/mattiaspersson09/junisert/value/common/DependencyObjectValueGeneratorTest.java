@@ -28,8 +28,10 @@ import io.github.mattiaspersson09.junisert.testunits.constructor.PackageArgConst
 import io.github.mattiaspersson09.junisert.testunits.constructor.RecursiveArgConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.SeveralArgConstructor;
 import io.github.mattiaspersson09.junisert.testunits.constructor.SeveralParameterConstructors;
+import io.github.mattiaspersson09.junisert.testunits.polymorphism.Base;
 import io.github.mattiaspersson09.junisert.testunits.unit.pojo.ImmutableModel;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -165,7 +167,24 @@ public class DependencyObjectValueGeneratorTest {
                 .withMaxDependencyDepth(DependencyObjectValueGenerator.MAX_DEPENDENCY_DEPTH + 1);
 
         assertThatThrownBy(builder::build).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Dependency depth isn't allowed be larger than")
+                .hasMessageContaining("Dependency depth isn't allowed to be larger than")
                 .hasMessageContaining(Objects.toString(DependencyObjectValueGenerator.MAX_DEPENDENCY_DEPTH));
+    }
+
+    @Test
+    void generate_givenUnitWithAbstractDependency_whenDependencyIsNotSupported_thenThrowsUnsupportedTypeError() {
+        when(argumentGenerator.supports(any())).thenReturn(false);
+
+        assertThatThrownBy(() -> generator.generate(HasAbstractDependency.class))
+                .isInstanceOf(UnsupportedTypeError.class)
+                .hasMessageContaining("support for type '%s'", Base.class);
+    }
+
+    private static class HasAbstractDependency {
+        private final Base base;
+
+        public HasAbstractDependency(Base base) {
+            this.base = base;
+        }
     }
 }
