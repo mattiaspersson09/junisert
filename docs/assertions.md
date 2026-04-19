@@ -7,7 +7,7 @@ nav_order: 3
 # Assertions
 {: .no_toc }
 
-Documentation for version: **0.3.0**
+Documentation updated from version: **0.3.0**
 
 ## Table of Contents
 {: .no_toc .text-delta }

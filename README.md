@@ -26,7 +26,7 @@ For documentation and user guide, visit Junisert GitHub pages: https://mattiaspe
 <dependency>
     <groupId>io.github.mattiaspersson09</groupId>
     <artifactId>junisert-core</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -34,7 +34,7 @@ For documentation and user guide, visit Junisert GitHub pages: https://mattiaspe
 ### Gradle
 
 ```groovy
-testImplementation("io.github.mattiaspersson09:junisert-core:0.3.0")
+testImplementation("io.github.mattiaspersson09:junisert-core:0.4.0")
 ```
 
 ### Your first test
