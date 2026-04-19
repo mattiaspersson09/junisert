@@ -295,8 +295,6 @@ public class DependencyObjectValueGenerator implements ValueGenerator<Object> {
             }
 
             int maxDepth = Math.max(dependencyDepth, 0);
-            LOGGER.config("Built with max accepted dependency depth: {0}", maxDepth);
-
             return new DependencyObjectValueGenerator(dependencyGenerator, forcedConstructorAccess, maxDepth);
         }
     }

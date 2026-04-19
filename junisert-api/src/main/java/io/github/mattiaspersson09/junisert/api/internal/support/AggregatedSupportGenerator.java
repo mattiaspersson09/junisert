@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <strong>INTERNAL DISCLAIMER:</strong>
@@ -93,5 +94,25 @@ public final class AggregatedSupportGenerator implements AggregatedValueGenerato
         aggregated.addAll(generators);
 
         return new AggregatedSupportGenerator(aggregated);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        AggregatedSupportGenerator that = (AggregatedSupportGenerator) object;
+        return Objects.equals(generators, that.generators);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(generators);
+    }
+
+    @Override
+    public String toString() {
+        return "AggregatedSupportGenerator{" +
+                "generators=" + generators +
+                '}';
     }
 }

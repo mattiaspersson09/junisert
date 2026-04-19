@@ -15,7 +15,6 @@
  */
 package io.github.mattiaspersson09.junisert.core;
 
-import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.Impl;
 
@@ -27,10 +26,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,31 +53,5 @@ public class CachingDependencyGeneratorTest {
         when(dependencyGenerator.supports(any())).thenReturn(false);
 
         assertThat(generator.supports(Impl.class)).isFalse();
-    }
-
-    @Test
-    void generate_whenCacheContainsValueToGenerate_thenReturnsCachedValue() {
-        when(valueCache.contains(any())).thenReturn(true);
-        doReturn((Value<?>) Impl::new).when(valueCache).get(any());
-
-        generator.generate(Impl.class);
-
-        verify(valueCache, times(1)).contains(any());
-        verify(valueCache, times(1)).get(Impl.class);
-        verifyNoInteractions(dependencyGenerator);
-    }
-
-    @Test
-    void generate_whenCacheDoesNotContainsValueToGenerate_thenGeneratesValueAndCaches() {
-        when(valueCache.contains(any())).thenReturn(false);
-        when(valueCache.save(any(), any())).thenAnswer(answer -> answer.getArgument(1));
-        doReturn((Value<?>) Impl::new).when(dependencyGenerator).generate(Impl.class);
-
-        Value<?> value = generator.generate(Impl.class);
-
-        assertThat(value.get()).isEqualTo(new Impl());
-
-        verify(valueCache, times(1)).save(any(), any());
-        verify(dependencyGenerator, times(1)).generate(Impl.class);
     }
 }

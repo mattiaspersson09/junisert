@@ -19,6 +19,7 @@ import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
+import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class ConstructorInstanceCreatorTest {
     @Mock
+    Unit unit;
+    @Mock
     ValueGenerator<Object> instanceGenerator;
     private InstanceCreator instanceCreator;
 
@@ -45,18 +48,20 @@ public class ConstructorInstanceCreatorTest {
 
     @Test
     void givenInstanceGenerator_whenGeneratorSupportsCreation_thenCreatesInstance() {
+        doReturn(UnitClass.class).when(unit).getType();
         when(instanceGenerator.supports(any())).thenReturn(true);
         doReturn((Value<?>) UnitClass::new).when(instanceGenerator).generate(UnitClass.class);
 
-        assertThat(instanceCreator.createInstance(UnitClass.class)).isNotNull();
-        assertThat(instanceCreator.createInstance(UnitClass.class)).isInstanceOf(UnitClass.class);
+        assertThat(instanceCreator.createInstance(unit)).isNotNull();
+        assertThat(instanceCreator.createInstance(unit)).isInstanceOf(UnitClass.class);
     }
 
     @Test
     void givenInstanceGenerator_whenGeneratorDoesNotSupportCreation_thenThrowsUnsupportedTypeError() {
+        doReturn(UnitClass.class).when(unit).getType();
         when(instanceGenerator.supports(any())).thenReturn(false);
 
-        assertThatThrownBy(() -> instanceCreator.createInstance(UnitClass.class))
+        assertThatThrownBy(() -> instanceCreator.createInstance(unit))
                 .isInstanceOf(UnsupportedTypeError.class);
     }
 

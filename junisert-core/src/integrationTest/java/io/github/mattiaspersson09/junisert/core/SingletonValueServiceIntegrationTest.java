@@ -30,6 +30,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SingletonValueServiceIntegrationTest {
     @Test
+    void getInstance_thenHasDefaultSupportRegistered() {
+        assertThat(SingletonValueService.getInstance().supportSize()).isGreaterThan(0);
+    }
+
+    @Test
+    void getInstance_whenCalledSeveralTimes_thenAlwaysSameReference() {
+        assertThat(SingletonValueService.getInstance()).isSameAs(SingletonValueService.getInstance());
+    }
+
+    @Test
     void supportGeneratorPriority_primitiveSupportFirst_argumentConstructorWithDependenciesLast() {
         SingletonValueService valueService = SingletonValueService.getInstance();
 

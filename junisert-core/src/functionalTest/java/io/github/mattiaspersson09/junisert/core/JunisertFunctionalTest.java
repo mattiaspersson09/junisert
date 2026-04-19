@@ -16,24 +16,43 @@
 package io.github.mattiaspersson09.junisert.core;
 
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
+import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
+import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.core.units.lombok.LombokDataUnit;
 import io.github.mattiaspersson09.junisert.core.units.lombok.LombokUnit;
 import io.github.mattiaspersson09.junisert.testunits.constructor.ArgConstructor;
+import io.github.mattiaspersson09.junisert.testunits.polymorphism.Base;
+import io.github.mattiaspersson09.junisert.testunits.polymorphism.Impl;
 import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanCompliantButNotRecommended;
 import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanCompliantModel;
 import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanVisibleFields;
 import io.github.mattiaspersson09.junisert.testunits.unit.pojo.DeepDependencyModel;
 import io.github.mattiaspersson09.junisert.testunits.unit.pojo.ImmutableModel;
 import io.github.mattiaspersson09.junisert.testunits.unit.pojo.ImmutableModelBrokenGetter;
+import io.github.mattiaspersson09.junisert.testunits.unit.pojo.ModelAbstractDependency;
 import io.github.mattiaspersson09.junisert.testunits.unit.pojo.UnknownDependencyImmutable;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class JunisertFunctionalTest {
+    @BeforeAll
+    static void beforeAll() {
+        SupportRegistry.get().clearRegisteredSupport();
+    }
+
+    @AfterEach
+    void tearDown() {
+        SupportRegistry.get().clearRegisteredSupport();
+        SupportRegistry.get().clearCache();
+    }
+
     @ParameterizedTest
     @ValueSource(classes = {
             BeanCompliantModel.class,
@@ -94,5 +113,38 @@ public class JunisertFunctionalTest {
     })
     void givenImmutable_whenIsNotImmutable_thenFailsAssertion(Class<?> type) {
         assertThatThrownBy(() -> Junisert.assertThatUnit(type).isImmutable()).isInstanceOf(UnitAssertionError.class);
+    }
+
+    @Test
+    void givenSupportToRegister_whenNotPreviouslySupported_thenNowSupports() {
+        assertThatThrownBy(() -> Junisert.assertThatPojo(ModelAbstractDependency.class).isWellImplemented())
+                .isInstanceOf(UnsupportedTypeError.class)
+                .hasMessageContaining("support for type '%s'", Base.class);
+
+        Junisert.registerSupport(Base.class, Impl::new);
+
+        Junisert.assertThatPojo(ModelAbstractDependency.class).isWellImplemented();
+    }
+
+    @Test
+    void givenSupportToRegister_whenSameSupportAsAlreadyRegistered_thenIsPrioritized() {
+        Value<?> valueOldSupport = SingletonValueService.getInstance().getValue(int.class);
+        Junisert.registerSupport(int.class, () -> 100);
+        Value<?> valueNewSupport = SingletonValueService.getInstance().getValue(int.class);
+
+        assertThat(valueNewSupport.get()).isNotEqualTo(valueOldSupport.get());
+        assertThat(valueNewSupport.get()).isEqualTo(100);
+        assertThat(valueNewSupport.asEmpty()).isEqualTo(0);
+    }
+
+    @Test
+    void registerSupport_givenPrimitiveSupport_whenSpecifyingEmptyValue_thenNowSupports() {
+        Value<?> valueOldSupport = SingletonValueService.getInstance().getValue(int.class);
+        Junisert.registerSupport(int.class, Value.of(() -> 100, () -> -1));
+        Value<?> valueNewSupport = SingletonValueService.getInstance().getValue(int.class);
+
+        assertThat(valueNewSupport.get()).isNotEqualTo(valueOldSupport.get());
+        assertThat(valueNewSupport.get()).isEqualTo(100);
+        assertThat(valueNewSupport.asEmpty()).isEqualTo(-1);
     }
 }

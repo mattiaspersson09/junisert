@@ -17,28 +17,12 @@ package io.github.mattiaspersson09.junisert.core.internal;
 
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
-import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
 /**
  * Providing broad support for different type of values. {@code ValueService}s should cache used values so that they
  * can be re-used to boost performance.
  */
 public interface ValueService {
-    /**
-     * Registers a value supporting generator.
-     *
-     * @param generator that supports values for some type
-     */
-    void registerSupport(ValueGenerator<?> generator);
-
-    /**
-     * Registers a value supporting generator with a given {@code supportName}.
-     *
-     * @param generator   that supports values for some type
-     * @param supportName for the value supporting generator
-     */
-    void registerNamedSupport(ValueGenerator<?> generator, String supportName);
-
     /**
      * Gets value for given {@code type} from a registered support or cache source.
      *

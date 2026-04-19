@@ -18,6 +18,7 @@ package io.github.mattiaspersson09.junisert.core;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 final class ValueCache {
@@ -42,12 +43,23 @@ final class ValueCache {
             If we cache a lazy value it will be constructed several more times later, resulting in
             unnecessary duplicates.
          */
-        CacheValue cacheValue = new CacheValue(value.get(), value.asEmpty());
+        Value<?> cacheValue = new CacheValue(value.get(), value.asEmpty());
+        Value<?> oldCacheValue = get(type);
+
+        if (oldCacheValue != null && !Objects.equals(oldCacheValue, cacheValue)) {
+            cache.put(type, cacheValue);
+            return cacheValue;
+        }
+
         return cache.computeIfAbsent(type, (key) -> cacheValue);
     }
 
     int size() {
         return cache.size();
+    }
+
+    void clear() {
+        cache.clear();
     }
 
     static class CacheValue implements Value<Object> {
@@ -67,6 +79,27 @@ final class ValueCache {
         @Override
         public Object asEmpty() {
             return empty;
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            if (this == object) return true;
+            if (object == null || getClass() != object.getClass()) return false;
+            CacheValue that = (CacheValue) object;
+            return Objects.equals(concrete, that.concrete) && Objects.equals(empty, that.empty);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(concrete, empty);
+        }
+
+        @Override
+        public String toString() {
+            return "CacheValue{" +
+                    "concrete=" + concrete +
+                    ", empty=" + empty +
+                    '}';
         }
     }
 }

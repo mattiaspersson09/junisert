@@ -160,6 +160,33 @@ public class AggregatedSupportGeneratorTest {
                 .anyMatch(generator -> generator.getClass().equals(IntGenerator.class));
     }
 
+    @Test
+    @SuppressWarnings("all")
+    void hashCodeAndEquals() {
+        AggregatedValueGenerator aggregatedValueGenerator = new AggregatedSupportGenerator(Collections.singletonList(
+                new IntegerGenerator(1_000)
+        ));
+        AggregatedValueGenerator aggregatedValueGenerator2 = new AggregatedSupportGenerator(Collections.singletonList(
+                new IntGenerator(1, 0)
+        ));
+
+        assertThat(aggregatedValueGenerator.equals(aggregatedValueGenerator2)).isFalse();
+        assertThat(aggregatedValueGenerator.equals(null)).isFalse();
+        assertThat(aggregatedValueGenerator.equals(new Object())).isFalse();
+        assertThat(aggregatedValueGenerator.equals(aggregatedValueGenerator)).isTrue();
+        assertThat(aggregatedValueGenerator.hashCode()).isNotEqualTo(aggregatedValueGenerator2.hashCode());
+    }
+
+    @Test
+    void toString_hasUsefulInformation() {
+        AggregatedSupportGenerator aggregated = new AggregatedSupportGenerator(
+                Collections.singletonList(new SupportGenerator<>(Super.class)));
+
+        assertThat(aggregated.toString())
+                .contains(AggregatedSupportGenerator.class.getSimpleName())
+                .contains(SupportGenerator.class.getSimpleName());
+    }
+
     private static class IntGenerator implements ValueGenerator<Number> {
         private final int value;
         private final int empty;

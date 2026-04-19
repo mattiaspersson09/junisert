@@ -44,12 +44,31 @@ public class ValueCacheTest {
     }
 
     @Test
-    void save_whenValueIsAlreadyCached_thenReturnsAlreadyCached() {
+    void save_whenValueIsAlreadyCached_andSameValue_thenReturnsOldCached() {
         Value<?> cached = valueCache.save(Impl.class, new CacheValue(new ExtendingImpl(), null));
-        Value<?> alreadyCached = valueCache.save(Impl.class, new CacheValue(new Impl(), null));
+        Value<?> newCached = valueCache.save(Impl.class, new CacheValue(new ExtendingImpl(), null));
 
         assertThat(valueCache.size()).isEqualTo(1);
-        assertThat(alreadyCached).isSameAs(cached);
-        assertThat(alreadyCached.get()).isInstanceOf(ExtendingImpl.class);
+        assertThat(newCached).isSameAs(cached);
+        assertThat(newCached.get()).isInstanceOf(ExtendingImpl.class);
+    }
+
+    @Test
+    void save_whenValueIsAlreadyCached_andDifferentValue_thenReplacesOldCache_andReturnsNewCached() {
+        Value<?> cached = valueCache.save(Impl.class, new CacheValue(new ExtendingImpl(), null));
+        Value<?> newCached = valueCache.save(Impl.class, new CacheValue(new Impl(), null));
+
+        assertThat(valueCache.size()).isEqualTo(1);
+        assertThat(newCached)
+                .isNotSameAs(cached)
+                .isNotEqualTo(cached);
+        assertThat(newCached.get()).isInstanceOf(Impl.class);
+    }
+
+    @Test
+    void implemented() {
+        Junisert.assertThatPojo(ValueCache.CacheValue.class)
+                .implementsEqualsAndHashCode()
+                .implementsToString();
     }
 }

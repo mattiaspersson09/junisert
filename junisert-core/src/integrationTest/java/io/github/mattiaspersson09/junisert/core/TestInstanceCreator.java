@@ -28,7 +28,7 @@ public final class TestInstanceCreator implements InstanceCreator {
     private final List<ValueGenerator<?>> instanceGenerators;
 
     public TestInstanceCreator() {
-        ValueGenerator<?> dependencySupport = Junisert.aggregatedDefaultValueSupport();
+        ValueGenerator<?> dependencySupport = SupportRegistry.get().defaultValueSupport();
         instanceGenerators = Arrays.asList(
                 ObjectValueGenerator.withForcedAccess(),
                 DependencyObjectValueGenerator.withForcedAccess(dependencySupport)

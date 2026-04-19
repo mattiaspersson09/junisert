@@ -26,73 +26,55 @@ import io.github.mattiaspersson09.junisert.value.common.DependencyObjectValueGen
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 final class SingletonValueService implements ValueService {
-    private static final Logger LOGGER = Logger.getLogger(ValueService.class);
+    private static final Logger LOGGER = Logger.getLogger(SingletonValueService.class);
     private static volatile SingletonValueService INSTANCE;
 
-    private final Object mutex = new Object();
-    private final List<ValueGenerator<?>> generators;
+    private final List<ValueGenerator<?>> valueSupport;
     private final ValueCache valueCache;
 
     SingletonValueService(ValueCache valueCache) {
-        LOGGER.config("Initializing default value support");
-        this.generators = new ArrayList<>();
+        this.valueSupport = new ArrayList<>();
         this.valueCache = valueCache;
 
-        AggregatedValueGenerator defaultSupport = Junisert.aggregatedDefaultValueSupport();
+        AggregatedValueGenerator defaultSupport = SupportRegistry.get().defaultValueSupport();
         DependencyObjectValueGenerator dependencyObjectValueGenerator = DependencyObjectValueGenerator
                 .buildDependencySupport(defaultSupport)
                 .withForcedAccess()
                 .withMaxDependencyDepth(Junisert.INSTANCE_DEPENDENCY_DEPTH)
                 .build();
 
-        this.generators.addAll(defaultSupport.aggregated());
-        this.generators.add(dependencyObjectValueGenerator);
+        this.valueSupport.addAll(defaultSupport.aggregated());
+        this.valueSupport.add(dependencyObjectValueGenerator);
     }
 
     static synchronized SingletonValueService getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new SingletonValueService(Junisert.valueCache());
+            INSTANCE = new SingletonValueService(SupportRegistry.get().cache());
         }
 
         return INSTANCE;
     }
 
     @Override
-    public void registerSupport(ValueGenerator<?> generator) {
-        Objects.requireNonNull(generator);
-
-        synchronized (mutex) {
-            generators.add(generator);
-        }
-
-        LOGGER.config("Registered support: {0}", generator);
-    }
-
-    @Override
-    public void registerNamedSupport(ValueGenerator<?> generator, String supportName) {
-        Objects.requireNonNull(generator);
-
-        synchronized (mutex) {
-            generators.add(generator);
-        }
-
-        LOGGER.config("Registered named support: {0}", supportName);
-    }
-
-    @Override
     public Value<?> getValue(Class<?> type) {
+        List<ValueGenerator<?>> userSupport = SupportRegistry.get().registeredSupport();
+
+        // Prioritize user defined support
+        for (ValueGenerator<?> generator : userSupport) {
+            if (generator.supports(type)) {
+                return valueCache.save(type, generator.generate(type));
+            }
+        }
+
         if (valueCache.contains(type)) {
             return valueCache.get(type);
         }
 
-        synchronized (mutex) {
-            for (ValueGenerator<?> generator : generators) {
-                if (generator.supports(type)) {
-                    return valueCache.save(type, generator.generate(type));
-                }
+        for (ValueGenerator<?> generator : valueSupport) {
+            if (generator.supports(type)) {
+                return valueCache.save(type, generator.generate(type));
             }
         }
 
@@ -100,14 +82,10 @@ final class SingletonValueService implements ValueService {
     }
 
     int supportSize() {
-        return generators.size();
-    }
-
-    void clear() {
-        generators.clear();
+        return valueSupport.size();
     }
 
     List<ValueGenerator<?>> getRegisteredSupport() {
-        return Collections.unmodifiableList(generators);
+        return Collections.unmodifiableList(valueSupport);
     }
 }

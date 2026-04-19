@@ -15,7 +15,8 @@
  */
 package io.github.mattiaspersson09.junisert.api.internal.support;
 
-import java.util.function.Supplier;
+import io.github.mattiaspersson09.junisert.api.value.Value;
+
 
 /**
  * <strong>INTERNAL DISCLAIMER:</strong>
@@ -57,7 +58,7 @@ public interface SupportBuilder {
      * @return this builder to continue building more support
      * @see #support(Class)
      */
-    <T, IMPL extends T> SupportBuilder supportSingle(Class<T> type, Supplier<IMPL> implementation);
+    <T, IMPL extends T> SupportBuilder supportSingle(Class<T> type, Value<IMPL> implementation);
 
     /**
      * Builds single support for a specific polymorphic type. Wider range between {@code superType} and
@@ -79,7 +80,7 @@ public interface SupportBuilder {
      */
     <T, IMPL extends T> SupportBuilder supportSingle(Class<T> superType,
                                                      Class<IMPL> implementationType,
-                                                     Supplier<IMPL> implementation);
+                                                     Value<IMPL> implementation);
 
     /**
      * Creates the built support aggregated in a {@link AggregatedValueGenerator}.
@@ -104,6 +105,6 @@ public interface SupportBuilder {
          * @param <IMPL>             implementation of this support
          * @return this support to build more implementations or start building a new support
          */
-        <IMPL extends T> Support<T> withImplementation(Class<IMPL> implementationType, Supplier<IMPL> implementation);
+        <IMPL extends T> Support<T> withImplementation(Class<IMPL> implementationType, Value<IMPL> implementation);
     }
 }
