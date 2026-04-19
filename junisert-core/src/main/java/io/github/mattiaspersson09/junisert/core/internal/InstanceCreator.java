@@ -17,6 +17,7 @@ package io.github.mattiaspersson09.junisert.core.internal;
 
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 
+
 /**
  * Primarily used to create instances of {@link Unit} classes.
  */
@@ -37,25 +38,5 @@ public interface InstanceCreator {
      */
     default Object createInstance(Unit unit) {
         return createInstance(unit.getType());
-    }
-
-    /**
-     * Creates a new unique instance of given {@code unitClass} where all properties are empty.
-     *
-     * @param unitClass to create instance of
-     * @return new unique instance of given unit class
-     */
-    default Object createEmptyInstance(Class<?> unitClass) {
-        throw new UnsupportedOperationException("Not implemented or possible");
-    }
-
-    /**
-     * Creates a new unique instance of given {@link Unit} where all properties are empty.
-     *
-     * @param unit to create instance of
-     * @return new unique instance of given unit
-     */
-    default Object createEmptyInstance(Unit unit) {
-        return createEmptyInstance(unit.getType());
     }
 }

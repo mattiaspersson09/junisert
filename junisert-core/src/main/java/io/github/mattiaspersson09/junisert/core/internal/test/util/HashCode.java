@@ -56,7 +56,7 @@ public final class HashCode {
         LOGGER.test("Consistency check -> instance.hashCode() == instance.hashCode()");
 
         if (Objects.hashCode(instance.hashCode()) != Objects.hashCode(instance)) {
-            throw new UnitAssertionError(methodName() + " was expected to consistently return the same value");
+            throw new UnitAssertionError(methodName() + " were expected to consistently return the same value");
         }
 
         return this;
@@ -72,7 +72,7 @@ public final class HashCode {
         LOGGER.test("Not empty check -> instance.hashCode() != 0");
 
         if (Objects.hashCode(instance) == Objects.hashCode(null)) {
-            throw new UnitAssertionError(methodName() + " was expected to not return empty value");
+            throw new UnitAssertionError(methodName() + " were expected to not return empty value");
         }
 
         return this;
@@ -91,7 +91,7 @@ public final class HashCode {
         LOGGER.test("Unique check -> instance.hashCode() == otherInstance.hashCode()");
 
         if (Objects.hashCode(instance) != Objects.hashCode(otherInstance)) {
-            throw new UnitAssertionError(instance + " was expected to have the same hash code as " + otherInstance);
+            throw new UnitAssertionError(instance + " were expected to have the same hash code as " + otherInstance);
         }
 
         return this;
@@ -122,7 +122,8 @@ public final class HashCode {
         LOGGER.test("Unique check -> instance.hashCode() != otherInstance.hashCode()");
 
         if (Objects.hashCode(instance) == Objects.hashCode(otherInstance)) {
-            throw new UnitAssertionError(instance + " was expected to not have the same hash code as " + otherInstance);
+            throw new UnitAssertionError(instance + " were expected to not have the same hash code as "
+                    + otherInstance);
         }
 
         return this;

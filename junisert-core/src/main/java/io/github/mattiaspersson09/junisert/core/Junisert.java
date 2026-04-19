@@ -82,7 +82,7 @@ public final class Junisert {
      * <strong>OBS!</strong> {@code implementation} should not construct a negative (null or primitive zero/false)
      * value, it will affect value comparison during assertions and produce error-prone results.
      * It's empty representation however is allowed to be negative, see
-     * {@link Value#of(Supplier, Supplier) lazy value} and {@link Value#ofEager(T, T) eager value}
+     * {@link Value#of(Supplier, Supplier) lazy value} and {@link Value#ofEager(Object, Object) eager value}
      * for more details.<br>
      * <br>
      * Will register custom support for a polymorphic type, where you can support a hierarchy of values.
@@ -120,7 +120,7 @@ public final class Junisert {
      * <strong>OBS!</strong> {@code implementation} should not construct a negative (null or primitive zero/false)
      * value, it will affect value comparison during assertions and produce error-prone results.
      * It's empty representation however is allowed to be negative, see
-     * {@link Value#of(Supplier, Supplier) lazy value} and {@link Value#ofEager(T, T) eager value}
+     * {@link Value#of(Supplier, Supplier) lazy value} and {@link Value#ofEager(Object, Object) eager value}
      * for more details.<br>
      * <br>
      * Will register custom support for a specific type, this will only support a single type and not an entire

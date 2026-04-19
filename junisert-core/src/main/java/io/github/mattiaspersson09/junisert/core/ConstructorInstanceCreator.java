@@ -37,20 +37,18 @@ import java.util.Objects;
  */
 final class ConstructorInstanceCreator implements InstanceCreator {
     private final ValueGenerator<Object> instanceGenerator;
-    private final AdaptableDependencyGenerator adaptableGenerator;
 
     ConstructorInstanceCreator(ValueGenerator<Object> instanceGenerator) {
-        this.instanceGenerator = this.adaptableGenerator = new AdaptableDependencyGenerator(instanceGenerator);
+        this.instanceGenerator = instanceGenerator;
     }
 
     ConstructorInstanceCreator(ValueGenerator<Object> dependencySupport, int dependencyDepth) {
         Objects.requireNonNull(dependencySupport);
-        this.adaptableGenerator = new AdaptableDependencyGenerator(dependencySupport);
         this.instanceGenerator = new AggregatedSupportGenerator(Arrays.asList(
                 ObjectValueGenerator.withForcedAccess(),
-                DependencyObjectValueGenerator.buildDependencySupport(this.adaptableGenerator)
+                DependencyObjectValueGenerator.buildDependencySupport(dependencySupport)
                         .withForcedAccess()
-                        .withMaxDependencyDepth(dependencyDepth)
+                        .withMaxDependencyDepth(Math.max(dependencyDepth, 0))
                         .build()
         ));
     }
@@ -60,15 +58,6 @@ final class ConstructorInstanceCreator implements InstanceCreator {
         if (!instanceGenerator.supports(unitClass)) {
             throw new UnsupportedTypeError(unitClass);
         }
-
-        adaptableGenerator.produceEmptyValues(false);
-
-        return instanceGenerator.generate(unitClass).get();
-    }
-
-    @Override
-    public Object createEmptyInstance(Class<?> unitClass) {
-        adaptableGenerator.produceEmptyValues(true);
 
         return instanceGenerator.generate(unitClass).get();
     }

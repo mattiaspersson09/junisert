@@ -30,6 +30,7 @@ public final class Equals {
     private static final Logger LOGGER = Logger.getLogger("Equals");
 
     private final Object instance;
+    private boolean log;
 
     Equals(Object instance) {
         this.instance = Objects.requireNonNull(instance);
@@ -53,11 +54,13 @@ public final class Equals {
      */
     @SuppressWarnings("all")
     public Equals isReflexive() throws UnitAssertionError {
-        LOGGER.test("Reflexive check -> instance.equals(instance)");
+        if (log) {
+            LOGGER.test("Reflexive check -> instance.equals(instance)");
+        }
 
         if (!instance.equals(instance)) {
             LOGGER.fail(methodName() + " fails reflexive check", "to equal reference of itself", "it did not");
-            throw new UnitAssertionError(methodName() + " was expected to be reflexive, but it was not");
+            throw new UnitAssertionError(methodName() + " were expected to be reflexive, but it was not");
         }
 
         return this;
@@ -76,13 +79,15 @@ public final class Equals {
     public Equals isSymmetricWith(Object otherInstance) throws UnitAssertionError {
         Objects.requireNonNull(otherInstance);
 
-        LOGGER.test("Symmetry check -> instance.equals(otherInstance)");
+        if (log) {
+            LOGGER.test("Symmetry check -> instance.equals(otherInstance)");
+        }
 
         if (!otherInstance.equals(instance) || !instance.equals(otherInstance)) {
             LOGGER.fail(methodName() + " fails symmetry check",
                     instance + " to be symmetric with " + otherInstance,
                     "it was not");
-            throw new UnitAssertionError(methodName() + " was expected to be <true> when comparing "
+            throw new UnitAssertionError(methodName() + " were expected to be <true> when comparing "
                     + instance + " with " + otherInstance);
         }
 
@@ -111,13 +116,15 @@ public final class Equals {
      * @throws UnitAssertionError if instance equals check happens to be symmetric
      */
     public Equals isNotSymmetricWith(Object otherInstance) throws UnitAssertionError {
-        LOGGER.test("Non symmetry check -> instance.equals(otherInstance)");
+        if (log) {
+            LOGGER.test("Non symmetry check -> instance.equals(otherInstance)");
+        }
 
         if (instance.equals(otherInstance)) {
             LOGGER.fail(methodName() + " fails non symmetry check",
                     instance + " to NOT be symmetric with " + otherInstance,
                     "it was");
-            throw new UnitAssertionError(methodName() + " was expected to be <false> when comparing "
+            throw new UnitAssertionError(methodName() + " were expected to be <false> when comparing "
                     + instance + " with " + otherInstance);
         }
 
@@ -150,13 +157,15 @@ public final class Equals {
         Objects.requireNonNull(second);
         Objects.requireNonNull(third);
 
-        LOGGER.test("Transitive check -> instance.equals(otherInstance)");
+        if (log) {
+            LOGGER.test("Transitive check -> instance.equals(otherInstance)");
+        }
 
         if (!instance.equals(second) || !second.equals(third) || !instance.equals(third)) {
             LOGGER.fail(methodName() + " fails transitive check",
                     instance + " to be transitive with " + second + " and " + third,
                     "it was not");
-            throw new UnitAssertionError(methodName() + " was expected to be <true> when comparing with "
+            throw new UnitAssertionError(methodName() + " were expected to be <true> when comparing with "
                     + "other instances with the same values");
         }
 
@@ -203,18 +212,40 @@ public final class Equals {
             return this;
         }
 
-        LOGGER.test("Consistency check (x{0} times) -> instance.equals(otherInstance)", consistentTimes);
+        if (log) {
+            LOGGER.test("Consistency check (x{0} times) -> instance.equals(otherInstance)", consistentTimes);
+        }
 
         for (int timesChecked = 1; timesChecked <= consistentTimes; timesChecked++) {
             if (!instance.equals(otherInstance)) {
                 LOGGER.fail(methodName() + " fails consistency check",
                         instance + " to be consistent with " + otherInstance,
                         "it was not on check " + timesChecked + "/" + consistentTimes);
-                throw new UnitAssertionError(methodName() + " was expected to still be <true> when comparing "
+                throw new UnitAssertionError(methodName() + " were expected to still be <true> when comparing "
                         + instance + " with " + otherInstance + " after " + consistentTimes + " checks");
             }
         }
 
+        return this;
+    }
+
+    /**
+     * Turns off logging during tests.
+     *
+     * @return this equals to continue checking
+     */
+    public Equals loggingOff() {
+        this.log = false;
+        return this;
+    }
+
+    /**
+     * Turns on logging during tests.
+     *
+     * @return this equals to continue checking
+     */
+    public Equals loggingOn() {
+        this.log = true;
         return this;
     }
 
