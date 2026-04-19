@@ -50,15 +50,23 @@ class EagerValue<T> implements Value<T> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        EagerValue<?> value1 = (EagerValue<?>) o;
-        return Objects.equals(value.getClass(), value1.value.getClass());
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        EagerValue<?> that = (EagerValue<?>) object;
+        return Objects.equals(value, that.value) && Objects.equals(empty, that.empty);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value.getClass());
+        return Objects.hash(value, empty);
+    }
+
+    @Override
+    public String toString() {
+        return "EagerValue{" +
+                "value=" + value +
+                ", empty=" + empty +
+                '}';
     }
 }

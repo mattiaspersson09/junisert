@@ -20,18 +20,20 @@ import java.util.function.Supplier;
 
 /**
  * @see Value#of(Supplier)
+ * @see Value#of(Supplier, Supplier)
  */
 class LazyValue<T> implements Value<T> {
     private final Supplier<T> value;
-    private final T empty;
+    private final Supplier<T> empty;
 
     LazyValue(Supplier<T> value) {
-        this(value, null);
+        this(value, () -> null);
     }
 
-    LazyValue(Supplier<T> value, T empty) {
+    LazyValue(Supplier<T> value, Supplier<T> empty) {
         this.value = Objects.requireNonNull(value, "Can't construct a lazy value object without a value supplier");
-        this.empty = empty;
+        this.empty = Objects.requireNonNull(empty, "Can't construct a lazy value object without a value supplier");
+        ;
     }
 
     @Override
@@ -41,6 +43,6 @@ class LazyValue<T> implements Value<T> {
 
     @Override
     public T asEmpty() {
-        return empty;
+        return empty.get();
     }
 }

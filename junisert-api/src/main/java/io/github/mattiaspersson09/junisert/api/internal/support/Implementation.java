@@ -21,7 +21,6 @@ import io.github.mattiaspersson09.junisert.common.sort.Order;
 import io.github.mattiaspersson09.junisert.common.sort.Sortable;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * Should be used for supplying a concrete implementation of a super type to support polymorphic values.
@@ -33,7 +32,7 @@ import java.util.function.Supplier;
  */
 final class Implementation<T> implements Value<T>, Sortable {
     private final Class<T> implementationType;
-    private final Supplier<? extends T> value;
+    private final Value<? extends T> value;
     private Order order;
 
     /**
@@ -42,7 +41,7 @@ final class Implementation<T> implements Value<T>, Sortable {
      * @param implementationType to support
      * @param value              lazy construction of the implementation
      */
-    Implementation(Class<T> implementationType, Supplier<? extends T> value) {
+    Implementation(Class<T> implementationType, Value<? extends T> value) {
         this.order = Order.DEFAULT;
         this.implementationType = Objects.requireNonNull(implementationType, "Must have an implementation type");
         this.value = Objects.requireNonNull(value, "Can't construct a lazy value object without a value supplier");
@@ -85,6 +84,11 @@ final class Implementation<T> implements Value<T>, Sortable {
     }
 
     @Override
+    public T asEmpty() {
+        return value.asEmpty();
+    }
+
+    @Override
     public Order order() {
         return order;
     }
@@ -100,5 +104,14 @@ final class Implementation<T> implements Value<T>, Sortable {
     @Override
     public int hashCode() {
         return Objects.hash(implementationType);
+    }
+
+    @Override
+    public String toString() {
+        return "Implementation{" +
+                "implementationType=" + implementationType +
+                ", value=" + value +
+                ", order=" + order +
+                '}';
     }
 }

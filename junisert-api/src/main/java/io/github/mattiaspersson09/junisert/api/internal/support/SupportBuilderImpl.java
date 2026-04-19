@@ -15,11 +15,11 @@
  */
 package io.github.mattiaspersson09.junisert.api.internal.support;
 
+import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * Direct implementation of {@link SupportBuilder} API.
@@ -44,7 +44,7 @@ final class SupportBuilderImpl implements SupportBuilder {
     }
 
     @Override
-    public <T, IMPL extends T> SupportBuilder supportSingle(Class<T> type, Supplier<IMPL> implementation) {
+    public <T, IMPL extends T> SupportBuilder supportSingle(Class<T> type, Value<IMPL> implementation) {
         generators.add(new SupportGenerator<>(type, new Implementation<>(type, implementation)));
         return this;
     }
@@ -52,7 +52,7 @@ final class SupportBuilderImpl implements SupportBuilder {
     @Override
     public <T, IMPL extends T> SupportBuilder supportSingle(Class<T> superType,
                                                             Class<IMPL> implementationType,
-                                                            Supplier<IMPL> implementation) {
+                                                            Value<IMPL> implementation) {
         generators.add(new SupportGenerator<>(superType, new Implementation<>(implementationType, implementation)));
         return this;
     }
@@ -80,7 +80,7 @@ final class SupportBuilderImpl implements SupportBuilder {
 
         @Override
         public <IMPL extends T> SupportImpl<T> withImplementation(Class<IMPL> implementationType,
-                                                                  Supplier<IMPL> implementation) {
+                                                                  Value<IMPL> implementation) {
             supportGenerator.addSupport(new Implementation<>(implementationType, implementation));
             return this;
         }
@@ -95,7 +95,7 @@ final class SupportBuilderImpl implements SupportBuilder {
         }
 
         @Override
-        public <NEW, IMPL extends NEW> SupportBuilder supportSingle(Class<NEW> type, Supplier<IMPL> implementation) {
+        public <NEW, IMPL extends NEW> SupportBuilder supportSingle(Class<NEW> type, Value<IMPL> implementation) {
             if (supportGenerator.hasSupport()) {
                 originalBuilder.support(supportGenerator);
             }
@@ -106,7 +106,7 @@ final class SupportBuilderImpl implements SupportBuilder {
         @Override
         public <NEW, IMPL extends NEW> SupportBuilder supportSingle(Class<NEW> superType,
                                                                     Class<IMPL> implementationType,
-                                                                    Supplier<IMPL> implementation) {
+                                                                    Value<IMPL> implementation) {
             if (supportGenerator.hasSupport()) {
                 originalBuilder.support(supportGenerator);
             }

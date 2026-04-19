@@ -70,16 +70,6 @@ public final class NoCacheTestValueService implements ValueService {
     }
 
     @Override
-    public void registerSupport(ValueGenerator<?> generator) {
-        // no-op
-    }
-
-    @Override
-    public void registerNamedSupport(ValueGenerator<?> generator, String supportName) {
-        // no-op
-    }
-
-    @Override
     public Value<?> getValue(Class<?> type) throws UnsupportedTypeError {
         for (ValueGenerator<?> generator : generators) {
             if (generator.supports(type)) {

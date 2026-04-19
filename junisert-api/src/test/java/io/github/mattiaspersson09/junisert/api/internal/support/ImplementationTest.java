@@ -34,10 +34,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ImplementationTest {
     @Test
     void get() {
-        Impl impl = new Impl();
         Implementation<?> value = new Implementation<>(Impl.class, Impl::new);
 
-        assertThat(value.get()).isEqualTo(impl);
+        assertThat(value.get()).isEqualTo(new Impl());
+    }
+
+    @Test
+    void asEmpty() {
+        Implementation<?> value = new Implementation<>(Base.class, Value.of(Impl::new, OtherImpl::new));
+
+        assertThat(value.get()).isEqualTo(new Impl());
+        assertThat(value.asEmpty()).isEqualTo(new OtherImpl());
     }
 
     @Test
@@ -154,5 +161,14 @@ public class ImplementationTest {
         Implementation<?> value = new Implementation<>(Super.class, Impl::new).order(Order.DEFAULT);
 
         assertThat(value.order(null).order()).isEqualTo(Order.DEFAULT);
+    }
+
+    @Test
+    void toString_hasUsefulImplementationInformation() {
+        Implementation<?> value = new Implementation<>(Super.class, Impl::new);
+
+        assertThat(value.toString())
+                .contains(Implementation.class.getSimpleName())
+                .contains(Super.class.getSimpleName());
     }
 }

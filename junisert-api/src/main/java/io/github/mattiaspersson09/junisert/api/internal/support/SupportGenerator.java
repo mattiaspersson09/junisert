@@ -118,4 +118,13 @@ final class SupportGenerator<T> implements ValueGenerator<T>, Sortable {
     public int hashCode() {
         return Objects.hash(type, implementations);
     }
+
+    @Override
+    public String toString() {
+        return "SupportGenerator{" +
+                "type=" + type +
+                ", implementations=" + implementations +
+                ", order=" + order +
+                '}';
+    }
 }

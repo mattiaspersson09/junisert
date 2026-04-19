@@ -17,24 +17,25 @@ package io.github.mattiaspersson09.junisert.value.java;
 
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedValueGenerator;
 import io.github.mattiaspersson09.junisert.api.internal.support.SupportBuilder;
+import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
 
 import java.util.ArrayList;
-import java.util.function.Supplier;
 
 final class JavaLangSupport {
-    private static final Supplier<Runnable> RUNNABLE = () -> () -> Logger.getLogger("Junisert -> Anonymous runnable")
-            .test("running...");
+    private static final Logger LOGGER = Logger.getLogger("Junisert -> Anonymous runnable");
+    private static final String JUNISERT = "Junisert";
+    private static final Value<Runnable> RUNNABLE = () -> () -> LOGGER.test("running...");
 
     private JavaLangSupport() {
     }
 
     static AggregatedValueGenerator getLangSupport() {
         return SupportBuilder.createSupport()
-                .supportSingle(Appendable.class, StringBuilder.class, () -> new StringBuilder("Junisert"))
+                .supportSingle(Appendable.class, StringBuilder.class, () -> new StringBuilder(JUNISERT))
                 .support(CharSequence.class)
-                .withImplementation(String.class, () -> "Junisert")
-                .withImplementation(StringBuffer.class, () -> new StringBuffer("Junisert"))
+                .withImplementation(String.class, () -> JUNISERT)
+                .withImplementation(StringBuffer.class, () -> new StringBuffer(JUNISERT))
                 .supportSingle(Iterable.class, ArrayList.class, ArrayList::new)
                 .supportSingle(Runnable.class, RUNNABLE)
                 .support(Throwable.class)

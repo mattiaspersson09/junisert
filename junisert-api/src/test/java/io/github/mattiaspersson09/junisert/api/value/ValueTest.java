@@ -34,7 +34,22 @@ public class ValueTest {
     }
 
     @Test
-    void of_returnsNewLazyValue() {
-        assertThat(Value.of(String::new)).isInstanceOf(LazyValue.class);
+    void of_givenValue_thenReturnsNewLazyValue() {
+        assertThat(Value.of(() -> "value"))
+                .isInstanceOf(LazyValue.class)
+                .satisfies(value -> {
+                    assertThat(value.get()).isEqualTo("value");
+                    assertThat(value.asEmpty()).isNull();
+                });
+    }
+
+    @Test
+    void of_givenValue_andEmptyValue_thenReturnsNewLazyValue() {
+        assertThat(Value.of(() -> "value", () -> "empty"))
+                .isInstanceOf(LazyValue.class)
+                .satisfies(value -> {
+                    assertThat(value.get()).isEqualTo("value");
+                    assertThat(value.asEmpty()).isEqualTo("empty");
+                });
     }
 }

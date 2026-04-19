@@ -33,53 +33,25 @@ public class EagerValueTest {
     }
 
     @Test
-    void equals_whenSameOriginClass_thenIsEqual() {
-        EagerValue<?> value = new EagerValue<>("string");
-        Object object = "";
-
-        assertThat(value).isEqualTo(new EagerValue<>("string"));
-        assertThat(value).isEqualTo(new EagerValue<>("another string"));
-        assertThat(value).isEqualTo(new EagerValue<>(object));
-    }
-
-    @Test
-    void equals_whenIsReference_thenIsEqual() {
+    void equals() {
         EagerValue<?> value = new EagerValue<>("string");
 
         assertThat(value).isEqualTo((Object) value);
-    }
-
-    @Test
-    void equals_whenIsNull_thenIsNotEqual() {
-        EagerValue<?> value = new EagerValue<>("string");
-
+        assertThat(value).isEqualTo(new EagerValue<>("string"));
+        assertThat(value).isNotEqualTo(new EagerValue<>("string", "other"));
+        assertThat(value).isNotEqualTo(new EagerValue<>("other", "string"));
         assertThat(value).isNotEqualTo(null);
-    }
-
-    @Test
-    void equals_whenIsNotTheSameClass_thenIsNotEqual() {
-        EagerValue<?> value = new EagerValue<>("string");
-
         assertThat(value).isNotEqualTo(new EagerValue<String>("string") {
         });
     }
 
     @Test
-    void hashCode_whenSameOriginClass_thenIsEqual() {
+    void hashCodes() {
         EagerValue<?> value = new EagerValue<>("string");
-        Object object = "";
 
         assertThat(value.hashCode()).isEqualTo(new EagerValue<>("string").hashCode());
-        assertThat(value.hashCode()).isEqualTo(new EagerValue<>("another string").hashCode());
-        assertThat(value.hashCode()).isEqualTo(new EagerValue<>(object).hashCode());
-    }
-
-    @Test
-    void hashCode_whenIsNotTheSameOriginClass_thenIsNotEqual() {
-        EagerValue<?> value = new EagerValue<>("string");
-        Object object = 1;
-
-        assertThat(value.hashCode()).isNotEqualTo(object.hashCode());
+        assertThat(value.hashCode()).isNotEqualTo(new EagerValue<>("other string").hashCode());
+        assertThat(value.hashCode()).isNotEqualTo(new EagerValue<>("string", "other").hashCode());
     }
 
     @Test
@@ -87,5 +59,14 @@ public class EagerValueTest {
         EagerValue<CharSequence> eagerValue = new EagerValue<>(new StringBuilder("string"));
 
         assertThat(eagerValue.get().toString()).isEqualTo("string");
+    }
+
+    @Test
+    void toString_hasUsefulValueInformation() {
+        EagerValue<?> value = new EagerValue<>("stringValue");
+        assertThat(value.toString())
+                .contains("EagerValue")
+                .contains("value=stringValue")
+                .contains("empty=null");
     }
 }

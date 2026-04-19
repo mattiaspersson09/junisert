@@ -237,4 +237,14 @@ public class SupportGeneratorTest {
         assertThat(support.hashCode()).isNotEqualTo(otherSupport.hashCode());
         assertThat(support.hashCode()).isNotEqualTo(concreteSupport.hashCode());
     }
+
+    @Test
+    void toString_hasUsefulSupportInformation() {
+        Implementation<Impl> implementation = new Implementation<>(Impl.class, Impl::new);
+        SupportGenerator<?> support = new SupportGenerator<>(Super.class, implementation);
+
+        assertThat(support.toString())
+                .contains(SupportGenerator.class.getSimpleName())
+                .contains("type=" + Super.class);
+    }
 }
