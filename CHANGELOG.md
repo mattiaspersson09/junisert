@@ -2,6 +2,21 @@
 
 This is an automatic changelog based on notable changes to this project, check [release notes](https://github.com/mattiaspersson09/junisert/releases) for additional information.
 
+## 0.4.0 *(2026-04-19)*
+**Release notes:** [release v0.4.0](https://github.com/mattiaspersson09/junisert/releases/tag/v0.4.0)
+
+
+### Features
+
+- Ensuring full code coverage when testing equals-method [#113](https://github.com/mattiaspersson09/junisert/pull/113) ([2be797](https://github.com/mattiaspersson09/junisert/commit/2be797085d8c24c0a692c4fd2bfe207fbae9f0eb)) 
+- Users can now register their own support if needed [#112](https://github.com/mattiaspersson09/junisert/pull/112) ([120a88](https://github.com/mattiaspersson09/junisert/commit/120a88173e3a504bf8f5b16f82842690864842c5)) 
+- Support for immutable models with recursive/copy constructor [#107](https://github.com/mattiaspersson09/junisert/pull/107) ([397236](https://github.com/mattiaspersson09/junisert/commit/397236835a4427ca5497e69918e669f12ac9ebd0)) 
+
+### Fixed
+
+- *(HasGetters)* Getter result should be compared with current value [#109](https://github.com/mattiaspersson09/junisert/pull/109) ([f4f770](https://github.com/mattiaspersson09/junisert/commit/f4f770e5aa20e4a36aa36393da2f0354a7ea3322)) 
+- *(HasSetters)* Skip immutable fields in mixed models [#108](https://github.com/mattiaspersson09/junisert/pull/108) ([2704a6](https://github.com/mattiaspersson09/junisert/commit/2704a6dd0e46079f1aa402ddbc807efe317c02ca))
+
 ## 0.3.0 *(2026-04-11)*
 **Release notes:** [release v0.3.0](https://github.com/mattiaspersson09/junisert/releases/tag/v0.3.0)
 
