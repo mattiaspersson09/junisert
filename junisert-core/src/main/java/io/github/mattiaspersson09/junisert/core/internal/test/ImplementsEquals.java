@@ -24,6 +24,9 @@ import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods;
 import io.github.mattiaspersson09.junisert.core.internal.test.util.Equals;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Tests that a {@link Unit} overrides {@link Object#equals(Object)} and that it's well implemented.
  */
@@ -70,30 +73,48 @@ public class ImplementsEquals extends AbstractUnitTest {
             }
         }
 
-        Equals.ofInstance(instance)
+        Equals equals = Equals.ofInstance(instance)
+                .loggingOn()
                 .isReflexive()
                 .isSymmetricWith(instance2)
                 .isTransitiveWith(instance2, instance3)
                 .isConsistentWith(instance2, TIMES_CONSISTENCY_CHECK)
                 .isNotSymmetricWith((Object) null)
-                .isNotSymmetricWith(new Object())
-                .isNotSymmetricWith(() -> resetFieldsInInstance(unit, instance2));
-    }
+                .isNotSymmetricWith(new Object());
 
-    private Object resetFieldsInInstance(Unit unit, Object instance) {
         if (unit.isImmutable()) {
-            return instanceCreator.createEmptyInstance(unit);
+            List<Object> instances = createImmutableInstances(unit).stream()
+                    .skip(1)
+                    .collect(Collectors.toList());
+
+            for (Object otherInstance : instances) {
+                equals.loggingOff()
+                        .isNotSymmetricWith(otherInstance)
+                        .loggingOn();
+            }
+            return;
         }
 
+        Field previousField = null;
         for (Field field : unit.getFields()) {
             if (!field.isInstanceMember()) {
                 continue;
             }
 
             Object value = valueService.getValue(field.getType()).asEmpty();
-            field.setValue(instance, value);
-        }
+            field.setValue(instance2, value);
+            equals.loggingOff()
+                    .isNotSymmetricWith(instance2)
+                    .loggingOn();
 
-        return instance;
+            if (previousField != null) {
+                previousField.setValue(instance2, valueService.getValue(previousField.getType()).get());
+                equals.loggingOff()
+                        .isNotSymmetricWith(instance2)
+                        .loggingOn();
+            }
+
+            previousField = field;
+        }
     }
 }

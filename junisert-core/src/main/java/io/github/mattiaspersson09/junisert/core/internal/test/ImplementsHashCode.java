@@ -72,14 +72,12 @@ public class ImplementsHashCode extends AbstractUnitTest {
                 .isConsistent()
                 .isNotEmpty()
                 .isEqualTo(instance2)
-                .isNotEqualTo(() -> resetFieldsInInstance(unit, instance2));
+                .isNotEqualTo(() -> unit.isImmutable()
+                        ? createEmptyImmutableInstance(unit)
+                        : resetFieldsInInstance(unit, instance2));
     }
 
     private Object resetFieldsInInstance(Unit unit, Object instance) {
-        if (unit.isImmutable()) {
-            return instanceCreator.createEmptyInstance(unit);
-        }
-
         for (Field field : unit.getFields()) {
             if (!field.isInstanceMember()) {
                 continue;

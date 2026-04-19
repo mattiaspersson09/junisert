@@ -24,14 +24,14 @@ import io.github.mattiaspersson09.junisert.common.sort.Sortable;
 import java.util.Objects;
 
 /**
- * Sortable wrapper for a supported value generator, to be able to adjust sorting order for every support
- * that isn't directly sortable. This wrapper should only be used if a support isn't already sortable.
+ * Sortable adapter for a supported value generator, to be able to adjust sorting order for every support
+ * that isn't directly sortable. This adapter should only be used if a support isn't already sortable.
  */
 public final class SortableSupport implements ValueGenerator<Object>, Sortable {
     private final ValueGenerator<?> support;
 
     /**
-     * Creates a new sortable wrapper for {@code support}.
+     * Creates a new sortable adapter for {@code support}.
      *
      * @param support to wrap as sortable
      */
@@ -55,6 +55,11 @@ public final class SortableSupport implements ValueGenerator<Object>, Sortable {
         return Order.DEFAULT.moveUp();
     }
 
+    /**
+     * Gets the support wrapped inside this sortable adapter.
+     *
+     * @return support
+     */
     public ValueGenerator<?> getSupport() {
         return support;
     }
