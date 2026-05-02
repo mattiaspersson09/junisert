@@ -48,7 +48,7 @@ class JavaInternalIntegrationTest {
 
     protected void assertThatFunctionalSupportCanBeUsed(Class<?> javaType) {
         if (supportInvoker == null) {
-            LOGGER.info("No support invoker setup, can't run test");
+            LOGGER.info("Skipped functional test: no support invoker setup, won't run test");
             return;
         }
 
@@ -62,7 +62,7 @@ class JavaInternalIntegrationTest {
 
     protected void assertThatSupportCanBeUsed(Class<?> javaType) {
         if (supportInvoker == null) {
-            LOGGER.info("No support invoker setup, can't run test");
+            LOGGER.info("Skipped support test: no support invoker setup, won't run test");
             return;
         }
 
