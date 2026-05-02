@@ -38,6 +38,7 @@ public class JavaLangSupportIntegrationTest extends JavaInternalIntegrationTest 
             AssertionError.class,
             Thread.class,
             ThreadLocal.class,
+            Class.class,
     })
     void javaLang(Class<?> type) {
         assertIsSupported(type);
