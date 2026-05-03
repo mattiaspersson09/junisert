@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core;
+package io.github.mattiaspersson09.junisert.core.internal.support;
 
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.sort.Order;
 import io.github.mattiaspersson09.junisert.common.sort.Sortable;
-import io.github.mattiaspersson09.junisert.core.internal.support.SupportComparator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
