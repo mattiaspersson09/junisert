@@ -14,8 +14,7 @@ chaining methods to set up several tests quickly after each other.
 ## Table of Contents
 {: .no_toc .text-delta }
 
-1. Plain mutable object
-2. Plain immutable object
+- TOC
 {:toc}
 
 

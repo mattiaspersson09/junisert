@@ -7,6 +7,13 @@
 
 A scalable and flexible framework used as complement to standard assertions for different kind of units.
 
+**Junisert is the answer for you!**\
+If you endlessly exclude models because of code coverage, copy-paste model tests and tired of tedious boilerplate tests.
+Minimize the risk for problems and boost your code coverage in the process.
+
+If you have previously used [OpenPojo](https://github.com/OpenPojo/openpojo), [pojo-tester](https://github.com/sta-szek/pojo-tester) or similar boilerplate testers, then you are
+familiar with the base concept.
+
 [![core](https://img.shields.io/maven-central/v/io.github.mattiaspersson09/junisert-core/0..svg?color=25a162&label=Junisert)](https://central.sonatype.com/search?namespace=io.github.mattiaspersson09)
 
 **Currently supported Java LTS:** 8+
@@ -17,6 +24,12 @@ For documentation and user guide, visit Junisert GitHub pages: https://mattiaspe
 [Create an issue](https://github.com/mattiaspersson09/junisert/issues/new) and share your thoughts!*
 
 ---
+## Upcoming features
+
+- Constructor assertion
+- Mapper assertion
+- Builder assertion
+---
 
 ## Getting started
 
@@ -26,7 +39,7 @@ For documentation and user guide, visit Junisert GitHub pages: https://mattiaspe
 <dependency>
     <groupId>io.github.mattiaspersson09</groupId>
     <artifactId>junisert-core</artifactId>
-    <version>0.4.0</version>
+    <version>0.5.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -34,7 +47,7 @@ For documentation and user guide, visit Junisert GitHub pages: https://mattiaspe
 ### Gradle
 
 ```groovy
-testImplementation("io.github.mattiaspersson09:junisert-core:0.4.0")
+testImplementation("io.github.mattiaspersson09:junisert-core:0.5.0")
 ```
 
 ### Your first test
@@ -133,7 +146,7 @@ for laying groundwork that sparked the birth of this project.*
 - Give the user ability to register their own prioritized dependency values when predefined support isn't enough,
 to avoid getting stuck when testing.
 - Give the user ability to block value types during assertion.
-- Guarantee 100% code coverage when asserting on boilerplate code.
+- Guarantee 100% code coverage when asserting on boilerplate units.
 
 
 
