@@ -1,0 +1,47 @@
+/*
+ * Copyright (c) 2026 Mattias Persson
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.github.mattiaspersson09.junisert.core.assertion;
+
+import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
+import io.github.mattiaspersson09.junisert.core.internal.ValueService;
+import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
+import io.github.mattiaspersson09.junisert.core.internal.test.UnitTest;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+public class AbstractAssertionTest {
+    @Test
+    void createTest_whenFailing_thenThrowsRuntimeException() {
+        UnitTest unitTest = Mockito.mock(UnitTest.class);
+        Unit unit = Mockito.mock(Unit.class);
+        InstanceCreator instanceCreator = Mockito.mock(InstanceCreator.class);
+        ValueService valueService = Mockito.mock(ValueService.class);
+
+        Assertion assertion = new Assertion(new AssertionResource(unit, instanceCreator, valueService));
+
+        assertThatThrownBy(() -> assertion.createTest(unitTest.getClass()))
+                .isInstanceOf(RuntimeException.class);
+    }
+
+    private static class Assertion extends AbstractAssertion<Assertion> {
+        protected Assertion(AssertionResource assertionResource) {
+            super(assertionResource);
+        }
+    }
+}

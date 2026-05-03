@@ -15,7 +15,10 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal;
 
+import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
+import io.github.mattiaspersson09.junisert.value.common.DependencyObjectValueGenerator;
+import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
 
 
 /**
@@ -38,5 +41,18 @@ public interface InstanceCreator {
      */
     default Object createInstance(Unit unit) {
         return createInstance(unit.getType());
+    }
+
+    /**
+     * Creates an instance creator which constructs instances using unit constructors.
+     *
+     * @param dependencySupport that creates values for unit dependencies
+     * @param dependencyDepth   max depth the creator can go using reflection if needed
+     * @return new instance creator
+     * @see ObjectValueGenerator
+     * @see DependencyObjectValueGenerator
+     */
+    static InstanceCreator usingConstructor(ValueGenerator<?> dependencySupport, int dependencyDepth) {
+        return new ConstructorInstanceCreator(dependencySupport, dependencyDepth);
     }
 }

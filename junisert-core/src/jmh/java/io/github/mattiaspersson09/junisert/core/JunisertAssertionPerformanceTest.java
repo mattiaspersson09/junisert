@@ -34,4 +34,9 @@ public class JunisertAssertionPerformanceTest {
     public void simpleUnit(Blackhole blackhole) {
         Junisert.assertThatPojo(BeanCompliantModel.class).isWellImplemented();
     }
+
+    @Benchmark
+    public void veryExpensiveImmutable(Blackhole blackhole) {
+        Junisert.assertThatPojo(VeryExpensiveImmutable.class).isWellImplemented();
+    }
 }

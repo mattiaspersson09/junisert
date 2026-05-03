@@ -16,15 +16,22 @@
 package io.github.mattiaspersson09.junisert.core;
 
 import io.github.mattiaspersson09.junisert.api.value.Value;
+import io.github.mattiaspersson09.junisert.core.internal.support.UserValue;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-final class ValueCache {
+/**
+ * Cache holding generated values during assertions, used to share values and prioritize user defined support values.
+ */
+public final class ValueCache {
     private final Map<Class<?>, Value<?>> cache;
 
-    ValueCache() {
+    /**
+     * Creates a new empty cache.
+     */
+    public ValueCache() {
         this.cache = new ConcurrentHashMap<>();
     }
 
@@ -37,21 +44,16 @@ final class ValueCache {
     }
 
     Value<?> save(Class<?> type, Value<?> value) {
-        /*
-            If the value to cache is lazy we need to construct the implementation at this point
-            to propagate construction failure to the caller and be able to cache the value.
-            If we cache a lazy value it will be constructed several more times later, resulting in
-            unnecessary duplicates.
-         */
-        Value<?> cacheValue = new CacheValue(value.get(), value.asEmpty());
-        Value<?> oldCacheValue = get(type);
+        Value<?> cached = get(type);
 
-        if (oldCacheValue != null && !Objects.equals(oldCacheValue, cacheValue)) {
-            cache.put(type, cacheValue);
-            return cacheValue;
+        // User registered support values should override old cached values which aren't from a registered support
+        if (cached != null && value instanceof UserValue && !(cached instanceof UserCacheValue)) {
+            CacheValue newValue = new UserCacheValue(value.get(), value.asEmpty());
+            cache.put(type, newValue);
+            return newValue;
         }
 
-        return cache.computeIfAbsent(type, (key) -> cacheValue);
+        return cache.computeIfAbsent(type, (key) -> new CacheValue(value.get(), value.asEmpty()));
     }
 
     int size() {
@@ -100,6 +102,12 @@ final class ValueCache {
                     "concrete=" + concrete +
                     ", empty=" + empty +
                     '}';
+        }
+    }
+
+    private static class UserCacheValue extends CacheValue {
+        UserCacheValue(Object concrete, Object empty) {
+            super(concrete, empty);
         }
     }
 }

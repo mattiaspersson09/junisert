@@ -19,21 +19,26 @@ import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 
-final class CachingDependencyGenerator implements ValueGenerator<Object> {
+/**
+ * Responsible for creating dependency values, used when creating units and its dependencies needs to be cached.
+ */
+public final class CachingDependencyGenerator implements ValueGenerator<Object> {
     private final ValueGenerator<?> dependencySupport;
     private final ValueCache valueCache;
 
-    CachingDependencyGenerator(ValueGenerator<?> dependencySupport, ValueCache valueCache) {
+    /**
+     * Creates a new caching {@link ValueGenerator}.
+     *
+     * @param dependencySupport support that creates unit dependency values.
+     * @param valueCache        to cache dependencies
+     */
+    public CachingDependencyGenerator(ValueGenerator<?> dependencySupport, ValueCache valueCache) {
         this.dependencySupport = dependencySupport;
         this.valueCache = valueCache;
     }
 
     @Override
     public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
-        if (valueCache.contains(fromType)) {
-            return valueCache.get(fromType);
-        }
-
         return valueCache.save(fromType, dependencySupport.generate(fromType));
     }
 

@@ -18,7 +18,6 @@ package io.github.mattiaspersson09.junisert.api.internal.support;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
-import io.github.mattiaspersson09.junisert.common.sort.Order;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.Base;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.ExtendingImpl;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.Impl;
@@ -116,32 +115,6 @@ public class SupportGeneratorTest {
         assertThat(support.generate(Impl.class).get()).isEqualTo(impl.get());
         assertThat(support.generate(ExtendingImpl.class).get()).isEqualTo(extendingImpl.get());
         assertThat(support.generate(OtherImpl.class).get()).isEqualTo(otherImpl.get());
-    }
-
-    @Test
-    void generate_order() {
-        Implementation<Impl> impl = new Implementation<>(Impl.class, Impl::new).order(Order.FIRST);
-        Implementation<ExtendingImpl> impl2 = new Implementation<>(ExtendingImpl.class, ExtendingImpl::new);
-        Implementation<OtherImpl> impl3 = new Implementation<>(OtherImpl.class, OtherImpl::new);
-
-        SupportGenerator<Super> support = new SupportGenerator<>(Super.class, Arrays.asList(impl3, impl2, impl));
-
-        assertThat(support.generate(Super.class).get()).isEqualTo(impl.get());
-    }
-
-    @Test
-    void canBeOrdered() {
-        SupportGenerator<?> support = new SupportGenerator<>(Super.class);
-
-        assertThat(support.order()).isEqualTo(Order.DEFAULT);
-        assertThat(support.order(Order.FIRST).order()).isEqualTo(Order.FIRST);
-    }
-
-    @Test
-    void order_whenGivenInvalidNewOrder_thenKeepsCurrentOrder() {
-        SupportGenerator<?> support = new SupportGenerator<>(Super.class).order(Order.DEFAULT);
-
-        assertThat(support.order(null).order()).isEqualTo(Order.DEFAULT);
     }
 
     @Test

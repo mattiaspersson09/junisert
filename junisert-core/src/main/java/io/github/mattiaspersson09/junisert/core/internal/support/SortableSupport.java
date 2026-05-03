@@ -26,6 +26,8 @@ import java.util.Objects;
 /**
  * Sortable adapter for a supported value generator, to be able to adjust sorting order for every support
  * that isn't directly sortable. This adapter should only be used if a support isn't already sortable.
+ *
+ * @see #toSortable(ValueGenerator)
  */
 public final class SortableSupport implements ValueGenerator<Object>, Sortable {
     private final ValueGenerator<?> support;
@@ -35,13 +37,13 @@ public final class SortableSupport implements ValueGenerator<Object>, Sortable {
      *
      * @param support to wrap as sortable
      */
-    public SortableSupport(ValueGenerator<?> support) {
+    SortableSupport(ValueGenerator<?> support) {
         this.support = support;
     }
 
     @Override
     public Value<?> generate(Class<?> fromType) throws UnsupportedTypeError {
-        return support.generate(fromType);
+        return new UserValue(support.generate(fromType));
     }
 
     @Override
@@ -51,8 +53,7 @@ public final class SortableSupport implements ValueGenerator<Object>, Sortable {
 
     @Override
     public Order order() {
-        // Place right before earlier registered support
-        return Order.DEFAULT.moveUp();
+        return Order.SECOND;
     }
 
     /**
@@ -62,6 +63,16 @@ public final class SortableSupport implements ValueGenerator<Object>, Sortable {
      */
     public ValueGenerator<?> getSupport() {
         return support;
+    }
+
+    /**
+     * Converts {@code support} to a sortable support if it's not already {@link Sortable}.
+     *
+     * @param support to convert
+     * @return sortable support
+     */
+    public static ValueGenerator<?> toSortable(ValueGenerator<?> support) {
+        return (support instanceof Sortable) ? support : new SortableSupport(support);
     }
 
     @Override

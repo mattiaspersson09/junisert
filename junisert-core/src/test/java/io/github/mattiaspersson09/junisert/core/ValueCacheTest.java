@@ -17,6 +17,7 @@ package io.github.mattiaspersson09.junisert.core;
 
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.core.ValueCache.CacheValue;
+import io.github.mattiaspersson09.junisert.core.internal.support.UserValue;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.ExtendingImpl;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.Impl;
 
@@ -54,9 +55,21 @@ public class ValueCacheTest {
     }
 
     @Test
-    void save_whenValueIsAlreadyCached_andDifferentValue_thenReplacesOldCache_andReturnsNewCached() {
+    void save_givenNormalValue_whenValueIsAlreadyCached_andDifferentValue_thenReturnsOldCached() {
         Value<?> cached = valueCache.save(Impl.class, new CacheValue(new ExtendingImpl(), null));
         Value<?> newCached = valueCache.save(Impl.class, new CacheValue(new Impl(), null));
+
+        assertThat(valueCache.size()).isEqualTo(1);
+        assertThat(newCached)
+                .isSameAs(cached)
+                .isEqualTo(cached);
+        assertThat(newCached.get()).isInstanceOf(ExtendingImpl.class);
+    }
+
+    @Test
+    void save_givenPrioritizedValue_whenValueIsAlreadyCached_thenCachesAndReturnsPrioritized() {
+        Value<?> cached = valueCache.save(Impl.class, new CacheValue(new ExtendingImpl(), null));
+        Value<?> newCached = valueCache.save(Impl.class, new UserValue(new CacheValue(new Impl(), null)));
 
         assertThat(valueCache.size()).isEqualTo(1);
         assertThat(newCached)
@@ -66,7 +79,7 @@ public class ValueCacheTest {
     }
 
     @Test
-    void implemented() {
+    void cacheValue_implemented() {
         Junisert.assertThatPojo(ValueCache.CacheValue.class)
                 .implementsEqualsAndHashCode()
                 .implementsToString();

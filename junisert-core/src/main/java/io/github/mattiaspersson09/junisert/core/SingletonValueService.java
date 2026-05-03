@@ -59,17 +59,13 @@ final class SingletonValueService implements ValueService {
 
     @Override
     public Value<?> getValue(Class<?> type) {
-        List<ValueGenerator<?>> userSupport = SupportRegistry.get().registeredSupport();
+        List<ValueGenerator<?>> userDefinedSupport = SupportRegistry.get().registeredSupport();
 
         // Prioritize user defined support
-        for (ValueGenerator<?> generator : userSupport) {
-            if (generator.supports(type)) {
-                return valueCache.save(type, generator.generate(type));
+        for (ValueGenerator<?> userSupport : userDefinedSupport) {
+            if (userSupport.supports(type)) {
+                return valueCache.save(type, userSupport.generate(type));
             }
-        }
-
-        if (valueCache.contains(type)) {
-            return valueCache.get(type);
         }
 
         for (ValueGenerator<?> generator : valueSupport) {

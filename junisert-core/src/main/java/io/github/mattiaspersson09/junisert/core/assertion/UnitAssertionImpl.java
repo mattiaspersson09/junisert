@@ -19,9 +19,6 @@ import io.github.mattiaspersson09.junisert.api.assertion.PlainObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
-import io.github.mattiaspersson09.junisert.core.internal.AssertionResource;
-import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
-import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Methods;
 import io.github.mattiaspersson09.junisert.core.internal.test.HasGetters;
@@ -33,10 +30,8 @@ import java.io.Serializable;
 /**
  * Direct implementation of {@link UnitAssertion} API.
  */
-public class UnitAssertionImpl implements UnitAssertion {
+public class UnitAssertionImpl extends AbstractAssertion<UnitAssertion> implements UnitAssertion {
     private static final Logger LOGGER = Logger.getLogger("Unit assertion");
-
-    private final AssertionResource assertionResource;
 
     /**
      * Creates a new implementation of {@link PlainObjectAssertion}.
@@ -44,19 +39,17 @@ public class UnitAssertionImpl implements UnitAssertion {
      * @param assertionResource needed for assertions
      */
     public UnitAssertionImpl(AssertionResource assertionResource) {
-        this.assertionResource = assertionResource;
+        super(assertionResource);
     }
 
     @Override
     public PlainObjectAssertion asPojo() {
-        return new PlainObjectAssertionImpl(assertionResource);
+        return new PlainObjectAssertionImpl(getAssertionResource());
     }
 
     @Override
     public UnitAssertion isJavaBeanCompliant() throws UnitAssertionError {
-        Unit unit = assertionResource.getUnitUnderAssertion();
-        ValueService valueService = assertionResource.getValueService();
-        InstanceCreator instanceCreator = assertionResource.getInstanceCreator();
+        Unit unit = getUnit();
 
         if (unit.hasNoDefaultConstructor()) {
             throw new UnitAssertionError(unit.getName() + " were expected to have a default constructor");
@@ -68,11 +61,11 @@ public class UnitAssertionImpl implements UnitAssertion {
 
         TestStrategy beanTestStrategy = TestStrategy.javaBeanCompliant();
 
-        HasGetters hasGetters = new HasGetters(valueService, instanceCreator);
+        HasGetters hasGetters = createTest(HasGetters.class);
         hasGetters.setTestStrategy(beanTestStrategy);
         hasGetters.test(unit);
 
-        HasSetters hasSetters = new HasSetters(valueService, instanceCreator);
+        HasSetters hasSetters = createTest(HasSetters.class);
         hasSetters.setTestStrategy(beanTestStrategy);
         hasSetters.test(unit);
 
@@ -98,7 +91,7 @@ public class UnitAssertionImpl implements UnitAssertion {
 
     @Override
     public UnitAssertion isImmutable() throws UnitAssertionError {
-        Unit unit = assertionResource.getUnitUnderAssertion();
+        Unit unit = getUnit();
 
         if (!unit.isImmutable()) {
             throw new UnitAssertionError(unit.getName() + " were expected to be immutable, but it wasn't");

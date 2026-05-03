@@ -17,8 +17,6 @@ package io.github.mattiaspersson09.junisert.api.internal.support;
 
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
-import io.github.mattiaspersson09.junisert.common.sort.Order;
-import io.github.mattiaspersson09.junisert.common.sort.Sortable;
 
 import java.util.Objects;
 
@@ -30,10 +28,9 @@ import java.util.Objects;
  * @param <T> concrete implementation in a polymorphic chain
  * @see Value
  */
-final class Implementation<T> implements Value<T>, Sortable {
+final class Implementation<T> implements Value<T> {
     private final Class<T> implementationType;
     private final Value<? extends T> value;
-    private Order order;
 
     /**
      * Creates a new support implementation.
@@ -42,7 +39,6 @@ final class Implementation<T> implements Value<T>, Sortable {
      * @param value              lazy construction of the implementation
      */
     Implementation(Class<T> implementationType, Value<? extends T> value) {
-        this.order = Order.DEFAULT;
         this.implementationType = Objects.requireNonNull(implementationType, "Must have an implementation type");
         this.value = Objects.requireNonNull(value, "Can't construct a lazy value object without a value supplier");
     }
@@ -64,20 +60,6 @@ final class Implementation<T> implements Value<T>, Sortable {
         return origin.isAssignableFrom(this.implementationType);
     }
 
-    /**
-     * Re-order this implementation with given {@code order}.
-     *
-     * @param order non-null new order, else current order will be kept
-     * @return this implementation
-     */
-    Implementation<T> order(Order order) {
-        if (order != null) {
-            this.order = order;
-        }
-
-        return this;
-    }
-
     @Override
     public T get() {
         return value.get();
@@ -86,11 +68,6 @@ final class Implementation<T> implements Value<T>, Sortable {
     @Override
     public T asEmpty() {
         return value.asEmpty();
-    }
-
-    @Override
-    public Order order() {
-        return order;
     }
 
     @Override
@@ -111,7 +88,6 @@ final class Implementation<T> implements Value<T>, Sortable {
         return "Implementation{" +
                 "implementationType=" + implementationType +
                 ", value=" + value +
-                ", order=" + order +
                 '}';
     }
 }
