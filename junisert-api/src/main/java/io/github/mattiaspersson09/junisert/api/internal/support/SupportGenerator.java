@@ -18,8 +18,6 @@ package io.github.mattiaspersson09.junisert.api.internal.support;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
-import io.github.mattiaspersson09.junisert.common.sort.Order;
-import io.github.mattiaspersson09.junisert.common.sort.Sortable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,10 +32,9 @@ import java.util.Objects;
  *
  * @param <T> polymorphic type this generator is supporting and generate values for.
  */
-final class SupportGenerator<T> implements ValueGenerator<T>, Sortable {
+final class SupportGenerator<T> implements ValueGenerator<T> {
     private final Class<T> type;
     private final List<Implementation<? extends T>> implementations;
-    private Order order;
 
     SupportGenerator(Class<T> type) {
         this(type, Collections.emptyList());
@@ -48,23 +45,8 @@ final class SupportGenerator<T> implements ValueGenerator<T>, Sortable {
     }
 
     SupportGenerator(Class<T> type, Collection<Implementation<? extends T>> implementations) {
-        this.order = Order.DEFAULT;
         this.type = Objects.requireNonNull(type);
         this.implementations = new ArrayList<>(Objects.requireNonNull(implementations));
-    }
-
-    /**
-     * Re-order this generator with given {@code order}.
-     *
-     * @param order non-null new order, else current order will be kept
-     * @return this support generator
-     */
-    SupportGenerator<T> order(Order order) {
-        if (order != null) {
-            this.order = order;
-        }
-
-        return this;
     }
 
     SupportGenerator<T> addSupport(Implementation<? extends T> implementation) {
@@ -84,7 +66,6 @@ final class SupportGenerator<T> implements ValueGenerator<T>, Sortable {
     public Value<? extends T> generate(Class<?> fromType) throws UnsupportedTypeError {
         return implementations.stream()
                 .filter(impl -> impl.isImplementationOf(fromType))
-                .sorted()
                 .findFirst()
                 .orElseThrow(() -> new UnsupportedTypeError(fromType));
     }
@@ -99,11 +80,6 @@ final class SupportGenerator<T> implements ValueGenerator<T>, Sortable {
         // specified in Java Language Specification > Assignment Contexts
         return this.type.isAssignableFrom(type) && implementations.stream()
                 .anyMatch(impl -> impl.isImplementationOf(type));
-    }
-
-    @Override
-    public Order order() {
-        return order;
     }
 
     @Override
@@ -124,7 +100,6 @@ final class SupportGenerator<T> implements ValueGenerator<T>, Sortable {
         return "SupportGenerator{" +
                 "type=" + type +
                 ", implementations=" + implementations +
-                ", order=" + order +
                 '}';
     }
 }

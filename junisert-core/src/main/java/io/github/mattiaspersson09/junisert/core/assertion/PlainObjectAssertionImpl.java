@@ -18,10 +18,6 @@ package io.github.mattiaspersson09.junisert.core.assertion;
 import io.github.mattiaspersson09.junisert.api.assertion.PlainObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
-import io.github.mattiaspersson09.junisert.core.internal.AssertionResource;
-import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
-import io.github.mattiaspersson09.junisert.core.internal.ValueService;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.test.HasGetters;
 import io.github.mattiaspersson09.junisert.core.internal.test.HasSetters;
 import io.github.mattiaspersson09.junisert.core.internal.test.ImplementsEquals;
@@ -31,12 +27,8 @@ import io.github.mattiaspersson09.junisert.core.internal.test.ImplementsToString
 /**
  * Direct implementation of {@link PlainObjectAssertion} API.
  */
-public class PlainObjectAssertionImpl implements PlainObjectAssertion {
+public class PlainObjectAssertionImpl extends AbstractAssertion<PlainObjectAssertion> implements PlainObjectAssertion {
     private static final Logger LOGGER = Logger.getLogger(PlainObjectAssertion.class);
-
-    private final Unit unitUnderAssertion;
-    private final ValueService valueService;
-    private final InstanceCreator instanceCreator;
 
     /**
      * Creates a new implementation of {@link PlainObjectAssertion}.
@@ -44,41 +36,39 @@ public class PlainObjectAssertionImpl implements PlainObjectAssertion {
      * @param assertionResource needed for assertions
      */
     public PlainObjectAssertionImpl(AssertionResource assertionResource) {
-        this.unitUnderAssertion = assertionResource.getUnitUnderAssertion();
-        this.valueService = assertionResource.getValueService();
-        this.instanceCreator = assertionResource.getInstanceCreator();
+        super(assertionResource);
     }
 
     @Override
     public PlainObjectAssertion hasGetters() throws UnitAssertionError {
-        new HasGetters(valueService, instanceCreator).test(unitUnderAssertion);
+        createTest(HasGetters.class).test(getUnit());
 
         return this;
     }
 
     @Override
     public PlainObjectAssertion hasSetters() throws UnitAssertionError {
-        if (unitUnderAssertion.isImmutable()) {
+        if (getUnit().isImmutable()) {
             LOGGER.info("Assertion hasSetters ignored: unit is immutable and can't have setters.");
             return this;
         }
 
-        new HasSetters(valueService, instanceCreator).test(unitUnderAssertion);
+        createTest(HasSetters.class).test(getUnit());
 
         return this;
     }
 
     @Override
     public PlainObjectAssertion implementsEqualsAndHashCode() throws UnitAssertionError {
-        new ImplementsEquals(valueService, instanceCreator).test(unitUnderAssertion);
-        new ImplementsHashCode(valueService, instanceCreator).test(unitUnderAssertion);
+        createTest(ImplementsEquals.class).test(getUnit());
+        createTest(ImplementsHashCode.class).test(getUnit());
 
         return this;
     }
 
     @Override
     public PlainObjectAssertion implementsToString() throws UnitAssertionError {
-        new ImplementsToString(valueService, instanceCreator).test(unitUnderAssertion);
+        createTest(ImplementsToString.class).test(getUnit());
 
         return this;
     }

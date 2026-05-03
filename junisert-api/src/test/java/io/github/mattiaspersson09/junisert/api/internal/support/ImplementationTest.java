@@ -16,16 +16,11 @@
 package io.github.mattiaspersson09.junisert.api.internal.support;
 
 import io.github.mattiaspersson09.junisert.api.value.Value;
-import io.github.mattiaspersson09.junisert.common.sort.Order;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.Base;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.ExtendingImpl;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.Impl;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.OtherImpl;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.Super;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -139,28 +134,6 @@ public class ImplementationTest {
         Implementation<?> value = new Implementation<>(Super.class, Impl::new);
 
         assertThat(value.hashCode()).isNotEqualTo(((Value<?>) Impl::new).hashCode());
-    }
-
-    @Test
-    void implementationsCanBeOrdered() {
-        Implementation<?> valuePrioritized = new Implementation<>(Super.class, ExtendingImpl::new).order(Order.FIRST);
-        Implementation<?> value = new Implementation<>(Super.class, Impl::new).order(Order.DEFAULT);
-        Implementation<?> valueOther = new Implementation<>(Super.class, OtherImpl::new).order(Order.LAST);
-
-        List<Implementation<?>> implementations = Stream.of(valueOther, valuePrioritized, value)
-                .sorted()
-                .collect(Collectors.toList());
-
-        assertThat(implementations.get(0)).isEqualTo(valuePrioritized);
-        assertThat(implementations.get(1)).isEqualTo(value);
-        assertThat(implementations.get(2)).isEqualTo(valueOther);
-    }
-
-    @Test
-    void order_whenGivenInvalidNewOrder_thenKeepsCurrentOrder() {
-        Implementation<?> value = new Implementation<>(Super.class, Impl::new).order(Order.DEFAULT);
-
-        assertThat(value.order(null).order()).isEqualTo(Order.DEFAULT);
     }
 
     @Test

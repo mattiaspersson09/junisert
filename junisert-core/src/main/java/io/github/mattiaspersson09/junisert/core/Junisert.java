@@ -19,16 +19,14 @@ import io.github.mattiaspersson09.junisert.api.assertion.PlainObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertion;
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedSupportGenerator;
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedValueGenerator;
-import io.github.mattiaspersson09.junisert.api.internal.support.SupportBuilder;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
+import io.github.mattiaspersson09.junisert.core.assertion.AssertionResource;
 import io.github.mattiaspersson09.junisert.core.assertion.PlainObjectAssertionImpl;
 import io.github.mattiaspersson09.junisert.core.assertion.UnitAssertionImpl;
-import io.github.mattiaspersson09.junisert.core.internal.AssertionResource;
+import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
-import io.github.mattiaspersson09.junisert.core.internal.support.PrimitiveSupport;
-import io.github.mattiaspersson09.junisert.core.internal.support.SortableSupport;
 
 import java.util.function.Supplier;
 
@@ -40,7 +38,10 @@ import java.util.function.Supplier;
  */
 public final class Junisert {
     private static final Logger LOGGER = Logger.getLogger("Junisert");
-    static final int INSTANCE_DEPENDENCY_DEPTH = 3;
+    /**
+     * Max depth for dependency creation when constructing units.
+     */
+    public static final int INSTANCE_DEPENDENCY_DEPTH = 3;
 
     private Junisert() {
     }
@@ -66,7 +67,7 @@ public final class Junisert {
     }
 
     /**
-     * Will register a custom created support that will support and generate values for a type/several types
+     * Will globally register a custom created support that will support and generate values for a type/several types
      * during assertions.
      *
      * @param support to register
@@ -79,15 +80,15 @@ public final class Junisert {
     }
 
     /**
+     * Will globally register custom support for a polymorphic type, where you can support a hierarchy of values.
+     * During assertions if any type between {@code superType} and {@code implementationType} appears,
+     * this support can generate values for it.<br>
+     * <br>
      * <strong>OBS!</strong> {@code implementation} should not construct a negative (null or primitive zero/false)
      * value, it will affect value comparison during assertions and produce error-prone results.
      * It's empty representation however is allowed to be negative, see
      * {@link Value#of(Supplier, Supplier) lazy value} and {@link Value#ofEager(Object, Object) eager value}
      * for more details.<br>
-     * <br>
-     * Will register custom support for a polymorphic type, where you can support a hierarchy of values.
-     * During assertions if any type between {@code superType} and {@code implementationType} appears,
-     * this support can generate values for it.<br>
      * <br>
      * <p>Example support for {@code CharSequence}, {@code AbstractStringBuilder} and {@code StringBuffer}:
      * <pre>
@@ -108,26 +109,22 @@ public final class Junisert {
     public static <T, I extends T> void registerSupport(Class<T> superType,
                                                         Class<I> implementationType,
                                                         Value<I> implementation) {
-        ValueGenerator<?> support = implementationType.isPrimitive()
-                ? new PrimitiveSupport<>(implementationType, implementation)
-                : SupportBuilder.createSupport()
-                        .supportSingle(superType, implementationType, implementation)
-                        .build();
-        registerSupport(new SortableSupport(support));
+        ValueGenerator<?> support = SupportRegistry.createSupport(superType, implementationType, implementation);
+        registerSupport(support);
     }
 
     /**
+     * Will globally register custom support for a specific type, this will only support a single type and not an entire
+     * polymorphic hierarchy.
+     * To support a hierarchy
+     * {@link #registerSupport(Class, Class, Value) Junisert.registerSupport(Class, Class, Value)}
+     * should be used instead.<br>
+     * <br>
      * <strong>OBS!</strong> {@code implementation} should not construct a negative (null or primitive zero/false)
      * value, it will affect value comparison during assertions and produce error-prone results.
      * It's empty representation however is allowed to be negative, see
      * {@link Value#of(Supplier, Supplier) lazy value} and {@link Value#ofEager(Object, Object) eager value}
      * for more details.<br>
-     * <br>
-     * Will register custom support for a specific type, this will only support a single type and not an entire
-     * polymorphic hierarchy.
-     * To support a hierarchy
-     * {@link #registerSupport(Class, Class, Value) Junisert.registerSupport(Class, Class, Value)}
-     * should be used instead.<br>
      * <br>
      * <p>Example support for {@code StringBuffer}:
      * <pre>
@@ -152,11 +149,11 @@ public final class Junisert {
                 .defaultValueSupport()
                 .mergeFirst(new AggregatedSupportGenerator(SupportRegistry.get().registeredSupport()));
 
-        ValueGenerator<Object> constructorSupport = new CachingDependencyGenerator(valueSupport,
+        ValueGenerator<?> cachingValueSupport = new CachingDependencyGenerator(valueSupport,
                 SupportRegistry.get().cache());
 
         return new AssertionResource(Unit.of(unitClass),
-                new ConstructorInstanceCreator(constructorSupport, INSTANCE_DEPENDENCY_DEPTH),
+                InstanceCreator.usingConstructor(cachingValueSupport, INSTANCE_DEPENDENCY_DEPTH),
                 SingletonValueService.getInstance());
     }
 }

@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core;
+package io.github.mattiaspersson09.junisert.core.internal;
 
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedSupportGenerator;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
-import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
-import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 import io.github.mattiaspersson09.junisert.value.common.DependencyObjectValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
 
@@ -36,13 +34,13 @@ import java.util.Objects;
  * and updating a field in one instance will affect other instances of the same type.
  */
 final class ConstructorInstanceCreator implements InstanceCreator {
-    private final ValueGenerator<Object> instanceGenerator;
+    private final ValueGenerator<?> instanceGenerator;
 
-    ConstructorInstanceCreator(ValueGenerator<Object> instanceGenerator) {
+    ConstructorInstanceCreator(ValueGenerator<?> instanceGenerator) {
         this.instanceGenerator = instanceGenerator;
     }
 
-    ConstructorInstanceCreator(ValueGenerator<Object> dependencySupport, int dependencyDepth) {
+    ConstructorInstanceCreator(ValueGenerator<?> dependencySupport, int dependencyDepth) {
         Objects.requireNonNull(dependencySupport);
         this.instanceGenerator = new AggregatedSupportGenerator(Arrays.asList(
                 ObjectValueGenerator.withForcedAccess(),

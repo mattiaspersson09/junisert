@@ -17,10 +17,13 @@ package io.github.mattiaspersson09.junisert.core;
 
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedSupportGenerator;
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedValueGenerator;
+import io.github.mattiaspersson09.junisert.api.internal.support.SupportBuilder;
+import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
-import io.github.mattiaspersson09.junisert.common.sort.Sortable;
+import io.github.mattiaspersson09.junisert.core.internal.support.PrimitiveSupport;
 import io.github.mattiaspersson09.junisert.core.internal.support.SortableSupport;
+import io.github.mattiaspersson09.junisert.core.internal.support.SupportComparator;
 import io.github.mattiaspersson09.junisert.value.common.ArrayValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.EnumValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.InterfaceValueGenerator;
@@ -34,7 +37,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-final class SupportRegistry {
+/**
+ * Registry responsible for holding default value support and globally registered user support.
+ */
+public final class SupportRegistry {
     private static final Logger LOGGER = Logger.getLogger(SupportRegistry.class);
     private static volatile SupportRegistry instance;
 
@@ -60,7 +66,12 @@ final class SupportRegistry {
         registeredSupport = new ArrayList<>();
     }
 
-    static synchronized SupportRegistry get() {
+    /**
+     * Gets instance of this registry.
+     *
+     * @return registry instance
+     */
+    public static synchronized SupportRegistry get() {
         if (instance == null) {
             instance = new SupportRegistry();
         }
@@ -68,15 +79,50 @@ final class SupportRegistry {
         return instance;
     }
 
-    ValueCache cache() {
+    /**
+     * Creates a suitable support for given type hierarchy that can be registered.
+     *
+     * @param superType          to support
+     * @param implementationType of {@code superType} to support
+     * @param implementation     of {@code implementationType} to lazily construct
+     * @return new support that can be registered
+     * @param <T> type for super type
+     * @param <I> type for implementation
+     */
+    public static <T, I extends T> ValueGenerator<?> createSupport(Class<T> superType,
+                                                                   Class<I> implementationType,
+                                                                   Value<I> implementation) {
+        return implementationType.isPrimitive()
+                ? new PrimitiveSupport<>(implementationType, implementation)
+                : SupportBuilder.createSupport()
+                        .supportSingle(superType, implementationType, implementation)
+                        .build();
+    }
+
+    /**
+     * Gets current {@link ValueCache} used where values and dependencies is cached.
+     *
+     * @return current cache
+     */
+    public ValueCache cache() {
         return valueCache;
     }
 
-    AggregatedValueGenerator defaultValueSupport() {
+    /**
+     * Gets unmodifiable view of the default value support, predefined by the framework.
+     *
+     * @return unmodifiable aggregated value support
+     */
+    public AggregatedValueGenerator defaultValueSupport() {
         return defaultValueSupport;
     }
 
-    List<ValueGenerator<?>> registeredSupport() {
+    /**
+     * Gets unmodifiable view of the user's currently global registered support.
+     *
+     * @return unmodifiable registered support
+     */
+    public List<ValueGenerator<?>> registeredSupport() {
         synchronized (mutex) {
             return Collections.unmodifiableList(registeredSupport);
         }
@@ -84,10 +130,10 @@ final class SupportRegistry {
 
     SupportRegistry register(ValueGenerator<?> support) {
         synchronized (mutex) {
-            registeredSupport.add(toSortableSupport(support));
+            registeredSupport.add(SortableSupport.toSortable(support));
             registeredSupport.sort(new SupportComparator());
         }
-        LOGGER.config("Registered support: {0}", support);
+        LOGGER.config("Registered global support: {0}", support);
 
         return this;
     }
@@ -105,9 +151,5 @@ final class SupportRegistry {
     private ValueGenerator<?> createJavaInternalSupport() {
         LOGGER.config("Initializing predefined Java internal support");
         return JavaInternals.getSupported();
-    }
-
-    private ValueGenerator<?> toSortableSupport(ValueGenerator<?> generator) {
-        return (generator instanceof Sortable) ? generator : new SortableSupport(generator);
     }
 }

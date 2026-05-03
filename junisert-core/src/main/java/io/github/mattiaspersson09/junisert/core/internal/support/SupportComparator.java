@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core;
+package io.github.mattiaspersson09.junisert.core.internal.support;
 
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.sort.Order;
@@ -21,7 +21,16 @@ import io.github.mattiaspersson09.junisert.common.sort.Sortable;
 
 import java.util.Comparator;
 
-final class SupportComparator implements Comparator<ValueGenerator<?>> {
+/**
+ * Comparator for sorting value support using their natural {@link Sortable} {@link Order} when sorting.
+ */
+public final class SupportComparator implements Comparator<ValueGenerator<?>> {
+    /**
+     * Creates a new support comparator to use when sorting value support.
+     */
+    public SupportComparator() {
+    }
+
     @Override
     public int compare(ValueGenerator<?> o1, ValueGenerator<?> o2) {
         Sortable left = toSortable(o1);

@@ -21,7 +21,7 @@ package io.github.mattiaspersson09.junisert.api.assertion;
  *
  * @see #isWellImplemented()
  */
-public interface PlainObjectAssertion {
+public interface PlainObjectAssertion extends Assertion<PlainObjectAssertion> {
     /**
      * Asserts that unit has a working getter for all <em>instance</em> fields. This assertion is flexible
      * and accepts both <em>Java Bean</em> compliant and <em>builder/record</em> styles and does not enforce

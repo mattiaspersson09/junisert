@@ -64,16 +64,17 @@ public class ImplementsToString extends AbstractUnitTest {
         List<Field> instanceFields = unit.findFieldsMatching(Field::isInstanceMember);
 
         for (Field field : instanceFields) {
-            Object value = valueService.getValue(field.getType()).get();
 
             if (!unit.isImmutable()) {
+                Object value = valueService.getValue(field.getType()).get();
                 field.setValue(instance, value);
             }
 
             LOGGER.test("Field check -> instance.toString() contains with value: {0}", field.getName());
+            Object fieldValue = field.getValue(instance);
 
-            if (!unitToString.contains(field, value)) {
-                String valueString = ToString.valueOf(value);
+            if (!unitToString.contains(field, fieldValue)) {
+                String valueString = ToString.valueOf(fieldValue);
 
                 LOGGER.fail(details(unit, "fails field check"),
                         "to contain field '" + field.getName() + "' with value '" + valueString + "'",
