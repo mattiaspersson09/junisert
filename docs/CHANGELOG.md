@@ -8,6 +8,14 @@ nav_order: 4
 
 This is an automatic changelog based on notable changes to this project, check [release notes](https://github.com/mattiaspersson09/junisert/releases) for additional information.
 
+## 0.5.0 *(2026-05-03)*
+**Release notes:** [release v0.5.0](https://github.com/mattiaspersson09/junisert/releases/tag/v0.5.0)
+
+
+### Features
+
+- Ability to register temporary support during assertion [#118](https://github.com/mattiaspersson09/junisert/pull/118) ([dc9dc9](https://github.com/mattiaspersson09/junisert/commit/dc9dc9c23464fcc7e0b82b94d8b7d6fe1d7bc095))
+
 ## 0.4.0 *(2026-04-19)*
 **Release notes:** [release v0.4.0](https://github.com/mattiaspersson09/junisert/releases/tag/v0.4.0)
 
