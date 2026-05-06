@@ -36,8 +36,9 @@ public interface Value<T> extends Supplier<T> {
     T get();
 
     /**
-     * Gets an empty value representation of {@link #get()}. This is usually represented as {@code null} for objects
-     * which aren't <em>primitive</em> if not implemented.
+     * Gets a resulting empty value representation of {@link #get()}. This is usually represented as {@code null} for
+     * objects
+     * which aren't <em>primitive</em>, if not implemented.
      *
      * @return empty representation
      */
@@ -61,7 +62,7 @@ public interface Value<T> extends Supplier<T> {
     }
 
     /**
-     * Creates value from an eagerly already constructed value with another value as it's empty counterpart.
+     * Creates value from an already constructed value with another value as it's empty counterpart.
      * Value isn't allowed to be empty/missing and {@code emptyRepresentation}
      * isn't allowed to be the same as {@code notEmpty}, to secure safe comparisons.<br>
      * <br>

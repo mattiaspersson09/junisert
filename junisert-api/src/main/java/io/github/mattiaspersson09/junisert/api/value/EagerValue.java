@@ -19,6 +19,7 @@ import java.util.Objects;
 
 /**
  * @see Value#ofEager(Object)
+ * @see Value#ofEager(Object, Object)
  */
 class EagerValue<T> implements Value<T> {
     private final T value;

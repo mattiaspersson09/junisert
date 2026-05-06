@@ -21,16 +21,16 @@ import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import java.util.function.Supplier;
 
 /**
- * A chainable support user that needs temporary support when performing operations.
+ * A chainable temporary support user that needs support when performing operations.
  *
  * @param <U> temporary support user
  */
 public interface SupportUser<U> {
     /**
-     * Registers temporary support to be used during operations. Values created by a temporary support
-     * will be handled differently, to prevent side effects and disruption of other operations.
+     * Registers support to be used during an operation. Values created by given support should be
+     * handled differently than global support, to prevent side effects and disruption of other operations.
      *
-     * @param support that is needed temporarily
+     * @param support that is needed
      * @return this support user
      * @see ValueGenerator
      * @see #withSupport(Class, Class, Value)
@@ -41,26 +41,26 @@ public interface SupportUser<U> {
     }
 
     /**
-     * Registers temporary support to be used during operations. Values created by a temporary support
-     * will be handled differently, to prevent side effects and disruption of other operations.<br>
+     * Registers support to be used during an operation. Values created by given support should be
+     * handled differently than global support, to prevent side effects and disruption of other operations.<br>
      * <br>
      * <strong>OBS!</strong> {@code implementation} should not construct a negative (null or primitive zero/false)
-     * value, it will affect value comparison and might produce error-prone results.
+     * resulting value, it will affect value comparison and might produce error-prone results.
      * It's empty representation however is allowed to be negative, see
      * {@link Value#of(Supplier, Supplier) lazy value} and {@link Value#ofEager(Object, Object) eager value}
      * for more details.<br>
      * <br>
      * Will register custom support for a polymorphic type, where you can support a hierarchy of values.
-     * During assertions if any type between {@code superType} and {@code implementationType} appears,
+     * During an operation, if any type between {@code superType} and {@code implementationType} appears,
      * this support can generate values for it.<br>
      * <br>
      * <p>Example support for {@code CharSequence}, {@code AbstractStringBuilder} and {@code StringBuffer}:
      * <pre>
-     * withTemporarySupport(CharSequence.class, StringBuffer.class, StringBuffer::new);
+     * withSupport(CharSequence.class, StringBuffer.class, StringBuffer::new);
      * </pre>
      * Example with the same support but non-null empty value:
      * <pre>
-     * withTemporarySupport(CharSequence.class, StringBuffer.class, Value.of(() -> new StringBuffer("Junisert"), StringBuffer::new));
+     * withSupport(CharSequence.class, StringBuffer.class, Value.of(() -> new StringBuffer("Junisert"), StringBuffer::new));
      * </pre>
      *
      * @param superType          to support
@@ -76,11 +76,11 @@ public interface SupportUser<U> {
     }
 
     /**
-     * Registers temporary support to be used during operations. Values created by a temporary support
-     * will be handled differently, to prevent side effects and disruption of other operations.<br>
+     * Registers support to be used during an operation. Values created by given support should be
+     * handled differently than global support, to prevent side effects and disruption of other operations.<br>
      * <br>
      * <strong>OBS!</strong> {@code implementation} should not construct a negative (null or primitive zero/false)
-     * value, it will affect value comparison and might produce error-prone results.
+     * resulting value, it will affect value comparison and might produce error-prone results.
      * It's empty representation however is allowed to be negative, see
      * {@link Value#of(Supplier, Supplier) lazy value} and {@link Value#ofEager(Object, Object) eager value}
      * for more details.<br>
@@ -91,11 +91,11 @@ public interface SupportUser<U> {
      * <br>
      * <p>Example support for {@code StringBuffer}:
      * <pre>
-     * withTemporarySupport(StringBuffer.class, StringBuffer::new);
+     * withSupport(StringBuffer.class, StringBuffer::new);
      * </pre>
      * Example with the same support but non-null empty value:
      * <pre>
-     * withTemporarySupport(StringBuffer.class, Value.of(() -> new StringBuffer("Junisert"), StringBuffer::new));
+     * withSupport(StringBuffer.class, Value.of(() -> new StringBuffer("Junisert"), StringBuffer::new));
      * </pre>
      *
      * @param implementationType to support

@@ -33,7 +33,6 @@ class LazyValue<T> implements Value<T> {
     LazyValue(Supplier<T> value, Supplier<T> empty) {
         this.value = Objects.requireNonNull(value, "Can't construct a lazy value object without a value supplier");
         this.empty = Objects.requireNonNull(empty, "Can't construct a lazy value object without a value supplier");
-        ;
     }
 
     @Override
