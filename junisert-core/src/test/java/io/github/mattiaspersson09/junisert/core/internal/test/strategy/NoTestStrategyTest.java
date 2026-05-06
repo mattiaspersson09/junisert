@@ -15,8 +15,8 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.test.strategy;
 
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Method;
+import io.github.mattiaspersson09.junisert.common.reflection.Field;
+import io.github.mattiaspersson09.junisert.common.reflection.Method;
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.Super;
 
 import org.junit.jupiter.api.BeforeEach;

@@ -16,7 +16,7 @@
 package io.github.mattiaspersson09.junisert.core.internal;
 
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
+import io.github.mattiaspersson09.junisert.common.reflection.Unit;
 import io.github.mattiaspersson09.junisert.value.common.DependencyObjectValueGenerator;
 import io.github.mattiaspersson09.junisert.value.common.ObjectValueGenerator;
 

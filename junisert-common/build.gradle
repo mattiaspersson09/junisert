@@ -2,3 +2,7 @@ plugins {
     id("junisert.java-library")
     id("junisert.maven-publish")
 }
+
+dependencies {
+    testImplementation(project(":junisert-testunits"))
+}

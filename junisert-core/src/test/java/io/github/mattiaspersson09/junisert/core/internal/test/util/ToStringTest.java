@@ -15,7 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.test.util;
 
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
+import io.github.mattiaspersson09.junisert.common.reflection.Field;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
