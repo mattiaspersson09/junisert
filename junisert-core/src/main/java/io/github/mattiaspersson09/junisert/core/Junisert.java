@@ -22,11 +22,11 @@ import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedValueG
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
+import io.github.mattiaspersson09.junisert.common.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.assertion.AssertionResource;
 import io.github.mattiaspersson09.junisert.core.assertion.PlainObjectAssertionImpl;
 import io.github.mattiaspersson09.junisert.core.assertion.UnitAssertionImpl;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 
 import java.util.function.Supplier;
 

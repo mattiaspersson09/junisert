@@ -22,13 +22,13 @@ import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
+import io.github.mattiaspersson09.junisert.common.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.CachingDependencyGenerator;
 import io.github.mattiaspersson09.junisert.core.Junisert;
 import io.github.mattiaspersson09.junisert.core.SupportRegistry;
 import io.github.mattiaspersson09.junisert.core.ValueCache;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.ValueService;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.support.SortableSupport;
 import io.github.mattiaspersson09.junisert.core.internal.test.UnitTest;
 

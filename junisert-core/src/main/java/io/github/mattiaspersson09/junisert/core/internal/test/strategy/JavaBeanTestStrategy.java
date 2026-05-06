@@ -15,9 +15,9 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.test.strategy;
 
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Method;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.util.Fields;
+import io.github.mattiaspersson09.junisert.common.reflection.Field;
+import io.github.mattiaspersson09.junisert.common.reflection.Method;
+import io.github.mattiaspersson09.junisert.common.reflection.util.Fields;
 
 import java.util.function.Predicate;
 

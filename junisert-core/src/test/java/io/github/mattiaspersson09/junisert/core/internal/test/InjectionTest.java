@@ -16,9 +16,9 @@
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedConstructionError;
+import io.github.mattiaspersson09.junisert.common.reflection.Invokable;
+import io.github.mattiaspersson09.junisert.common.reflection.ReflectionException;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Invokable;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.ReflectionException;
 import io.github.mattiaspersson09.junisert.testunits.setter.BeanStyle;
 import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanCompliantModel;
 

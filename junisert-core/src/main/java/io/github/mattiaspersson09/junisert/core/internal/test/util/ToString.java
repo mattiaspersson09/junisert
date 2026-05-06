@@ -16,7 +16,7 @@
 package io.github.mattiaspersson09.junisert.core.internal.test.util;
 
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Field;
+import io.github.mattiaspersson09.junisert.common.reflection.Field;
 
 import java.util.Arrays;
 import java.util.Objects;

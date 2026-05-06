@@ -15,9 +15,9 @@
  */
 package io.github.mattiaspersson09.junisert.core.assertion;
 
+import io.github.mattiaspersson09.junisert.common.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.ValueService;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Unit;
 
 /**
  * Used to wrap and supply expensive resources that should only be constructed once and be injected where needed

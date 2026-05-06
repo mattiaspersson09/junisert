@@ -16,8 +16,8 @@
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
+import io.github.mattiaspersson09.junisert.common.reflection.Invokable;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
-import io.github.mattiaspersson09.junisert.core.internal.reflection.Invokable;
 
 import java.util.Arrays;
 import java.util.Objects;
