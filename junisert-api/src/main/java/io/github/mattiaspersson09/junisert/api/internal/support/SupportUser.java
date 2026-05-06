@@ -85,7 +85,7 @@ public interface SupportUser<U> {
      * {@link Value#of(Supplier, Supplier) lazy value} and {@link Value#ofEager(Object, Object) eager value}
      * for more details.<br>
      * <br>
-     * Will temporarily register custom support for a specific type, this will only support a single type and not an
+     * Will register custom support for a specific type, this will only support a single type and not an
      * entire polymorphic hierarchy. To support a hierarchy {@link #withSupport(Class, Class, Value)}
      * should be used instead.<br>
      * <br>
