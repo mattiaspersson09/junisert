@@ -20,7 +20,7 @@ package io.github.mattiaspersson09.junisert.api.assertion;
  * To assume the unit under assertion is a specific type of unit, use methods starting with
  * <em>"as"</em> for specific assertions. Use methods starting with <em>"is"</em> for convenient direct assertion.
  */
-public interface UnitAssertion extends Assertion<UnitAssertion> {
+public interface UnitAssertion extends Assertion<UnitAssertion>, Excluder<UnitAssertion> {
     /**
      * Assumes this unit is a plain object for assertion, which doesn't necessarily follow a naming convention
      * but carries properties.
@@ -52,6 +52,8 @@ public interface UnitAssertion extends Assertion<UnitAssertion> {
      * @return this assertion, chained to be able to assert more
      * @throws UnitAssertionError if some requirement is not met
      * @see #asPojo()
+     * @see #excludingField(String) excluding a field
+     * @see #excludingMethod(String, Class[]) excluding a method
      */
     UnitAssertion isJavaBeanCompliant() throws UnitAssertionError;
 

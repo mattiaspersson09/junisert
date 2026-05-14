@@ -16,12 +16,16 @@
 package io.github.mattiaspersson09.junisert.core.assertion;
 
 import io.github.mattiaspersson09.junisert.api.assertion.Assertion;
+import io.github.mattiaspersson09.junisert.api.assertion.Excluder;
+import io.github.mattiaspersson09.junisert.api.assertion.Exclusion;
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedSupportGenerator;
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedValueGenerator;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedTypeError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
+import io.github.mattiaspersson09.junisert.common.reflection.Field;
+import io.github.mattiaspersson09.junisert.common.reflection.Method;
 import io.github.mattiaspersson09.junisert.common.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.CachingDependencyGenerator;
 import io.github.mattiaspersson09.junisert.core.Junisert;
@@ -30,17 +34,19 @@ import io.github.mattiaspersson09.junisert.core.ValueCache;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.support.SortableSupport;
+import io.github.mattiaspersson09.junisert.core.internal.test.AbstractUnitTest;
 import io.github.mattiaspersson09.junisert.core.internal.test.UnitTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Base class for assertions, responsible for dependency injection and resource setup for implementations.
  *
  * @param <A> type of assertion
  */
-abstract class AbstractAssertion<A> implements Assertion<A> {
+abstract class AbstractAssertion<A> implements Assertion<A>, Excluder<A> {
     private static final Logger LOGGER = Logger.getLogger(AbstractAssertion.class);
 
     private final AssertionResource assertionResource;
@@ -61,7 +67,8 @@ abstract class AbstractAssertion<A> implements Assertion<A> {
     protected final AssertionResource getAssertionResource() {
         return assertionSupport.isEmpty()
                 ? assertionResource
-                : new AssertionResource(getUnit(), getInstanceCreator(), getValueService());
+                : new AssertionResource(getUnit(), getInstanceCreator(), getValueService(),
+                        assertionResource.getExclusion());
     }
 
     /**
@@ -74,19 +81,39 @@ abstract class AbstractAssertion<A> implements Assertion<A> {
     }
 
     /**
+     * Gets current assertion {@link Exclusion} filters.
+     *
+     * @return current exclusion filters
+     */
+    protected final Exclusion getExclusion() {
+        return assertionResource.getExclusion();
+    }
+
+    /**
      * Creates a qualified {@link UnitTest} and injects dependencies needed during construction.
      *
      * @param test to construct
      * @return qualified unit test with injected dependencies
      * @param <T> test type
      */
-    protected final <T extends UnitTest> T createTest(Class<T> test) {
+    protected final <T extends AbstractUnitTest<T>> T createTest(Class<T> test) {
         try {
             return test.getDeclaredConstructor(ValueService.class, InstanceCreator.class)
-                    .newInstance(getValueService(), getInstanceCreator());
+                    .newInstance(getValueService(), getInstanceCreator())
+                    .withExclusion(assertionResource.getExclusion());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Runs a qualified {@link UnitTest} and injects dependencies needed during construction.
+     *
+     * @param test to construct and run
+     * @param <T>  test type
+     */
+    protected final <T extends AbstractUnitTest<T>> void runTest(Class<T> test) {
+        createTest(test).test(getUnit());
     }
 
     @Override
@@ -106,6 +133,27 @@ abstract class AbstractAssertion<A> implements Assertion<A> {
     @Override
     public <T> A withSupport(Class<T> implementationType, Value<T> implementation) {
         return withSupport(implementationType, implementationType, implementation);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public A excludingField(Predicate<Field> filter) {
+        assertionResource.getExclusion().addFieldExclusion(filter);
+        return (A) this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public A excludingMethod(Predicate<Method> filter) {
+        assertionResource.getExclusion().addMethodExclusion(filter);
+        return (A) this;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public A excluding(Exclusion exclusion) {
+        assertionResource.getExclusion().add(exclusion);
+        return (A) this;
     }
 
     private ValueService getValueService() {

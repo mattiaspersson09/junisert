@@ -30,7 +30,7 @@ import java.util.Objects;
 /**
  * Tests that a {@link Unit} has a working getter for every non-synthetic instance field.
  */
-public final class HasGetters extends AbstractUnitTest {
+public final class HasGetters extends AbstractUnitTest<HasGetters> {
     private static final Logger LOGGER = Logger.getLogger("Has Getters");
 
     /**
@@ -48,17 +48,22 @@ public final class HasGetters extends AbstractUnitTest {
         LOGGER.info("Active test strategy: {0}", testStrategy.name());
         LOGGER.info("Testing unit: {0}", unit.getName());
 
-        for (Field field : unit.getFields()) {
-            if (!field.isInstanceMember()) {
-                continue;
-            }
+        List<Field> fields = unit.findFieldsMatching(exclusion::isNotExcluded);
 
+        for (Field field : fields) {
             LOGGER.info("Checking field: {0}", field);
 
             List<Method> getters = unit.findMethodsMatching(testStrategy.isGetterForField(field)
-                    .and(Method::isInstanceMember));
+                    .and(exclusion::isNotExcluded));
 
             if (getters.isEmpty()) {
+                List<Method> excluded = unit.findMethodsMatching(testStrategy.isGetterForField(field));
+
+                if (!excluded.isEmpty()) {
+                    LOGGER.info("Skipped: no getter to test, all found is excluded: {0}", excluded);
+                    continue;
+                }
+
                 throw new UnitAssertionError(String.format("%s was expected to have getter for instance field: %s, "
                         + "but none was found", unit.getName(), field.getName()));
             }

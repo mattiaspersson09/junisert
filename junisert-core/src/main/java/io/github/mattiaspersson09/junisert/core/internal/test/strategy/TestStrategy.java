@@ -61,7 +61,7 @@ public interface TestStrategy {
      *
      * @return a new test strategy
      */
-    static TestStrategy none() {
-        return new NoTestStrategy();
+    static TestStrategy flexible() {
+        return new FlexibleTestStrategy();
     }
 }

@@ -21,9 +21,10 @@ package io.github.mattiaspersson09.junisert.api.assertion;
  *
  * @see #isWellImplemented()
  */
-public interface PlainObjectAssertion extends Assertion<PlainObjectAssertion> {
+public interface PlainObjectAssertion extends Assertion<PlainObjectAssertion>, Excluder<PlainObjectAssertion> {
     /**
-     * Asserts that unit has a working getter for all <em>instance</em> fields. This assertion is flexible
+     * Asserts that unit has a working non-excluded getter for all non-excluded <em>instance</em> fields. This assertion
+     * is flexible
      * and accepts both <em>Java Bean</em> compliant and <em>builder/record</em> styles and does not enforce
      * public visibility.
      * <p>
@@ -39,13 +40,16 @@ public interface PlainObjectAssertion extends Assertion<PlainObjectAssertion> {
      *
      * @return this assertion chained to assert more
      * @throws UnitAssertionError if unit fails assertion
+     * @see #excludingField(String) excluding a field
+     * @see #excludingMethod(String, Class[]) excluding a method
      */
     PlainObjectAssertion hasGetters() throws UnitAssertionError;
 
     /**
      * <em>If the unit is immutable then this assertion will be skipped.</em><br>
      * <br>
-     * Asserts that unit has a working setter for all <em>instance</em> fields. This assertion is flexible
+     * Asserts that unit has a working non-excluded setter for all non-excluded <em>instance</em> fields. This assertion
+     * is flexible
      * and accepts both <em>Java Bean</em> compliant and <em>builder/record</em> styles and does not enforce
      * public visibility.
      * <p>
@@ -62,6 +66,8 @@ public interface PlainObjectAssertion extends Assertion<PlainObjectAssertion> {
      *
      * @return this assertion chained to assert more
      * @throws UnitAssertionError if unit fails assertion
+     * @see #excludingField(String) excluding a field
+     * @see #excludingMethod(String, Class[]) excluding a method
      */
     PlainObjectAssertion hasSetters() throws UnitAssertionError;
 
@@ -83,11 +89,12 @@ public interface PlainObjectAssertion extends Assertion<PlainObjectAssertion> {
      * This assertion will enforce that {@code toString} contains the name of the unit and all <em>instance fields</em>
      * with their current value is shown.<br>
      * For field check this asserts that {@code <property name>}, operator &#61; or &#58; and {@code <property value>}
-     * is present together for every instance field.
+     * is present together for every <em>non-excluded</em> instance field.
      *
      * @return this assertion chained to assert more
      * @throws UnitAssertionError if unit fails assertion
      * @see Object#toString()
+     * @see #excludingField(String) excluding an instance field
      */
     PlainObjectAssertion implementsToString() throws UnitAssertionError;
 

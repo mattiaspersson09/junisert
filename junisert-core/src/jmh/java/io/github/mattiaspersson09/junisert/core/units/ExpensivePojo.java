@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core;
+package io.github.mattiaspersson09.junisert.core.units;
 
 import io.github.mattiaspersson09.junisert.testunits.polymorphism.Super;
 import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanCompliantModel;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-class ExpensivePojo {
+public class ExpensivePojo {
     private InceptionModel inceptionModel;
     private ImmutableModel immutableModel;
     private BeanCompliantModel beanModel;

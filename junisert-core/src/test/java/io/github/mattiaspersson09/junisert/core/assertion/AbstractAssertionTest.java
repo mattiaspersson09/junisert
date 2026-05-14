@@ -15,27 +15,38 @@
  */
 package io.github.mattiaspersson09.junisert.core.assertion;
 
-import io.github.mattiaspersson09.junisert.common.reflection.Unit;
-import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
-import io.github.mattiaspersson09.junisert.core.internal.ValueService;
-import io.github.mattiaspersson09.junisert.core.internal.test.UnitTest;
+import io.github.mattiaspersson09.junisert.core.internal.test.AbstractUnitTest;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doThrow;
 
 public class AbstractAssertionTest {
     @Test
-    void createTest_whenFailing_thenThrowsRuntimeException() {
-        UnitTest unitTest = Mockito.mock(UnitTest.class);
-        Unit unit = Mockito.mock(Unit.class);
-        InstanceCreator instanceCreator = Mockito.mock(InstanceCreator.class);
-        ValueService valueService = Mockito.mock(ValueService.class);
+    @SuppressWarnings("unchecked")
+    void createTest_whenFailingToCreateTest_thenThrowsRuntimeException() {
+        AbstractUnitTest<?> unitTest = Mockito.mock(AbstractUnitTest.class);
+        AssertionResource assertionResource = Mockito.mock(AssertionResource.class);
+        Assertion assertion = new Assertion(assertionResource);
 
-        Assertion assertion = new Assertion(new AssertionResource(unit, instanceCreator, valueService));
+        doThrow().when(unitTest).getClass();
 
         assertThatThrownBy(() -> assertion.createTest(unitTest.getClass()))
+                .isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void runtTest_whenFailingToCreateTest_thenThrowsRuntimeException() {
+        AbstractUnitTest<?> unitTest = Mockito.mock(AbstractUnitTest.class);
+        AssertionResource assertionResource = Mockito.mock(AssertionResource.class);
+        Assertion assertion = new Assertion(assertionResource);
+
+        doThrow().when(unitTest).getClass();
+
+        assertThatThrownBy(() -> assertion.runTest(unitTest.getClass()))
                 .isInstanceOf(RuntimeException.class);
     }
 

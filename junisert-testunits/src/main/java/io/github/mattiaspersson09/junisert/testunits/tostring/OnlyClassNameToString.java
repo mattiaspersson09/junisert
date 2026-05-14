@@ -5,6 +5,6 @@ public class OnlyClassNameToString {
 
     @Override
     public String toString() {
-        return "NameToString";
+        return "OnlyClassNameToString";
     }
 }

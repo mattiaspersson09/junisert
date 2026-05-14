@@ -15,6 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.core.assertion;
 
+import io.github.mattiaspersson09.junisert.api.assertion.Exclusion;
 import io.github.mattiaspersson09.junisert.common.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.ValueService;
@@ -27,6 +28,7 @@ public final class AssertionResource {
     private final Unit unitUnderAssertion;
     private final InstanceCreator instanceCreator;
     private final ValueService valueService;
+    private final Exclusion exclusion;
 
     /**
      * Creates a new resource to share and inject where needed.
@@ -34,11 +36,16 @@ public final class AssertionResource {
      * @param unitUnderAssertion currently being asserted
      * @param instanceCreator    creating instances of {@code unitUnderAssertion}
      * @param valueService       providing value support with potentially caching abilities
+     * @param exclusion          filters for excluding unit members
      */
-    public AssertionResource(Unit unitUnderAssertion, InstanceCreator instanceCreator, ValueService valueService) {
+    public AssertionResource(Unit unitUnderAssertion,
+                             InstanceCreator instanceCreator,
+                             ValueService valueService,
+                             Exclusion exclusion) {
         this.unitUnderAssertion = unitUnderAssertion;
         this.instanceCreator = instanceCreator;
         this.valueService = valueService;
+        this.exclusion = exclusion;
     }
 
     /**
@@ -66,5 +73,14 @@ public final class AssertionResource {
      */
     public ValueService getValueService() {
         return valueService;
+    }
+
+    /**
+     * Gets current exclusion filters.
+     *
+     * @return exclusion filters
+     */
+    public Exclusion getExclusion() {
+        return exclusion;
     }
 }

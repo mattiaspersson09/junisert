@@ -15,6 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.core;
 
+import io.github.mattiaspersson09.junisert.api.assertion.Exclusion;
 import io.github.mattiaspersson09.junisert.api.assertion.PlainObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertion;
 import io.github.mattiaspersson09.junisert.api.internal.support.AggregatedSupportGenerator;
@@ -152,8 +153,15 @@ public final class Junisert {
         ValueGenerator<?> cachingValueSupport = new CachingDependencyGenerator(valueSupport,
                 SupportRegistry.get().cache());
 
-        return new AssertionResource(Unit.of(unitClass),
+        // Start with excluding non-instance members, no current assertion is interested in statics or synthetics
+        return new AssertionResource(
+                Unit.of(unitClass),
                 InstanceCreator.usingConstructor(cachingValueSupport, INSTANCE_DEPENDENCY_DEPTH),
-                SingletonValueService.getInstance());
+                SingletonValueService.getInstance(),
+                Exclusion.exclude()
+                        .fieldMatching(field -> !field.isInstanceMember())
+                        .methodMatching(method -> !method.isInstanceMember())
+                        .build()
+        );
     }
 }

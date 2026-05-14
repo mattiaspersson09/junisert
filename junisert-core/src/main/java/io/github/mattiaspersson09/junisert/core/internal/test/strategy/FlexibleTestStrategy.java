@@ -20,7 +20,7 @@ import io.github.mattiaspersson09.junisert.common.reflection.Method;
 
 import java.util.function.Predicate;
 
-final class NoTestStrategy implements TestStrategy {
+final class FlexibleTestStrategy implements TestStrategy {
     @Override
     public Predicate<Method> isGetterForField(Field field) {
         return new JavaBeanTestStrategy()
@@ -37,7 +37,7 @@ final class NoTestStrategy implements TestStrategy {
 
     @Override
     public String name() {
-        return "None (flexible)";
+        return "Flexible";
     }
 
     private Predicate<Method> isRecordStyleGetter(Field field) {

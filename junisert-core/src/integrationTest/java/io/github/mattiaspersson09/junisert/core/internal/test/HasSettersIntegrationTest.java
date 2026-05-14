@@ -15,7 +15,10 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
+import io.github.mattiaspersson09.junisert.api.assertion.Exclusion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
+import io.github.mattiaspersson09.junisert.common.reflection.Field;
+import io.github.mattiaspersson09.junisert.common.reflection.Method;
 import io.github.mattiaspersson09.junisert.common.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.NoCacheTestValueService;
 import io.github.mattiaspersson09.junisert.core.TestInstanceCreator;
@@ -63,7 +66,11 @@ public class HasSettersIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        hasSetters = new HasSetters(valueService, instanceCreator);
+        hasSetters = new HasSetters(valueService, instanceCreator)
+                .withExclusion(Exclusion.exclude()
+                        .fieldMatching(Field::isSynthetic)
+                        .methodMatching(Method::isSynthetic)
+                        .build());
     }
 
     @Test
@@ -78,7 +85,7 @@ public class HasSettersIntegrationTest {
 
     @Test
     void givenUnit_whenConventionIsSetToJavaBean_andSetterIsNotBeanCompliant_thenFailsTest() {
-        hasSetters.setTestStrategy(TestStrategy.javaBeanCompliant());
+        hasSetters.withTestStrategy(TestStrategy.javaBeanCompliant());
 
         assertThatThrownBy(() -> hasSetters.test(Unit.of(BuilderStyle.class))).isInstanceOf(UnitAssertionError.class);
         assertThatThrownBy(() -> hasSetters.test(Unit.of(RecordStyle.class))).isInstanceOf(UnitAssertionError.class);
@@ -103,9 +110,34 @@ public class HasSettersIntegrationTest {
     }
 
     @Test
+    void givenUnitWithFieldHavingTwoSetters_andJustOneWorking_whenBrokenSetterIsExcluded_thenPassesTest() {
+        new HasSetters(valueService, instanceCreator)
+                .withExclusion(Exclusion.exclude()
+                        .fieldMatching(Field::isSynthetic)
+                        .methodMatching(method -> method.getName().equals("field"))
+                        .build())
+                .test(Unit.of(TwoButOnlyOneWorking.class));
+    }
+
+    @Test
     void givenUnit_whenAllFieldsHaveSetters_butSomeSetterIsNotWorking_thenFailsTest() {
         assertThatThrownBy(() -> hasSetters.test(Unit.of(NotSettingField.class)))
                 .isInstanceOf(UnitAssertionError.class);
+    }
+
+    @Test
+    void givenUnit_whenAnyFieldHasBrokenSetter_butSetterIsExcluded_thenSkipsTest() {
+        assertThatThrownBy(() -> hasSetters.test(Unit.of(NotSettingField.class)))
+                .isInstanceOf(UnitAssertionError.class);
+
+        HasSetters hasSetters = new HasSetters(valueService, instanceCreator)
+                .withExclusion(Exclusion.exclude()
+                        .fieldMatching(Field::isSynthetic)
+                        .methodMatching(Method::isSynthetic)
+                        .methodMatching(method -> method.getName().equals("setField"))
+                        .build());
+
+        hasSetters.test(Unit.of(NotSettingField.class));
     }
 
     @Test

@@ -15,6 +15,7 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
+import io.github.mattiaspersson09.junisert.api.assertion.Exclusion;
 import io.github.mattiaspersson09.junisert.api.value.UnsupportedConstructionError;
 import io.github.mattiaspersson09.junisert.api.value.Value;
 import io.github.mattiaspersson09.junisert.common.reflection.Constructor;
@@ -29,8 +30,10 @@ import java.util.stream.Collectors;
 
 /**
  * Base class for {@link UnitTest}'s, holding needed resources for performing tests.
+ *
+ * @param <T> test type
  */
-public abstract class AbstractUnitTest implements UnitTest {
+public abstract class AbstractUnitTest<T> implements UnitTest {
     /**
      * Providing value support with potentially caching abilities.
      */
@@ -39,6 +42,11 @@ public abstract class AbstractUnitTest implements UnitTest {
      * Creates instances of {@link Unit}'s.
      */
     protected final InstanceCreator instanceCreator;
+
+    /**
+     * Exclusion filters for unit members.
+     */
+    protected Exclusion exclusion;
     /**
      * Active testing strategy for units.
      */
@@ -50,19 +58,34 @@ public abstract class AbstractUnitTest implements UnitTest {
      * @param valueService    providing value support with potentially caching abilities
      * @param instanceCreator of units
      */
-    public AbstractUnitTest(ValueService valueService, InstanceCreator instanceCreator) {
+    protected AbstractUnitTest(ValueService valueService, InstanceCreator instanceCreator) {
         this.valueService = valueService;
         this.instanceCreator = instanceCreator;
-        this.testStrategy = TestStrategy.none();
+        this.testStrategy = TestStrategy.flexible();
     }
 
     /**
      * Sets active testing strategy.
      *
      * @param testStrategy to be used during test
+     * @return this test
      */
-    public final void setTestStrategy(TestStrategy testStrategy) {
+    @SuppressWarnings("unchecked")
+    public final T withTestStrategy(TestStrategy testStrategy) {
         this.testStrategy = testStrategy;
+        return (T) this;
+    }
+
+    /**
+     * Sets active exclusion filters.
+     *
+     * @param exclusion that excludes unit members
+     * @return this test
+     */
+    @SuppressWarnings("unchecked")
+    public final T withExclusion(Exclusion exclusion) {
+        this.exclusion = exclusion;
+        return (T) this;
     }
 
     /**

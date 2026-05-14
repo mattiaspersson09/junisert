@@ -15,8 +15,10 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
+import io.github.mattiaspersson09.junisert.api.assertion.Exclusion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.common.reflection.Field;
+import io.github.mattiaspersson09.junisert.common.reflection.Method;
 import io.github.mattiaspersson09.junisert.common.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.ValueService;
@@ -54,11 +56,15 @@ public class HasGettersTest {
     @Test
     void givenField_whenNotFindingAnyInstanceGetter_thenThrowsUnitAssertionError() {
         when(unit.getName()).thenReturn("unit");
-        when(unit.getFields()).thenReturn(Collections.singletonList(field));
+        when(unit.findFieldsMatching(any())).thenReturn(Collections.singletonList(field));
         when(unit.findMethodsMatching(any())).thenReturn(Collections.emptyList());
-        when(field.isInstanceMember()).thenReturn(true);
 
-        assertThatThrownBy(() -> hasGetters.test(unit)).isInstanceOf(UnitAssertionError.class);
+        Exclusion excludingSynthetic = Exclusion.exclude()
+                .methodMatching(Method::isSynthetic)
+                .build();
+
+        assertThatThrownBy(() -> hasGetters.withExclusion(excludingSynthetic).test(unit))
+                .isInstanceOf(UnitAssertionError.class);
 
         verifyNoInteractions(instanceCreator);
         verifyNoInteractions(valueService);
