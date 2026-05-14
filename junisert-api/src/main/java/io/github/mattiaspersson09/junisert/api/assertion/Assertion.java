@@ -17,7 +17,6 @@ package io.github.mattiaspersson09.junisert.api.assertion;
 
 import io.github.mattiaspersson09.junisert.api.internal.support.SupportUser;
 
-
 /**
  * Base assertion API.
  *

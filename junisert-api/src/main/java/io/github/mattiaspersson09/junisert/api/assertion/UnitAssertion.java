@@ -52,6 +52,8 @@ public interface UnitAssertion extends Assertion<UnitAssertion>, Excluder<UnitAs
      * @return this assertion, chained to be able to assert more
      * @throws UnitAssertionError if some requirement is not met
      * @see #asPojo()
+     * @see #excludingField(String) excluding a field
+     * @see #excludingMethod(String, Class[]) excluding a method
      */
     UnitAssertion isJavaBeanCompliant() throws UnitAssertionError;
 
