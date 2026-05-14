@@ -30,6 +30,8 @@ import io.github.mattiaspersson09.junisert.testunits.setter.BeanStyle;
 import io.github.mattiaspersson09.junisert.testunits.setter.BooleanCollisionBeanStyle;
 import io.github.mattiaspersson09.junisert.testunits.setter.BooleanTwoAlternatives;
 import io.github.mattiaspersson09.junisert.testunits.setter.BuilderStyle;
+import io.github.mattiaspersson09.junisert.testunits.setter.BuilderStyleBooleanWithPrefix;
+import io.github.mattiaspersson09.junisert.testunits.setter.BuilderStyleWithPrefix;
 import io.github.mattiaspersson09.junisert.testunits.setter.MissingSetter;
 import io.github.mattiaspersson09.junisert.testunits.setter.NotSettingField;
 import io.github.mattiaspersson09.junisert.testunits.setter.PolymorphicSetter;
@@ -143,5 +145,15 @@ public class HasSettersIntegrationTest {
     @Test
     void givenUnit_whenMixedMutableAndImmutableFields_thenSkipsImmutableFields_andPassesTest() {
         hasSetters.test(Unit.of(ModelWithMutableAndImmutableFields.class));
+    }
+
+    @Test
+    void givenUnit_whenHavingWithPrefixSetter_thenPassesTest() {
+        hasSetters.test(Unit.of(BuilderStyleWithPrefix.class));
+    }
+
+    @Test
+    void givenUnit_whenBooleanField_andWithPrefixSetter_thenPassesTest() {
+        hasSetters.test(Unit.of(BuilderStyleBooleanWithPrefix.class));
     }
 }

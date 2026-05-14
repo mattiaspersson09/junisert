@@ -17,6 +17,7 @@ package io.github.mattiaspersson09.junisert.core.internal.test.strategy;
 
 import io.github.mattiaspersson09.junisert.common.reflection.Field;
 import io.github.mattiaspersson09.junisert.common.reflection.Method;
+import io.github.mattiaspersson09.junisert.common.reflection.util.Fields;
 
 import java.util.function.Predicate;
 
@@ -45,7 +46,9 @@ final class FlexibleTestStrategy implements TestStrategy {
     }
 
     private Predicate<Method> isBuilderStyleSetter(Field field) {
-        return method -> method.getName().equals(field.getName())
+        return method -> (method.getName().equals(field.getName())
+                || method.getName().equals("with" + Fields.toCapitalizedPropertyName(field))
+                || method.getName().equals("with" + Fields.toBooleanCapitalizedPropertyName(field)))
                 && method.hasParameterCount(1)
                 && method.hasParameterOf(field.getType());
     }
