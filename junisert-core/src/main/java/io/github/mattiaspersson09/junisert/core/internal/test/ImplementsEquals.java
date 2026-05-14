@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 /**
  * Tests that a {@link Unit} overrides {@link Object#equals(Object)} and that it's well implemented.
  */
-public class ImplementsEquals extends AbstractUnitTest {
+public class ImplementsEquals extends AbstractUnitTest<ImplementsEquals> {
     private static final Logger LOGGER = Logger.getLogger("Implements Equals");
     private static final int TIMES_CONSISTENCY_CHECK = 3;
 
@@ -60,11 +60,9 @@ public class ImplementsEquals extends AbstractUnitTest {
 
         LOGGER.info("Setting up fields for equality comparison");
 
-        for (Field field : unit.getFields()) {
-            if (!field.isInstanceMember()) {
-                continue;
-            }
+        List<Field> fields = unit.findFieldsMatching(exclusion::isNotExcluded);
 
+        for (Field field : fields) {
             if (!unit.isImmutable()) {
                 Object value = valueService.getValue(field.getType()).get();
                 field.setValue(instance, value);
@@ -96,11 +94,7 @@ public class ImplementsEquals extends AbstractUnitTest {
         }
 
         Field previousField = null;
-        for (Field field : unit.getFields()) {
-            if (!field.isInstanceMember()) {
-                continue;
-            }
-
+        for (Field field : fields) {
             Object value = valueService.getValue(field.getType()).asEmpty();
             field.setValue(instance2, value);
             equals.loggingOff()

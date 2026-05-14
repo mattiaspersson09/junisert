@@ -41,7 +41,7 @@ public class PlainObjectAssertionImpl extends AbstractAssertion<PlainObjectAsser
 
     @Override
     public PlainObjectAssertion hasGetters() throws UnitAssertionError {
-        createTest(HasGetters.class).test(getUnit());
+        runTest(HasGetters.class);
 
         return this;
     }
@@ -49,26 +49,26 @@ public class PlainObjectAssertionImpl extends AbstractAssertion<PlainObjectAsser
     @Override
     public PlainObjectAssertion hasSetters() throws UnitAssertionError {
         if (getUnit().isImmutable()) {
-            LOGGER.info("Assertion hasSetters ignored: unit is immutable and can't have setters.");
+            LOGGER.info("Assertion hasSetters skipped: unit is immutable and can't have setters");
             return this;
         }
 
-        createTest(HasSetters.class).test(getUnit());
+        runTest(HasSetters.class);
 
         return this;
     }
 
     @Override
     public PlainObjectAssertion implementsEqualsAndHashCode() throws UnitAssertionError {
-        createTest(ImplementsEquals.class).test(getUnit());
-        createTest(ImplementsHashCode.class).test(getUnit());
+        runTest(ImplementsEquals.class);
+        runTest(ImplementsHashCode.class);
 
         return this;
     }
 
     @Override
     public PlainObjectAssertion implementsToString() throws UnitAssertionError {
-        createTest(ImplementsToString.class).test(getUnit());
+        runTest(ImplementsToString.class);
 
         return this;
     }

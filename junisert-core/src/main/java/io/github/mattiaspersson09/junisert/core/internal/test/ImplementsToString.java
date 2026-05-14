@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Tests that a {@link Unit} overrides {@link Object#toString()} and that it's well implemented.
  */
-public class ImplementsToString extends AbstractUnitTest {
+public class ImplementsToString extends AbstractUnitTest<ImplementsToString> {
     private static final Logger LOGGER = Logger.getLogger("Implements ToString");
 
     /**
@@ -61,10 +61,9 @@ public class ImplementsToString extends AbstractUnitTest {
             throw new UnitAssertionError("Was expected to contain '" + unit.getName() + "'");
         }
 
-        List<Field> instanceFields = unit.findFieldsMatching(Field::isInstanceMember);
+        List<Field> fields = unit.findFieldsMatching(exclusion::isNotExcluded);
 
-        for (Field field : instanceFields) {
-
+        for (Field field : fields) {
             if (!unit.isImmutable()) {
                 Object value = valueService.getValue(field.getType()).get();
                 field.setValue(instance, value);

@@ -55,19 +55,19 @@ public class UnitAssertionImpl extends AbstractAssertion<UnitAssertion> implemen
             throw new UnitAssertionError(unit.getName() + " were expected to have a default constructor");
         }
 
-        if (unit.hasFieldMatching(field -> field.isInstanceMember() && !field.modifier().isPrivate())) {
+        if (unit.hasFieldMatching(field -> getExclusion().isNotExcluded(field) && !field.modifier().isPrivate())) {
             throw new UnitAssertionError(unit.getName() + " were expected to only have private properties");
         }
 
         TestStrategy beanTestStrategy = TestStrategy.javaBeanCompliant();
 
-        HasGetters hasGetters = createTest(HasGetters.class);
-        hasGetters.setTestStrategy(beanTestStrategy);
-        hasGetters.test(unit);
+        createTest(HasGetters.class)
+                .withTestStrategy(beanTestStrategy)
+                .test(unit);
 
-        HasSetters hasSetters = createTest(HasSetters.class);
-        hasSetters.setTestStrategy(beanTestStrategy);
-        hasSetters.test(unit);
+        createTest(HasSetters.class)
+                .withTestStrategy(beanTestStrategy)
+                .test(unit);
 
         if (!Serializable.class.isAssignableFrom(unit.getType())) {
             LOGGER.warn("{0} should implement {1}, it is not enforced but recommended to ensure serialization",

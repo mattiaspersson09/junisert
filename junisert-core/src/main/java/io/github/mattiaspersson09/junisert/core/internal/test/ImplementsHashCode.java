@@ -24,11 +24,13 @@ import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.test.util.HashCode;
 
+import java.util.List;
+
 
 /**
  * Tests that a {@link Unit} overrides {@link Object#hashCode()} and that it's well implemented.
  */
-public class ImplementsHashCode extends AbstractUnitTest {
+public class ImplementsHashCode extends AbstractUnitTest<ImplementsHashCode> {
     private static final Logger LOGGER = Logger.getLogger("Implements HashCode");
 
     /**
@@ -56,11 +58,9 @@ public class ImplementsHashCode extends AbstractUnitTest {
 
         LOGGER.info("Setting up fields for hash code comparison");
 
-        for (Field field : unit.getFields()) {
-            if (!field.isInstanceMember()) {
-                continue;
-            }
+        List<Field> fields = unit.findFieldsMatching(exclusion::isNotExcluded);
 
+        for (Field field : fields) {
             if (!unit.isImmutable()) {
                 Object value = valueService.getValue(field.getType()).get();
                 field.setValue(instance, value);
@@ -74,15 +74,11 @@ public class ImplementsHashCode extends AbstractUnitTest {
                 .isEqualTo(instance2)
                 .isNotEqualTo(() -> unit.isImmutable()
                         ? createEmptyImmutableInstance(unit)
-                        : resetFieldsInInstance(unit, instance2));
+                        : resetFieldsInInstance(fields, instance2));
     }
 
-    private Object resetFieldsInInstance(Unit unit, Object instance) {
-        for (Field field : unit.getFields()) {
-            if (!field.isInstanceMember()) {
-                continue;
-            }
-
+    private Object resetFieldsInInstance(List<Field> fields, Object instance) {
+        for (Field field : fields) {
             Object value = valueService.getValue(field.getType()).asEmpty();
             field.setValue(instance, value);
         }

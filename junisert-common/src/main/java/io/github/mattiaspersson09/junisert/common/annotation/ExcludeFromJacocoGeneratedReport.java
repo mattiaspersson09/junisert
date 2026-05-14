@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.api.assertion;
+package io.github.mattiaspersson09.junisert.common.annotation;
 
-import io.github.mattiaspersson09.junisert.api.internal.support.SupportUser;
-
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Base assertion API.
- *
- * @param <A> type of assertion
+ * Forces JaCoCo to exclude type or method having this annotation in coverage report.
  */
-public interface Assertion<A> extends SupportUser<A> {
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface ExcludeFromJacocoGeneratedReport {
 }

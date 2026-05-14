@@ -30,7 +30,7 @@ import java.util.Objects;
 /**
  * Tests that a {@link Unit} has a working setter for every non-synthetic instance field.
  */
-public class HasSetters extends AbstractUnitTest {
+public class HasSetters extends AbstractUnitTest<HasSetters> {
     private static final Logger LOGGER = Logger.getLogger("Has Setters");
 
     /**
@@ -46,18 +46,16 @@ public class HasSetters extends AbstractUnitTest {
     @Override
     public void test(Unit unit) {
         if (unit.isImmutable()) {
-            LOGGER.info("Test ignored: unit is immutable and can't have setters.");
+            LOGGER.info("Test skipped: unit is immutable and can't have setters.");
             return;
         }
 
         LOGGER.info("Active test strategy: {0}", testStrategy.name());
         LOGGER.info("Testing unit: {0}", unit.getName());
 
-        for (Field field : unit.getFields()) {
-            if (!field.isInstanceMember()) {
-                continue;
-            }
+        List<Field> fields = unit.findFieldsMatching(exclusion::isNotExcluded);
 
+        for (Field field : fields) {
             if (field.isImmutable()) {
                 LOGGER.info("Skipping immutable field: {0}", field);
                 continue;
@@ -66,9 +64,16 @@ public class HasSetters extends AbstractUnitTest {
             LOGGER.info("Checking field: {0}", field);
 
             List<Method> setters = unit.findMethodsMatching(testStrategy.isSetterForField(field)
-                    .and(Method::isInstanceMember));
+                    .and(exclusion::isNotExcluded));
 
             if (setters.isEmpty()) {
+                List<Method> excluded = unit.findMethodsMatching(testStrategy.isSetterForField(field));
+
+                if (!excluded.isEmpty()) {
+                    LOGGER.info("Skipped: no setter to test, all found is excluded: {0}", excluded);
+                    continue;
+                }
+
                 throw new UnitAssertionError(String.format("%s was expected to have setter for instance field: %s, "
                         + "but none was found", unit.getName(), field.getName()));
             }
@@ -90,7 +95,8 @@ public class HasSetters extends AbstractUnitTest {
                     LOGGER.fail("Expected method to set value for field but it did not",
                             method + " to set value for " + field,
                             "it did not");
-                    throw new UnitAssertionError(String.format("Found setter: %s, but it was not setting for field: %s",
+                    throw new UnitAssertionError(String.format(
+                            "Found setter: %s, but it was not setting value for field: %s",
                             method.getName(), field.getName()));
                 }
             }

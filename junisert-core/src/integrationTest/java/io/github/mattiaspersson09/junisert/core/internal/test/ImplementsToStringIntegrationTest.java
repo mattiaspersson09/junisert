@@ -15,7 +15,10 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
+import io.github.mattiaspersson09.junisert.api.assertion.Exclusion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
+import io.github.mattiaspersson09.junisert.common.reflection.Field;
+import io.github.mattiaspersson09.junisert.common.reflection.Method;
 import io.github.mattiaspersson09.junisert.common.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.NoCacheTestValueService;
 import io.github.mattiaspersson09.junisert.core.TestInstanceCreator;
@@ -64,7 +67,11 @@ public class ImplementsToStringIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        implementsToString = new ImplementsToString(valueService, instanceCreator);
+        implementsToString = new ImplementsToString(valueService, instanceCreator)
+                .withExclusion(Exclusion.exclude()
+                        .fieldMatching(Field::isSynthetic)
+                        .methodMatching(Method::isSynthetic)
+                        .build());
     }
 
     @Test
@@ -113,5 +120,15 @@ public class ImplementsToStringIntegrationTest {
                 .isInstanceOf(UnitAssertionError.class);
         assertThatThrownBy(() -> implementsToString.test(Unit.of(EmptyToString.class)))
                 .isInstanceOf(UnitAssertionError.class);
+    }
+
+    @Test
+    void givenUnit_whenFieldIsMissing_butIsExcluded_thenPassesTest() {
+        new ImplementsToString(valueService, instanceCreator)
+                .withExclusion(Exclusion.exclude()
+                        .fieldMatching(Field::isSynthetic)
+                        .fieldMatching(field -> field.getName().equals("field"))
+                        .build())
+                .test(Unit.of(OnlyClassNameToString.class));
     }
 }

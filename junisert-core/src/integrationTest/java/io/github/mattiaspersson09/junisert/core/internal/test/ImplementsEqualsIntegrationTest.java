@@ -15,7 +15,10 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
+import io.github.mattiaspersson09.junisert.api.assertion.Exclusion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
+import io.github.mattiaspersson09.junisert.common.reflection.Field;
+import io.github.mattiaspersson09.junisert.common.reflection.Method;
 import io.github.mattiaspersson09.junisert.common.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.NoCacheTestValueService;
 import io.github.mattiaspersson09.junisert.core.TestInstanceCreator;
@@ -49,7 +52,11 @@ public class ImplementsEqualsIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        implementsEquals = new ImplementsEquals(valueService, instanceCreator);
+        implementsEquals = new ImplementsEquals(valueService, instanceCreator)
+                .withExclusion(Exclusion.exclude()
+                        .fieldMatching(Field::isSynthetic)
+                        .methodMatching(Method::isSynthetic)
+                        .build());
     }
 
     @Test

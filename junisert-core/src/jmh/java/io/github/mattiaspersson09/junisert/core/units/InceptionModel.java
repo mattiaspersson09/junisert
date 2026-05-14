@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.mattiaspersson09.junisert.core;
+package io.github.mattiaspersson09.junisert.core.units;
 
 import java.util.Objects;
 
-class InceptionModel {
+public class InceptionModel {
     private final Arg arg;
 
     public InceptionModel(Arg arg) {

@@ -30,16 +30,16 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class NoTestStrategyTest {
+public class FlexibleTestStrategyTest {
     @Mock
     Method method;
     @Mock
     Field field;
-    private NoTestStrategy convention;
+    private FlexibleTestStrategy convention;
 
     @BeforeEach
     void setUp() {
-        convention = new NoTestStrategy();
+        convention = new FlexibleTestStrategy();
     }
 
     @Test

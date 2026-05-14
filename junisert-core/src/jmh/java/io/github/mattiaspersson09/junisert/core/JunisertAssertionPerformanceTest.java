@@ -15,6 +15,8 @@
  */
 package io.github.mattiaspersson09.junisert.core;
 
+import io.github.mattiaspersson09.junisert.core.units.ExpensivePojo;
+import io.github.mattiaspersson09.junisert.core.units.VeryExpensiveImmutable;
 import io.github.mattiaspersson09.junisert.testunits.unit.bean.BeanCompliantModel;
 
 import org.openjdk.jmh.annotations.Benchmark;

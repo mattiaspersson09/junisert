@@ -15,7 +15,10 @@
  */
 package io.github.mattiaspersson09.junisert.core.internal.test;
 
+import io.github.mattiaspersson09.junisert.api.assertion.Exclusion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
+import io.github.mattiaspersson09.junisert.common.reflection.Field;
+import io.github.mattiaspersson09.junisert.common.reflection.Method;
 import io.github.mattiaspersson09.junisert.common.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.NoCacheTestValueService;
 import io.github.mattiaspersson09.junisert.core.TestInstanceCreator;
@@ -54,7 +57,11 @@ public class HasGettersIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        hasGetters = new HasGetters(valueService, instanceCreator);
+        hasGetters = new HasGetters(valueService, instanceCreator)
+                .withExclusion(Exclusion.exclude()
+                        .fieldMatching(Field::isSynthetic)
+                        .methodMatching(Method::isSynthetic)
+                        .build());
     }
 
     @Test
@@ -70,7 +77,7 @@ public class HasGettersIntegrationTest {
 
     @Test
     void givenUnit_whenConventionIsSetToJavaBean_andGetterIsNotBeanCompliant_thenFailsTest() {
-        hasGetters.setTestStrategy(TestStrategy.javaBeanCompliant());
+        hasGetters.withTestStrategy(TestStrategy.javaBeanCompliant());
 
         assertThatThrownBy(() -> hasGetters.test(Unit.of(RecordStyle.class))).isInstanceOf(UnitAssertionError.class);
         assertThatThrownBy(() -> hasGetters.test(Unit.of(BooleanRecordStyle.class))).isInstanceOf(
@@ -91,9 +98,34 @@ public class HasGettersIntegrationTest {
     }
 
     @Test
+    void givenUnitWithFieldHavingTwoGetters_andJustOneWorking_whenBrokenGetterIsExcluded_thenPassesTest() {
+        new HasGetters(valueService, instanceCreator)
+                .withExclusion(Exclusion.exclude()
+                        .fieldMatching(Field::isSynthetic)
+                        .methodMatching(method -> method.getName().equals("field"))
+                        .build())
+                .test(Unit.of(TwoButOnlyOneWorking.class));
+    }
+
+    @Test
     void givenUnit_whenAnyFieldIsMissingGetter_thenFailsTest() {
         assertThatThrownBy(() -> hasGetters.test(Unit.of(MissingGetter.class)))
                 .isInstanceOf(UnitAssertionError.class);
+    }
+
+    @Test
+    void givenUnit_whenAnyFieldHasBrokenGetter_butGetterIsExcluded_thenSkipsTest() {
+        assertThatThrownBy(() -> hasGetters.test(Unit.of(NotGettingField.class)))
+                .isInstanceOf(UnitAssertionError.class);
+
+        HasGetters hasGetters = new HasGetters(valueService, instanceCreator)
+                .withExclusion(Exclusion.exclude()
+                        .fieldMatching(Field::isSynthetic)
+                        .methodMatching(Method::isSynthetic)
+                        .methodMatching(method -> method.getName().equals("getField"))
+                        .build());
+
+        hasGetters.test(Unit.of(NotGettingField.class));
     }
 
     @Test
