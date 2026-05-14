@@ -220,7 +220,7 @@ public class Method extends ExecutableMember implements Invokable {
      * Checks if this method is considered a function that only accepts {@code inputAndResult} as argument and producing
      * {@code inputAndResult}. Can be seen as equivalent of a unary operation for filtering, formatting or processing.
      * <br>
-     * Is equivalent of using {@link #isFunctionOf(Class, Class)} with the same type for input and argument.
+     * Is equivalent of using {@link #isFunctionOf(Class, Class)} with the same type for input and result.
      * <p>
      * Example pseudo function:
      * <pre>

@@ -16,6 +16,8 @@
 package io.github.mattiaspersson09.junisert.common.reflection;
 
 import io.github.mattiaspersson09.junisert.testunits.constructor.ArgConstructor;
+import io.github.mattiaspersson09.junisert.testunits.field.MixedMutableAndImmutableFields;
+import io.github.mattiaspersson09.junisert.testunits.field.OnlyImmutableFields;
 
 import java.util.Objects;
 
@@ -38,6 +40,7 @@ public class UnitIntegrationTest {
         assertThat(unit.hasFieldMatching(Field::isInstanceMember)).isTrue();
         assertThat(unit.hasFieldMatching(Field::isImmutable)).isTrue();
         assertThat(unit.hasFieldMatching(Field::isInstanceImmutable)).isTrue();
+        assertThat(unit.findFieldsMatching(Field::isImmutable)).hasSize(2);
         assertThat(unit.findFieldsMatching(Field::isClassConstant)).hasSize(1);
         assertThat(unit.findFieldsMatching(Field::isInstanceImmutable)).hasSize(1);
         assertThat(unit.findFieldsMatching(Field::isInstanceMember)).hasSize(2);
@@ -152,6 +155,12 @@ public class UnitIntegrationTest {
         assertThatThrownBy(() -> Unit.of(null))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("unit origin");
+    }
+
+    @Test
+    void isImmutable_whenThereIsOnlyReadyOnlyFields_thenIsImmutable() {
+        assertThat(Unit.of(OnlyImmutableFields.class).isImmutable()).isTrue();
+        assertThat(Unit.of(MixedMutableAndImmutableFields.class).isImmutable()).isFalse();
     }
 
     @Test

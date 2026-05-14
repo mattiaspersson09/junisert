@@ -66,4 +66,12 @@ public class FieldsTest {
 
         assertThat(Fields.toBooleanCapitalizedPropertyName(field)).isEqualTo("Field");
     }
+
+    @Test
+    void toBooleanCapitalizedPropertyName_whenFieldIsNotBoolean_andHasIsPrefix_thenKeepsPrefix() {
+        when(field.getName()).thenReturn("isField");
+        when(field.isBoolean()).thenReturn(false);
+
+        assertThat(Fields.toBooleanCapitalizedPropertyName(field)).isEqualTo("IsField");
+    }
 }

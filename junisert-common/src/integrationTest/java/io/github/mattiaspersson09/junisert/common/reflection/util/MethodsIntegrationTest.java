@@ -15,5 +15,25 @@
  */
 package io.github.mattiaspersson09.junisert.common.reflection.util;
 
+import io.github.mattiaspersson09.junisert.common.reflection.Unit;
+import io.github.mattiaspersson09.junisert.testunits.method.FakeEqualsMethods;
+import io.github.mattiaspersson09.junisert.testunits.method.FakeHashCodeMethods;
+import io.github.mattiaspersson09.junisert.testunits.method.FakeToStringMethods;
+
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class MethodsIntegrationTest {
+    @Test
+    void givenObjectMethods_whenTheyAreFake_thenIsNotMethod() {
+        assertThat(Unit.of(FakeEqualsMethods.class).getMethods())
+                .noneMatch(Methods::isEqualsMethod);
+
+        assertThat(Unit.of(FakeHashCodeMethods.class).getMethods())
+                .noneMatch(Methods::isHashCodeMethod);
+
+        assertThat(Unit.of(FakeToStringMethods.class).getMethods())
+                .noneMatch(Methods::isToStringMethod);
+    }
 }

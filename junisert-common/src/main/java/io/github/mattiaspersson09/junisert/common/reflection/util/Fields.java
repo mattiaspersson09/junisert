@@ -44,12 +44,7 @@ public final class Fields {
      */
     public static String toCapitalizedPropertyName(Field field) {
         String name = field.getName();
-
-        if (ONE_LETTER_PREFIX_FIELD.test(name)) {
-            return name;
-        }
-
-        return capitalize(name);
+        return ONE_LETTER_PREFIX_FIELD.test(name) ? name : capitalize(name);
     }
 
     /**
