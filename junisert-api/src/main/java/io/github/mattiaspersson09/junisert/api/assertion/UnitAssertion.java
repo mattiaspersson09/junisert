@@ -58,8 +58,7 @@ public interface UnitAssertion extends Assertion<UnitAssertion>, Excluder<UnitAs
     UnitAssertion isJavaBeanCompliant() throws UnitAssertionError;
 
     /**
-     * Asserts that unit is immutable, meaning that all instance fields are read-only and there's
-     * a working getter for all properties.
+     * Asserts that unit is immutable, meaning that all instance fields are read-only.
      *
      * @return this assertion, chained to be able to assert more
      * @throws UnitAssertionError if requirement is not met

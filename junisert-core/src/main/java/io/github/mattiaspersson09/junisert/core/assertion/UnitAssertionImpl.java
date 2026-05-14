@@ -97,8 +97,6 @@ public class UnitAssertionImpl extends AbstractAssertion<UnitAssertion> implemen
             throw new UnitAssertionError(unit.getName() + " were expected to be immutable, but it wasn't");
         }
 
-        asPojo().hasGetters();
-
         return this;
     }
 }
