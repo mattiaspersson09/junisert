@@ -62,6 +62,7 @@ public interface PlainObjectAssertion extends Assertion<PlainObjectAssertion>, E
      * <ul>
      * <li>{@code public void <property name>(Type arg)}</li>
      * <li>{@code public Unit <property name>(Type arg)}</li>
+     * <li>{@code public Unit with<capitalized property name>(Type arg)}</li>
      * </ul>
      *
      * @return this assertion chained to assert more
