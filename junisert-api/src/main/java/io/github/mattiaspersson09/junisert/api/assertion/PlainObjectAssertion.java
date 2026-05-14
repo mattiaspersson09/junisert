@@ -23,7 +23,8 @@ package io.github.mattiaspersson09.junisert.api.assertion;
  */
 public interface PlainObjectAssertion extends Assertion<PlainObjectAssertion>, Excluder<PlainObjectAssertion> {
     /**
-     * Asserts that unit has a working non-excluded getter for all non-excluded <em>instance</em> fields. This assertion is flexible
+     * Asserts that unit has a working non-excluded getter for all non-excluded <em>instance</em> fields. This assertion
+     * is flexible
      * and accepts both <em>Java Bean</em> compliant and <em>builder/record</em> styles and does not enforce
      * public visibility.
      * <p>
@@ -47,7 +48,8 @@ public interface PlainObjectAssertion extends Assertion<PlainObjectAssertion>, E
     /**
      * <em>If the unit is immutable then this assertion will be skipped.</em><br>
      * <br>
-     * Asserts that unit has a working non-excluded setter for all non-excluded <em>instance</em> fields. This assertion is flexible
+     * Asserts that unit has a working non-excluded setter for all non-excluded <em>instance</em> fields. This assertion
+     * is flexible
      * and accepts both <em>Java Bean</em> compliant and <em>builder/record</em> styles and does not enforce
      * public visibility.
      * <p>

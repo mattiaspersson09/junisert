@@ -58,7 +58,7 @@ public class ImplementsHashCode extends AbstractUnitTest<ImplementsHashCode> {
 
         LOGGER.info("Setting up fields for hash code comparison");
 
-        List<Field> fields = unit.findFieldsMatching(exclusion::isNotExcluded);
+        List<Field> fields = unit.findFieldsMatching(Field::isInstanceMember);
 
         for (Field field : fields) {
             if (!unit.isImmutable()) {
