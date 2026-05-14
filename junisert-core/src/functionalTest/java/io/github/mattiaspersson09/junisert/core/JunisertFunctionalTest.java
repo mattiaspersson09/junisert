@@ -89,10 +89,14 @@ public class JunisertFunctionalTest {
             BeanCompliantModel.class,
             LombokDataUnit.class,
             LombokUnit.class,
-            DeepDependencyModel.class,
-            ImmutableModelBrokenGetter.class
+            DeepDependencyModel.class
     })
     void givenImmutable_whenIsNotImmutable_thenFailsAssertion(Class<?> type) {
         assertThatThrownBy(() -> Junisert.assertThatUnit(type).isImmutable()).isInstanceOf(UnitAssertionError.class);
+    }
+
+    @Test
+    void givenImmutable_whenOnlyFieldsAreImmutable_butNoGetter_thenPassesAssertion() {
+        Junisert.assertThatUnit(ImmutableModelBrokenGetter.class).isImmutable();
     }
 }
