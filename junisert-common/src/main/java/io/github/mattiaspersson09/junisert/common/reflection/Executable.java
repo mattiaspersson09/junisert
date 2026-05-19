@@ -15,6 +15,8 @@
  */
 package io.github.mattiaspersson09.junisert.common.reflection;
 
+
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -90,4 +92,14 @@ public interface Executable {
      * @return parameter types
      */
     List<Class<?>> getParameterTypes();
+
+    /**
+     * Checks if this executable accepts exactly given {@code parameters} as argument in declaration order.
+     *
+     * @param parameters to match with
+     * @return true if parameters matches
+     */
+    default boolean hasParameters(Class<?>... parameters) {
+        return getParameterTypes().equals(Arrays.asList(parameters));
+    }
 }

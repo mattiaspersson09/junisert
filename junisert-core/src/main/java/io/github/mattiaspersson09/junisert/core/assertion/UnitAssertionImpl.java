@@ -15,10 +15,12 @@
  */
 package io.github.mattiaspersson09.junisert.core.assertion;
 
+import io.github.mattiaspersson09.junisert.api.assertion.ConstructorAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.PlainObjectAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertion;
 import io.github.mattiaspersson09.junisert.api.assertion.UnitAssertionError;
 import io.github.mattiaspersson09.junisert.common.logging.Logger;
+import io.github.mattiaspersson09.junisert.common.reflection.Constructor;
 import io.github.mattiaspersson09.junisert.common.reflection.Unit;
 import io.github.mattiaspersson09.junisert.common.reflection.util.Methods;
 import io.github.mattiaspersson09.junisert.core.internal.test.HasGetters;
@@ -26,20 +28,29 @@ import io.github.mattiaspersson09.junisert.core.internal.test.HasSetters;
 import io.github.mattiaspersson09.junisert.core.internal.test.strategy.TestStrategy;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Direct implementation of {@link UnitAssertion} API.
+ *
+ * @param <T> unit type
  */
-public class UnitAssertionImpl extends AbstractAssertion<UnitAssertion> implements UnitAssertion {
-    private static final Logger LOGGER = Logger.getLogger("Unit assertion");
+public class UnitAssertionImpl<T> extends AbstractAssertion<UnitAssertion<T>> implements UnitAssertion<T> {
+    private static final Logger LOGGER = Logger.getLogger("Unit Assertion");
+    private final Class<T> unitClass;
 
     /**
      * Creates a new implementation of {@link PlainObjectAssertion}.
      *
+     * @param unitClass         unit under assertion, providing type safety
      * @param assertionResource needed for assertions
      */
-    public UnitAssertionImpl(AssertionResource assertionResource) {
+    public UnitAssertionImpl(Class<T> unitClass, AssertionResource assertionResource) {
         super(assertionResource);
+        this.unitClass = unitClass;
     }
 
     @Override
@@ -48,7 +59,7 @@ public class UnitAssertionImpl extends AbstractAssertion<UnitAssertion> implemen
     }
 
     @Override
-    public UnitAssertion isJavaBeanCompliant() throws UnitAssertionError {
+    public UnitAssertion<T> isJavaBeanCompliant() throws UnitAssertionError {
         Unit unit = getUnit();
 
         if (unit.hasNoDefaultConstructor()) {
@@ -90,7 +101,7 @@ public class UnitAssertionImpl extends AbstractAssertion<UnitAssertion> implemen
     }
 
     @Override
-    public UnitAssertion isImmutable() throws UnitAssertionError {
+    public UnitAssertion<T> isImmutable() throws UnitAssertionError {
         Unit unit = getUnit();
 
         if (!unit.isImmutable()) {
@@ -98,5 +109,39 @@ public class UnitAssertionImpl extends AbstractAssertion<UnitAssertion> implemen
         }
 
         return this;
+    }
+
+    @Override
+    public ConstructorAssertion<T> whenCreatedFromConstructor(Class<?>... parameters) {
+        Constructor constructor = getUnit().findConstructorsMatching(c -> c.hasParameters(parameters))
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new UnitAssertionError(String.format("Couldn't find a matching constructor"
+                        + "\nExpected unit: %s\nTo have a constructor with parameters: %s",
+                        getUnit().getName(), Arrays.asList(parameters))));
+
+        return new ConstructorAssertionImpl<>(constructor, getAssertionResource());
+    }
+
+    @Override
+    public ConstructorAssertion<T> whenCreatedFromConstructor(Predicate<Constructor> filter) throws UnitAssertionError {
+        List<Constructor> constructors = getUnit().findConstructorsMatching(filter);
+
+        if (constructors.isEmpty()) {
+            throw new UnitAssertionError(String.format("Couldn't find any matching constructor"
+                    + "\nExpected unit: %s\nTo have any constructor matching given filter", getUnit().getName()));
+        }
+
+        AssertionResource assertionResource = getAssertionResource();
+
+        if (constructors.size() == 1) {
+            return new ConstructorAssertionImpl<>(constructors.get(0), assertionResource);
+        }
+
+        List<ConstructorAssertionImpl<T>> assertions = constructors.stream()
+                .map(constructor -> new ConstructorAssertionImpl<T>(constructor, assertionResource))
+                .collect(Collectors.toList());
+
+        return new MultipleConstructorAssertion<>(assertions, assertionResource);
     }
 }

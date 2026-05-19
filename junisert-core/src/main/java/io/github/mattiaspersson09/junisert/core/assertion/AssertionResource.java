@@ -16,9 +16,13 @@
 package io.github.mattiaspersson09.junisert.core.assertion;
 
 import io.github.mattiaspersson09.junisert.api.assertion.Exclusion;
+import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
 import io.github.mattiaspersson09.junisert.common.reflection.Unit;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.ValueService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Used to wrap and supply expensive resources that should only be constructed once and be injected where needed
@@ -29,6 +33,7 @@ public final class AssertionResource {
     private final InstanceCreator instanceCreator;
     private final ValueService valueService;
     private final Exclusion exclusion;
+    private final List<ValueGenerator<?>> support;
 
     /**
      * Creates a new resource to share and inject where needed.
@@ -46,6 +51,28 @@ public final class AssertionResource {
         this.instanceCreator = instanceCreator;
         this.valueService = valueService;
         this.exclusion = exclusion;
+        this.support = new ArrayList<>();
+    }
+
+    /**
+     * Creates a new resource to share and inject where needed.
+     *
+     * @param unitUnderAssertion currently being asserted
+     * @param instanceCreator    creating instances of {@code unitUnderAssertion}
+     * @param valueService       providing value support with potentially caching abilities
+     * @param exclusion          filters for excluding unit members
+     * @param support            temporary assertion support
+     */
+    public AssertionResource(Unit unitUnderAssertion,
+                             InstanceCreator instanceCreator,
+                             ValueService valueService,
+                             Exclusion exclusion,
+                             List<ValueGenerator<?>> support) {
+        this.unitUnderAssertion = unitUnderAssertion;
+        this.instanceCreator = instanceCreator;
+        this.valueService = valueService;
+        this.exclusion = exclusion;
+        this.support = support;
     }
 
     /**
@@ -82,5 +109,14 @@ public final class AssertionResource {
      */
     public Exclusion getExclusion() {
         return exclusion;
+    }
+
+    /**
+     * Gets current temporary assertion support.
+     *
+     * @return assertion support
+     */
+    public List<ValueGenerator<?>> getSupport() {
+        return support;
     }
 }
