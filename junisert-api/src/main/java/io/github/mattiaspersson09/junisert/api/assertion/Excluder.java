@@ -19,7 +19,6 @@ import io.github.mattiaspersson09.junisert.common.annotation.ExcludeFromJacocoGe
 import io.github.mattiaspersson09.junisert.common.reflection.Field;
 import io.github.mattiaspersson09.junisert.common.reflection.Method;
 
-import java.util.Arrays;
 import java.util.function.Predicate;
 
 /**
@@ -75,8 +74,7 @@ public interface Excluder<E> {
      * @return this excluder
      */
     default E excludingMethod(String methodName, Class<?>... methodParameters) {
-        return excludingMethod(method -> method.getName().equals(methodName)
-                && method.getParameterTypes().equals(Arrays.asList(methodParameters)));
+        return excludingMethod(method -> method.getName().equals(methodName) && method.hasParameters(methodParameters));
     }
 
     /**

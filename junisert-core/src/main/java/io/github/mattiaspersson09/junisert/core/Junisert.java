@@ -52,9 +52,10 @@ public final class Junisert {
      *
      * @param unitClass to assert on
      * @return a new unit assertion
+     * @param <T> unit type
      */
-    public static UnitAssertion assertThatUnit(Class<?> unitClass) {
-        return new UnitAssertionImpl(getAssertionResource(unitClass));
+    public static <T> UnitAssertionImpl<T> assertThatUnit(Class<T> unitClass) {
+        return new UnitAssertionImpl<>(unitClass, getAssertionResource(unitClass));
     }
 
     /**

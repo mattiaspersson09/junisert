@@ -15,13 +15,23 @@
  */
 package io.github.mattiaspersson09.junisert.core.assertion;
 
+import io.github.mattiaspersson09.junisert.api.value.Value;
+import io.github.mattiaspersson09.junisert.api.value.ValueGenerator;
+import io.github.mattiaspersson09.junisert.core.assertion.AbstractAssertion.TemporaryValueService;
+import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.test.AbstractUnitTest;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 public class AbstractAssertionTest {
     @Test
@@ -48,6 +58,34 @@ public class AbstractAssertionTest {
 
         assertThatThrownBy(() -> assertion.runTest(unitTest.getClass()))
                 .isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void temporaryValueService_whenTemporarySupportSupportsType_thenUsesTemporarySupport() {
+        ValueGenerator<?> support = Mockito.mock(ValueGenerator.class);
+        ValueService originalValueService = Mockito.mock(ValueService.class);
+        TemporaryValueService temporaryValueService = new TemporaryValueService(originalValueService, support);
+
+        when(support.supports(any())).thenReturn(true);
+        when(support.generate(any())).thenReturn((Value) () -> "value");
+
+        assertThat(temporaryValueService.getValue(String.class).get()).isEqualTo("value");
+
+        verifyNoInteractions(originalValueService);
+    }
+
+    @Test
+    void temporaryValueService_whenTemporarySupportDoesNotSupportType_thenUsesOriginalValueService() {
+        ValueGenerator<?> support = Mockito.mock(ValueGenerator.class);
+        ValueService originalValueService = Mockito.mock(ValueService.class);
+        TemporaryValueService temporaryValueService = new TemporaryValueService(originalValueService, support);
+
+        when(support.supports(any())).thenReturn(false);
+
+        temporaryValueService.getValue(String.class);
+
+        verify(originalValueService, times(1)).getValue(any());
     }
 
     private static class Assertion extends AbstractAssertion<Assertion> {

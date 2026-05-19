@@ -32,4 +32,13 @@ public final class SelfConstructorImmutableModel {
     public boolean isBooleanField() {
         return booleanField;
     }
+
+    @Override
+    public String toString() {
+        return "SelfConstructorImmutableModel{" +
+                "longField=" + longField +
+                ", stringField='" + stringField + '\'' +
+                ", booleanField=" + booleanField +
+                '}';
+    }
 }

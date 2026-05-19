@@ -15,12 +15,18 @@
  */
 package io.github.mattiaspersson09.junisert.api.assertion;
 
+import io.github.mattiaspersson09.junisert.common.reflection.Constructor;
+
+import java.util.function.Predicate;
+
 /**
  * Assertion facade and convenience for different kind of units.
  * To assume the unit under assertion is a specific type of unit, use methods starting with
  * <em>"as"</em> for specific assertions. Use methods starting with <em>"is"</em> for convenient direct assertion.
+ *
+ * @param <T> unit type
  */
-public interface UnitAssertion extends Assertion<UnitAssertion>, Excluder<UnitAssertion> {
+public interface UnitAssertion<T> extends Assertion<UnitAssertion<T>>, Excluder<UnitAssertion<T>> {
     /**
      * Assumes this unit is a plain object for assertion, which doesn't necessarily follow a naming convention
      * but carries properties.
@@ -55,7 +61,7 @@ public interface UnitAssertion extends Assertion<UnitAssertion>, Excluder<UnitAs
      * @see #excludingField(String) excluding a field
      * @see #excludingMethod(String, Class[]) excluding a method
      */
-    UnitAssertion isJavaBeanCompliant() throws UnitAssertionError;
+    UnitAssertion<T> isJavaBeanCompliant() throws UnitAssertionError;
 
     /**
      * Asserts that unit is immutable, meaning that all instance fields are read-only.
@@ -63,5 +69,24 @@ public interface UnitAssertion extends Assertion<UnitAssertion>, Excluder<UnitAs
      * @return this assertion, chained to be able to assert more
      * @throws UnitAssertionError if requirement is not met
      */
-    UnitAssertion isImmutable() throws UnitAssertionError;
+    UnitAssertion<T> isImmutable() throws UnitAssertionError;
+
+    /**
+     * Creates a {@link ConstructorAssertion} to assert state of the unit after construction.
+     *
+     * @param parameters to find constructor with
+     * @return a new {@link ConstructorAssertion}
+     * @throws UnitAssertionError if no constructor matching {@code parameters} is found
+     */
+    ConstructorAssertion<T> whenCreatedFromConstructor(Class<?>... parameters) throws UnitAssertionError;
+
+    /**
+     * Creates a {@link ConstructorAssertion} to assert state of the unit after construction.
+     * If multiple constructors match given {@code filter}, all of them are asserted on.
+     *
+     * @param filter to find constructor or multiple constructors with
+     * @return a new {@link ConstructorAssertion}
+     * @throws UnitAssertionError if no constructor matching {@code filter} is found
+     */
+    ConstructorAssertion<T> whenCreatedFromConstructor(Predicate<Constructor> filter) throws UnitAssertionError;
 }

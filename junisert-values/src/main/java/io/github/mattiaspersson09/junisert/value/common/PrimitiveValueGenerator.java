@@ -46,9 +46,13 @@ public class PrimitiveValueGenerator implements ValueGenerator<Object> {
         return type.isPrimitive();
     }
 
+    /**
+     * Default empty values are as defined in Java Language Specification > 4.12.5. Initial Values of Variables:
+     * <a href="https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.12.5">JLS section 4.12.5</a>
+     */
     private enum Primitive {
         BOOLEAN(boolean.class, true, false),
-        CHAR(char.class, '1', '0'),
+        CHAR(char.class, '1', '\u0000'),
         BYTE(byte.class, (byte) 1, (byte) 0),
         SHORT(short.class, (short) 1, (short) 0),
         INTEGER(int.class, 1, 0),

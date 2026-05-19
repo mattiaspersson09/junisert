@@ -34,11 +34,12 @@ import io.github.mattiaspersson09.junisert.core.ValueCache;
 import io.github.mattiaspersson09.junisert.core.internal.InstanceCreator;
 import io.github.mattiaspersson09.junisert.core.internal.ValueService;
 import io.github.mattiaspersson09.junisert.core.internal.support.SortableSupport;
+import io.github.mattiaspersson09.junisert.core.internal.support.SupportComparator;
 import io.github.mattiaspersson09.junisert.core.internal.test.AbstractUnitTest;
 import io.github.mattiaspersson09.junisert.core.internal.test.UnitTest;
+import io.github.mattiaspersson09.junisert.value.common.DependencyObjectValueGenerator;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 import java.util.function.Predicate;
 
 /**
@@ -50,12 +51,10 @@ abstract class AbstractAssertion<A> implements Assertion<A>, Excluder<A> {
     private static final Logger LOGGER = Logger.getLogger(AbstractAssertion.class);
 
     private final AssertionResource assertionResource;
-    private final List<ValueGenerator<?>> assertionSupport;
     private final ValueCache assertionCache;
 
     protected AbstractAssertion(AssertionResource assertionResource) {
         this.assertionResource = assertionResource;
-        this.assertionSupport = new ArrayList<>();
         this.assertionCache = new ValueCache();
     }
 
@@ -65,10 +64,10 @@ abstract class AbstractAssertion<A> implements Assertion<A>, Excluder<A> {
      * @return current assertion resource
      */
     protected final AssertionResource getAssertionResource() {
-        return assertionSupport.isEmpty()
+        return assertionResource.getSupport().isEmpty()
                 ? assertionResource
                 : new AssertionResource(getUnit(), getInstanceCreator(), getValueService(),
-                        assertionResource.getExclusion());
+                        assertionResource.getExclusion(), assertionResource.getSupport());
     }
 
     /**
@@ -90,11 +89,22 @@ abstract class AbstractAssertion<A> implements Assertion<A>, Excluder<A> {
     }
 
     /**
+     * Gets current {@link ValueService}.
+     *
+     * @return value service
+     */
+    protected final ValueService getValueService() {
+        return assertionResource.getSupport().isEmpty()
+                ? assertionResource.getValueService()
+                : createValueServiceWithTemporarySupport();
+    }
+
+    /**
      * Creates a qualified {@link UnitTest} and injects dependencies needed during construction.
      *
      * @param test to construct
+     * @param <T>  test type
      * @return qualified unit test with injected dependencies
-     * @param <T> test type
      */
     protected final <T extends AbstractUnitTest<T>> T createTest(Class<T> test) {
         try {
@@ -119,7 +129,8 @@ abstract class AbstractAssertion<A> implements Assertion<A>, Excluder<A> {
     @Override
     @SuppressWarnings("unchecked")
     public A withSupport(ValueGenerator<?> support) {
-        assertionSupport.add(SortableSupport.toSortable(support));
+        assertionResource.getSupport().add(SortableSupport.toSortable(support));
+        assertionResource.getSupport().sort(new SupportComparator());
         LOGGER.config("Registered assertion support: {0}", support);
         return (A) this;
     }
@@ -156,20 +167,14 @@ abstract class AbstractAssertion<A> implements Assertion<A>, Excluder<A> {
         return (A) this;
     }
 
-    private ValueService getValueService() {
-        return assertionSupport.isEmpty()
-                ? assertionResource.getValueService()
-                : createValueServiceWithTemporarySupport();
-    }
-
     private InstanceCreator getInstanceCreator() {
-        return assertionSupport.isEmpty()
+        return assertionResource.getSupport().isEmpty()
                 ? assertionResource.getInstanceCreator()
                 : createInstanceCreatorWithTemporarySupport();
     }
 
     private InstanceCreator createInstanceCreatorWithTemporarySupport() {
-        AggregatedValueGenerator support = new AggregatedSupportGenerator(assertionSupport)
+        AggregatedValueGenerator support = new AggregatedSupportGenerator(assertionResource.getSupport())
                 .merge(new AggregatedSupportGenerator(SupportRegistry.get().registeredSupport()))
                 .merge(SupportRegistry.get().defaultValueSupport());
 
@@ -179,13 +184,20 @@ abstract class AbstractAssertion<A> implements Assertion<A>, Excluder<A> {
     }
 
     private ValueService createValueServiceWithTemporarySupport() {
-        ValueGenerator<?> support = SortableSupport.toSortable(new AggregatedSupportGenerator(assertionSupport));
+        AggregatedValueGenerator support = SupportRegistry.get()
+                .defaultValueSupport()
+                .mergeFirst(new AggregatedSupportGenerator(assertionResource.getSupport()));
+        AggregatedValueGenerator temporary = new AggregatedSupportGenerator(Collections.singletonList(
+                DependencyObjectValueGenerator.buildDependencySupport(support)
+                        .withForcedAccess()
+                        .withMaxDependencyDepth(Junisert.INSTANCE_DEPENDENCY_DEPTH)
+                        .build()))
+                .mergeFirst(support);
 
-        return new TemporaryValueService(assertionResource.getValueService(),
-                new CachingDependencyGenerator(support, assertionCache));
+        return new TemporaryValueService(assertionResource.getValueService(), temporary);
     }
 
-    private static class TemporaryValueService implements ValueService {
+    static class TemporaryValueService implements ValueService {
         private final ValueService valueService;
         private final ValueGenerator<?> temporarySupport;
 
